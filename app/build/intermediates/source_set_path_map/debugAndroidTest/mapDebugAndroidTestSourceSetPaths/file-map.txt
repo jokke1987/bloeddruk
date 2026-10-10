@@ -1,0 +1,4 @@
+com.joeri.bloeddruk.test.app-androidTest-0 C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\build\generated\res\resValues\androidTest\debug
+com.joeri.bloeddruk.test.app-mergeDebugAndroidTestResources-1 C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+com.joeri.bloeddruk.test.app-mergeDebugAndroidTestResources-2 C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+com.joeri.bloeddruk.test.app-debugAndroidTest-3 C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\build\intermediates\merged_res\debugAndroidTest\mergeDebugAndroidTestResources
