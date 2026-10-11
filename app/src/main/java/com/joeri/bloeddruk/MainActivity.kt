@@ -108,23 +108,17 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    // Automatische achtergrondcontrole op GitHub Releases
+                    // Automatische achtergrondcontrole op GitHub Releases (geen pop-up, wel rode badge '1' in het menu)
                     var updateReleaseInfo by remember { mutableStateOf<GitHubReleaseInfo?>(null) }
                     var updateDownloadUrl by remember { mutableStateOf("https://github.com/jokke1987/bloeddruk/releases/latest/download/app-debug.apk") }
+                    var hasUpdateAvailable by rememberSaveable { mutableStateOf(false) }
 
                     LaunchedEffect(Unit) {
                         val release = AppUpdater.checkForUpdates(context)
                         if (release != null) {
                             updateReleaseInfo = release
                             updateDownloadUrl = release.downloadUrl
-                            val result = snackbar.showSnackbar(
-                                message = "Nieuwe update beschikbaar (${release.tagName}) op GitHub!",
-                                actionLabel = "Installeren",
-                                duration = SnackbarDuration.Long
-                            )
-                            if (result == SnackbarResult.ActionPerformed) {
-                                showUpdateDialog = true
-                            }
+                            hasUpdateAvailable = true
                         }
                     }
 
@@ -167,6 +161,7 @@ class MainActivity : ComponentActivity() {
                             OverviewScreen(
                                 entries = entries,
                                 userProfile = userProfile,
+                                hasUpdateAvailable = hasUpdateAvailable,
                                 snackbarHostState = snackbar,
                                 onAdd = { editing = null; sheetOpen = true },
                                 onEdit = { editing = it; sheetOpen = true },

@@ -53,6 +53,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -207,7 +208,7 @@ private fun SlotCard(
     onEdit: (MedicationItem) -> Unit,
     onAdd: () -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
+    var isExpanded by rememberSaveable(cfg.id) { mutableStateOf(false) }
 
     Card(
         shape = RoundedCornerShape(20.dp),
@@ -328,7 +329,7 @@ private fun MedicationListTab(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(medications, key = { it.id }) { item ->
-                var isExpanded by remember { mutableStateOf(false) }
+                var isExpanded by rememberSaveable(item.id) { mutableStateOf(false) }
 
                 val slotName = when (item.slot) {
                     "MORNING" -> "’s Morgens"

@@ -107,6 +107,7 @@ private val W = listOf(0.8f, 0.8f, 0.8f, 1.7f, 1.9f, 1.9f, 1.5f)
 fun OverviewScreen(
     entries: List<BloodPressureEntry>,
     userProfile: UserProfile = UserProfile(),
+    hasUpdateAvailable: Boolean = false,
     snackbarHostState: SnackbarHostState,
     onAdd: () -> Unit,
     onEdit: (BloodPressureEntry) -> Unit,
@@ -292,7 +293,31 @@ fun OverviewScreen(
 
                     NavigationDrawerItem(
                         icon = { Icon(Icons.Filled.SystemUpdate, null) },
-                        label = { Text("Controleer op updates") },
+                        label = {
+                            Row(
+                                Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text("Controleer op updates")
+                                if (hasUpdateAvailable) {
+                                    Box(
+                                        Modifier
+                                            .size(20.dp)
+                                            .clip(CircleShape)
+                                            .background(Color(0xFFE53935)),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            "1",
+                                            color = Color.White,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                            }
+                        },
                         selected = false,
                         onClick = {
                             scope.launch { drawerState.close() }
