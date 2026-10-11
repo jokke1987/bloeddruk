@@ -37,22 +37,48 @@ object AppUpdater {
         }
     }
 
-    /** Downloadt de nieuwste APK van een URL (bijv. GitHub Releases) en start de installatie */
+    /** Downloadt de nieuwste APK van een URL (inclusief GitHub Releases redirects) en start de installatie */
     suspend fun downloadAndInstallApk(
         context: Context,
         apkUrl: String,
         onProgress: (Int) -> Unit
     ): Result<File> = withContext(Dispatchers.IO) {
         try {
-            val url = URL(apkUrl)
-            val connection = url.openConnection() as HttpURLConnection
+            var currentUrl = apkUrl
+            var connection = URL(currentUrl).openConnection() as HttpURLConnection
+            connection.instanceFollowRedirects = true
             connection.requestMethod = "GET"
             connection.connectTimeout = 15000
             connection.readTimeout = 15000
             connection.connect()
 
-            if (connection.responseCode != HttpURLConnection.HTTP_OK) {
-                return@withContext Result.failure(Exception("HTTP Fout: ${connection.responseCode}"))
+            var status = connection.responseCode
+            var redirectCount = 0
+
+            // Volg GitHub 301/302 redirects automatisch
+            while ((status == HttpURLConnection.HTTP_MOVED_TEMP ||
+                        status == HttpURLConnection.HTTP_MOVED_PERM ||
+                        status == HttpURLConnection.HTTP_SEE_OTHER ||
+                        status == 307 || status == 308) && redirectCount < 5
+            ) {
+                val newUrl = connection.getHeaderField("Location")
+                connection.disconnect()
+                if (newUrl.isNullOrBlank()) break
+                currentUrl = newUrl
+                connection = URL(currentUrl).openConnection() as HttpURLConnection
+                connection.instanceFollowRedirects = true
+                connection.requestMethod = "GET"
+                connection.connectTimeout = 15000
+                connection.readTimeout = 15000
+                connection.connect()
+                status = connection.responseCode
+                redirectCount++
+            }
+
+            if (status != HttpURLConnection.HTTP_OK) {
+                return@withContext Result.failure(
+                    Exception("HTTP $status - Geen release APK gevonden op $currentUrl")
+                )
             }
 
             val fileLength = connection.contentLength
