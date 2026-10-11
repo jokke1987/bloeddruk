@@ -37,8 +37,31 @@ object AppUpdater {
         }
     }
 
-    /** Downloadt de nieuwste APK van een URL (inclusief GitHub Releases redirects) en start de installatie */
+    /** Downloadt de nieuwste APK van een URL (inclusief automatische fallback tussen app-debug.apk en app-release.apk) */
     suspend fun downloadAndInstallApk(
+        context: Context,
+        apkUrl: String,
+        onProgress: (Int) -> Unit
+    ): Result<File> = withContext(Dispatchers.IO) {
+        val primaryResult = tryDownload(context, apkUrl, onProgress)
+        if (primaryResult.isSuccess) return@withContext primaryResult
+
+        // Slimme automatische fallback als het bestand app-debug.apk of app-release.apk heet op GitHub
+        val fallbackUrl = when {
+            apkUrl.contains("app-release.apk") -> apkUrl.replace("app-release.apk", "app-debug.apk")
+            apkUrl.contains("app-debug.apk") -> apkUrl.replace("app-debug.apk", "app-release.apk")
+            else -> null
+        }
+
+        if (fallbackUrl != null) {
+            val fallbackResult = tryDownload(context, fallbackUrl, onProgress)
+            if (fallbackResult.isSuccess) return@withContext fallbackResult
+        }
+
+        return@withContext primaryResult
+    }
+
+    private suspend fun tryDownload(
         context: Context,
         apkUrl: String,
         onProgress: (Int) -> Unit
@@ -55,7 +78,6 @@ object AppUpdater {
             var status = connection.responseCode
             var redirectCount = 0
 
-            // Volg GitHub 301/302 redirects automatisch
             while ((status == HttpURLConnection.HTTP_MOVED_TEMP ||
                         status == HttpURLConnection.HTTP_MOVED_PERM ||
                         status == HttpURLConnection.HTTP_SEE_OTHER ||
@@ -77,7 +99,7 @@ object AppUpdater {
 
             if (status != HttpURLConnection.HTTP_OK) {
                 return@withContext Result.failure(
-                    Exception("HTTP $status - Geen release APK gevonden op $currentUrl")
+                    Exception("HTTP $status - Geen bestand op $currentUrl")
                 )
             }
 

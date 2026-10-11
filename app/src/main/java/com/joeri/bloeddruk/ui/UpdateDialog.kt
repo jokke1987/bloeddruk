@@ -41,7 +41,7 @@ fun UpdateDialog(
     val scope = rememberCoroutineScope()
 
     var apkUrl by remember {
-        mutableStateOf("https://github.com/jokke1987/bloeddruk/releases/latest/download/app-release.apk")
+        mutableStateOf("https://github.com/jokke1987/bloeddruk/releases/latest/download/app-debug.apk")
     }
     var isDownloading by remember { mutableStateOf(false) }
     var progress by remember { mutableIntStateOf(0) }
