@@ -1,5 +1,6 @@
 package com.joeri.bloeddruk.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,6 +22,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.NightlightRound
 import androidx.compose.material.icons.filled.WbSunny
@@ -116,7 +120,7 @@ fun MedicationScreen(
             }
 
             if (selectedTab == 0) {
-                // Weergave in 4 vakken: Ochtend, Middag, Avond, Nacht
+                // Weergave in 4 in- en uitklapbare vakken: Ochtend, Middag, Avond, Nacht
                 InnamemomentenTab(
                     medications = medications,
                     onEdit = {
@@ -126,7 +130,7 @@ fun MedicationScreen(
                     onAddForSlot = { slot -> openAdd(slot) }
                 )
             } else {
-                // Beheer & Lijst van alle ingevoerde medicijnen
+                // Beheer & Inklapbare lijst van alle ingevoerde medicijnen
                 MedicationListTab(
                     medications = medications,
                     onEdit = {
@@ -156,7 +160,7 @@ fun MedicationScreen(
     }
 }
 
-/** Tab 1: De 4 vakken (Ochtend, Middag, Avond, Nacht) */
+/** Tab 1: De 4 inklapbare vakken (Ochtend, Middag, Avond, Nacht) */
 @Composable
 private fun InnamemomentenTab(
     medications: List<MedicationItem>,
@@ -174,7 +178,7 @@ private fun InnamemomentenTab(
         Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(slots, key = { it.id }) { cfg ->
             val itemsForSlot = medications.filter { it.slot == cfg.id }
@@ -203,77 +207,94 @@ private fun SlotCard(
     onEdit: (MedicationItem) -> Unit,
     onAdd: () -> Unit
 ) {
+    var isExpanded by remember { mutableStateOf(items.isNotEmpty()) }
+
     Card(
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Surface),
         elevation = CardDefaults.cardElevation(1.dp)
     ) {
-        Column(Modifier.fillMaxWidth().padding(16.dp)) {
+        Column(Modifier.fillMaxWidth().padding(14.dp)) {
             Row(
-                Modifier.fillMaxWidth(),
+                Modifier
+                    .fillMaxWidth()
+                    .clickable { isExpanded = !isExpanded },
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                     Icon(
                         cfg.icon,
                         contentDescription = null,
                         tint = cfg.color,
                         modifier = Modifier.size(26.dp)
                     )
-                    Spacer(Modifier.width(10.dp))
+                    Spacer(Modifier.width(12.dp))
                     Column {
                         Text(cfg.title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Ink)
                         Text("${items.size} medicijnen", fontSize = 12.sp, color = InkSoft)
                     }
                 }
-                IconButton(onClick = onAdd) {
-                    Icon(Icons.Filled.Add, contentDescription = "Toevoegen aan ${cfg.title}", tint = Primary)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onAdd) {
+                        Icon(Icons.Filled.Add, contentDescription = "Toevoegen aan ${cfg.title}", tint = Primary)
+                    }
+                    IconButton(onClick = { isExpanded = !isExpanded }) {
+                        Icon(
+                            if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                            contentDescription = if (isExpanded) "Inklappen" else "Uitklappen",
+                            tint = InkSoft
+                        )
+                    }
                 }
             }
 
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 10.dp),
-                color = InkSoft.copy(alpha = 0.15f)
-            )
+            AnimatedVisibility(visible = isExpanded) {
+                Column {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(vertical = 10.dp),
+                        color = InkSoft.copy(alpha = 0.15f)
+                    )
 
-            if (items.isEmpty()) {
-                Text(
-                    "Geen medicatie ingevoerd voor ${cfg.subtitle.lowercase()}.",
-                    fontSize = 13.sp,
-                    color = InkSoft,
-                    modifier = Modifier.padding(vertical = 6.dp)
-                )
-            } else {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items.forEach { item ->
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .clickable { onEdit(item) }
-                                .padding(vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Filled.MedicalServices,
-                                contentDescription = null,
-                                tint = cfg.color,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(Modifier.width(12.dp))
-                            Column(Modifier.weight(1f)) {
-                                Text(item.name, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = Ink)
-                                val desc = listOfNotNull(
-                                    item.dosage.trim().ifEmpty { null },
-                                    item.purpose.trim().ifEmpty { null }?.let { "Waarvoor: $it" },
-                                    item.note.trim().ifEmpty { null }
-                                ).joinToString(" · ")
-                                if (desc.isNotEmpty()) {
-                                    Text(desc, fontSize = 13.sp, color = InkSoft)
+                    if (items.isEmpty()) {
+                        Text(
+                            "Geen medicatie ingevoerd voor ${cfg.subtitle.lowercase()}.",
+                            fontSize = 13.sp,
+                            color = InkSoft,
+                            modifier = Modifier.padding(vertical = 6.dp)
+                        )
+                    } else {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            items.forEach { item ->
+                                Row(
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .clickable { onEdit(item) }
+                                        .padding(vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        Icons.Filled.MedicalServices,
+                                        contentDescription = null,
+                                        tint = cfg.color,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(Modifier.width(12.dp))
+                                    Column(Modifier.weight(1f)) {
+                                        Text(item.name, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = Ink)
+                                        val desc = listOfNotNull(
+                                            item.dosage.trim().ifEmpty { null },
+                                            item.purpose.trim().ifEmpty { null }?.let { "Waarvoor: $it" },
+                                            item.note.trim().ifEmpty { null }
+                                        ).joinToString(" · ")
+                                        if (desc.isNotEmpty()) {
+                                            Text(desc, fontSize = 13.sp, color = InkSoft)
+                                        }
+                                    }
+                                    IconButton(onClick = { onEdit(item) }) {
+                                        Icon(Icons.Filled.Edit, contentDescription = "Bewerken", tint = InkSoft)
+                                    }
                                 }
-                            }
-                            IconButton(onClick = { onEdit(item) }) {
-                                Icon(Icons.Filled.Edit, contentDescription = "Bewerken", tint = InkSoft)
                             }
                         }
                     }
@@ -283,7 +304,7 @@ private fun SlotCard(
     }
 }
 
-/** Tab 2: Alle medicatielijst */
+/** Tab 2: Alle medicatielijst met compacte inklapbare blokjes */
 @Composable
 private fun MedicationListTab(
     medications: List<MedicationItem>,
@@ -307,6 +328,8 @@ private fun MedicationListTab(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             items(medications, key = { it.id }) { item ->
+                var isExpanded by remember { mutableStateOf(false) }
+
                 val slotName = when (item.slot) {
                     "MORNING" -> "’s Morgens"
                     "AFTERNOON" -> "’s Middags"
@@ -314,44 +337,67 @@ private fun MedicationListTab(
                     "NIGHT" -> "Nacht"
                     else -> "’s Morgens"
                 }
+
                 Card(
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(containerColor = Surface),
-                    elevation = CardDefaults.cardElevation(1.dp)
+                    elevation = CardDefaults.cardElevation(1.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { isExpanded = !isExpanded }
                 ) {
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Filled.MedicalServices,
-                            contentDescription = null,
-                            tint = Primary,
-                            modifier = Modifier.size(28.dp)
-                        )
-                        Spacer(Modifier.width(14.dp))
-                        Column(Modifier.weight(1f)) {
-                            Text(item.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Ink)
-                            Text(
-                                "Innamemoment: $slotName" +
-                                        if (item.dosage.isNotEmpty()) " · ${item.dosage}" else "",
-                                fontSize = 13.sp,
-                                color = InkSoft
+                    Column(Modifier.padding(14.dp)) {
+                        Row(
+                            Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Filled.MedicalServices,
+                                contentDescription = null,
+                                tint = Primary,
+                                modifier = Modifier.size(24.dp)
                             )
-                            if (item.purpose.isNotEmpty()) {
-                                Text("Waarvoor: ${item.purpose}", fontSize = 12.sp, color = Primary, fontWeight = FontWeight.Medium)
+                            Spacer(Modifier.width(12.dp))
+                            Column(Modifier.weight(1f)) {
+                                Text(item.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Ink)
+                                Text("Innamemoment: $slotName", fontSize = 12.sp, color = InkSoft)
                             }
-                            if (item.note.isNotEmpty()) {
-                                Text(item.note, fontSize = 12.sp, color = InkSoft)
+                            IconButton(onClick = { isExpanded = !isExpanded }) {
+                                Icon(
+                                    if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                                    contentDescription = if (isExpanded) "Inklappen" else "Uitklappen",
+                                    tint = InkSoft
+                                )
                             }
                         }
-                        IconButton(onClick = { onEdit(item) }) {
-                            Icon(Icons.Filled.Edit, contentDescription = "Bewerken", tint = InkSoft)
-                        }
-                        IconButton(onClick = { onDelete(item) }) {
-                            Icon(Icons.Filled.Delete, contentDescription = "Verwijderen", tint = Color(0xFFE53935))
+
+                        AnimatedVisibility(visible = isExpanded) {
+                            Column(Modifier.padding(top = 10.dp)) {
+                                HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
+                                Spacer(Modifier.height(8.dp))
+
+                                if (item.dosage.isNotEmpty()) {
+                                    Text("Dosering: ${item.dosage}", fontSize = 13.sp, color = Ink)
+                                }
+                                if (item.purpose.isNotEmpty()) {
+                                    Text("Waarvoor: ${item.purpose}", fontSize = 13.sp, color = Primary, fontWeight = FontWeight.Medium)
+                                }
+                                if (item.note.isNotEmpty()) {
+                                    Text("Notitie: ${item.note}", fontSize = 12.sp, color = InkSoft)
+                                }
+
+                                Row(
+                                    Modifier.fillMaxWidth().padding(top = 8.dp),
+                                    horizontalArrangement = Arrangement.End
+                                ) {
+                                    IconButton(onClick = { onEdit(item) }) {
+                                        Icon(Icons.Filled.Edit, contentDescription = "Bewerken", tint = InkSoft)
+                                    }
+                                    IconButton(onClick = { onDelete(item) }) {
+                                        Icon(Icons.Filled.Delete, contentDescription = "Verwijderen", tint = Color(0xFFE53935))
+                                    }
+                                }
+                            }
                         }
                     }
                 }
