@@ -41,6 +41,8 @@ import com.joeri.bloeddruk.ui.BloodTypeDialog
 import com.joeri.bloeddruk.ui.DoctorDialog
 import com.joeri.bloeddruk.ui.SplashScreen
 import com.joeri.bloeddruk.ui.UpdateDialog
+import com.joeri.bloeddruk.update.AppUpdater
+import com.joeri.bloeddruk.update.GitHubReleaseInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -106,6 +108,26 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
+                    // Automatische achtergrondcontrole op GitHub Releases
+                    var updateReleaseInfo by remember { mutableStateOf<GitHubReleaseInfo?>(null) }
+                    var updateDownloadUrl by remember { mutableStateOf("https://github.com/jokke1987/bloeddruk/releases/latest/download/app-debug.apk") }
+
+                    LaunchedEffect(Unit) {
+                        val release = AppUpdater.checkForUpdates(context)
+                        if (release != null) {
+                            updateReleaseInfo = release
+                            updateDownloadUrl = release.downloadUrl
+                            val result = snackbar.showSnackbar(
+                                message = "Nieuwe update beschikbaar (${release.tagName}) op GitHub!",
+                                actionLabel = "Installeren",
+                                duration = SnackbarDuration.Long
+                            )
+                            if (result == SnackbarResult.ActionPerformed) {
+                                showUpdateDialog = true
+                            }
+                        }
+                    }
+
                     BackHandler(enabled = activeScreen != "overview") { activeScreen = "overview" }
 
                     when (activeScreen) {
@@ -164,7 +186,10 @@ class MainActivity : ComponentActivity() {
                     }
 
                     if (showUpdateDialog) {
-                        UpdateDialog(onDismiss = { showUpdateDialog = false })
+                        UpdateDialog(
+                            initialUrl = updateDownloadUrl,
+                            onDismiss = { showUpdateDialog = false }
+                        )
                     }
 
                     if (showDoctorDialog) {

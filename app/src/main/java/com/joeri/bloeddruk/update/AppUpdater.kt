@@ -8,10 +8,17 @@ import android.provider.Settings
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
+
+data class GitHubReleaseInfo(
+    val tagName: String,
+    val downloadUrl: String,
+    val releaseNotes: String
+)
 
 object AppUpdater {
 
@@ -35,6 +42,46 @@ object AppUpdater {
             }
             context.startActivity(intent)
         }
+    }
+
+    /** Controleert op de GitHub API of er een nieuwere release aanwezig is op het account jokke1987/bloeddruk */
+    suspend fun checkForUpdates(context: Context): GitHubReleaseInfo? = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("https://api.github.com/repos/jokke1987/bloeddruk/releases/latest")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.setRequestProperty("Accept", "application/vnd.github+json")
+            connection.connectTimeout = 8000
+            connection.readTimeout = 8000
+            connection.connect()
+
+            if (connection.responseCode == HttpURLConnection.HTTP_OK) {
+                val jsonText = connection.inputStream.bufferedReader().use { it.readText() }
+                val json = JSONObject(jsonText)
+                val tagName = json.optString("tag_name", "")
+                val body = json.optString("body", "Nieuwe versie beschikbaar op GitHub.")
+
+                var downloadUrl = "https://github.com/jokke1987/bloeddruk/releases/latest/download/app-debug.apk"
+                val assets = json.optJSONArray("assets")
+                if (assets != null && assets.length() > 0) {
+                    for (i in 0 until assets.length()) {
+                        val asset = assets.getJSONObject(i)
+                        val name = asset.optString("name", "")
+                        if (name.endsWith(".apk")) {
+                            downloadUrl = asset.optString("browser_download_url", downloadUrl)
+                            break
+                        }
+                    }
+                }
+
+                if (tagName.isNotBlank()) {
+                    return@withContext GitHubReleaseInfo(tagName, downloadUrl, body)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return@withContext null
     }
 
     /** Downloadt de nieuwste APK van een URL (inclusief automatische fallback tussen app-debug.apk en app-release.apk) */
