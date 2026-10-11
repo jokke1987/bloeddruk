@@ -207,7 +207,7 @@ private fun SlotCard(
     onEdit: (MedicationItem) -> Unit,
     onAdd: () -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(items.isNotEmpty()) }
+    var isExpanded by remember { mutableStateOf(false) }
 
     Card(
         shape = RoundedCornerShape(20.dp),
