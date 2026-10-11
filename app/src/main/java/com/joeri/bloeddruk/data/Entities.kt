@@ -45,3 +45,15 @@ data class MedicationItem(
     val note: String = "",
     val purpose: String = "" // Waarvoor dient het (bv. "Voor hoge bloeddruk")
 )
+
+/** Medisch profiel van de gebruiker (bloedgroep en doktergegevens). */
+@Entity(tableName = "user_profile")
+data class UserProfile(
+    @PrimaryKey val id: Int = 1,
+    val bloodType: String = "",       // e.g. "A+", "O-", etc.
+    val doctorName: String = "",      // e.g. "Dr. Janssens"
+    val doctorPhone: String = "",     // e.g. "0123456789"
+    val doctorEmail: String = "",     // e.g. "dokter@praktijk.be"
+    val doctorAddress: String = "",   // e.g. "Medisch Centrum"
+    val doctorNotes: String = ""      // e.g. "Spreekuur op dinsdag"
+)

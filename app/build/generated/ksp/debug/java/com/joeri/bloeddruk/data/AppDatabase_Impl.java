@@ -32,17 +32,20 @@ public final class AppDatabase_Impl extends AppDatabase {
 
   private volatile MedicationDao _medicationDao;
 
+  private volatile UserProfileDao _userProfileDao;
+
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(5) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(6) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `metingen` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL, `isMorning` INTEGER NOT NULL, `systolic` INTEGER NOT NULL, `diastolic` INTEGER NOT NULL, `pulse` INTEGER NOT NULL, `note` TEXT NOT NULL, `tags` TEXT NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `alarmen` (`id` INTEGER NOT NULL, `hour` INTEGER NOT NULL, `minute` INTEGER NOT NULL, `enabled` INTEGER NOT NULL, `isMorning` INTEGER NOT NULL, `soundUri` TEXT NOT NULL, `soundTitle` TEXT NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `medicatie` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `dosage` TEXT NOT NULL, `slot` TEXT NOT NULL, `note` TEXT NOT NULL, `purpose` TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `user_profile` (`id` INTEGER NOT NULL, `bloodType` TEXT NOT NULL, `doctorName` TEXT NOT NULL, `doctorPhone` TEXT NOT NULL, `doctorEmail` TEXT NOT NULL, `doctorAddress` TEXT NOT NULL, `doctorNotes` TEXT NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '094ec22cb87fb6b37e961358cc85caf2')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0fe23e236c79dbf4fac43087ab8cef6f')");
       }
 
       @Override
@@ -50,6 +53,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("DROP TABLE IF EXISTS `metingen`");
         db.execSQL("DROP TABLE IF EXISTS `alarmen`");
         db.execSQL("DROP TABLE IF EXISTS `medicatie`");
+        db.execSQL("DROP TABLE IF EXISTS `user_profile`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -144,9 +148,26 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoMedicatie + "\n"
                   + " Found:\n" + _existingMedicatie);
         }
+        final HashMap<String, TableInfo.Column> _columnsUserProfile = new HashMap<String, TableInfo.Column>(7);
+        _columnsUserProfile.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("bloodType", new TableInfo.Column("bloodType", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("doctorName", new TableInfo.Column("doctorName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("doctorPhone", new TableInfo.Column("doctorPhone", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("doctorEmail", new TableInfo.Column("doctorEmail", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("doctorAddress", new TableInfo.Column("doctorAddress", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("doctorNotes", new TableInfo.Column("doctorNotes", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysUserProfile = new HashSet<TableInfo.ForeignKey>(0);
+        final HashSet<TableInfo.Index> _indicesUserProfile = new HashSet<TableInfo.Index>(0);
+        final TableInfo _infoUserProfile = new TableInfo("user_profile", _columnsUserProfile, _foreignKeysUserProfile, _indicesUserProfile);
+        final TableInfo _existingUserProfile = TableInfo.read(db, "user_profile");
+        if (!_infoUserProfile.equals(_existingUserProfile)) {
+          return new RoomOpenHelper.ValidationResult(false, "user_profile(com.joeri.bloeddruk.data.UserProfile).\n"
+                  + " Expected:\n" + _infoUserProfile + "\n"
+                  + " Found:\n" + _existingUserProfile);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "094ec22cb87fb6b37e961358cc85caf2", "4a9181dfd182833b42a398cc8c6cd246");
+    }, "0fe23e236c79dbf4fac43087ab8cef6f", "ec58597e7203d9946bba27a450a7ffea");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -157,7 +178,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "metingen","alarmen","medicatie");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "metingen","alarmen","medicatie","user_profile");
   }
 
   @Override
@@ -169,6 +190,7 @@ public final class AppDatabase_Impl extends AppDatabase {
       _db.execSQL("DELETE FROM `metingen`");
       _db.execSQL("DELETE FROM `alarmen`");
       _db.execSQL("DELETE FROM `medicatie`");
+      _db.execSQL("DELETE FROM `user_profile`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -186,6 +208,7 @@ public final class AppDatabase_Impl extends AppDatabase {
     _typeConvertersMap.put(BloodPressureDao.class, BloodPressureDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(AlarmDao.class, AlarmDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(MedicationDao.class, MedicationDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(UserProfileDao.class, UserProfileDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -242,6 +265,20 @@ public final class AppDatabase_Impl extends AppDatabase {
           _medicationDao = new MedicationDao_Impl(this);
         }
         return _medicationDao;
+      }
+    }
+  }
+
+  @Override
+  public UserProfileDao userProfileDao() {
+    if (_userProfileDao != null) {
+      return _userProfileDao;
+    } else {
+      synchronized(this) {
+        if(_userProfileDao == null) {
+          _userProfileDao = new UserProfileDao_Impl(this);
+        }
+        return _userProfileDao;
       }
     }
   }

@@ -37,6 +37,8 @@ import com.joeri.bloeddruk.ui.ExportDialog
 import com.joeri.bloeddruk.ui.MedicationScreen
 import com.joeri.bloeddruk.ui.OverviewScreen
 import com.joeri.bloeddruk.ui.SearchScreen
+import com.joeri.bloeddruk.ui.BloodTypeDialog
+import com.joeri.bloeddruk.ui.DoctorDialog
 import com.joeri.bloeddruk.ui.SplashScreen
 import com.joeri.bloeddruk.ui.UpdateDialog
 import kotlinx.coroutines.Dispatchers
@@ -59,6 +61,7 @@ class MainActivity : ComponentActivity() {
                 val entries by vm.entries.collectAsStateWithLifecycle()
                 val alarms by vm.alarms.collectAsStateWithLifecycle()
                 val medications by vm.medications.collectAsStateWithLifecycle()
+                val userProfile by vm.userProfile.collectAsStateWithLifecycle()
                 val context = LocalContext.current
 
                 var showSplash by remember { mutableStateOf(true) }
@@ -67,6 +70,8 @@ class MainActivity : ComponentActivity() {
                 var sheetOpen by rememberSaveable { mutableStateOf(false) }
                 var showExport by rememberSaveable { mutableStateOf(false) }
                 var showUpdateDialog by rememberSaveable { mutableStateOf(false) }
+                var showDoctorDialog by rememberSaveable { mutableStateOf(false) }
+                var showBloodTypeDialog by rememberSaveable { mutableStateOf(false) }
                 var editing by remember { mutableStateOf<BloodPressureEntry?>(null) }
 
                 val snackbar = remember { SnackbarHostState() }
@@ -139,6 +144,7 @@ class MainActivity : ComponentActivity() {
                         else -> {
                             OverviewScreen(
                                 entries = entries,
+                                userProfile = userProfile,
                                 snackbarHostState = snackbar,
                                 onAdd = { editing = null; sheetOpen = true },
                                 onEdit = { editing = it; sheetOpen = true },
@@ -149,6 +155,8 @@ class MainActivity : ComponentActivity() {
                                 },
                                 onOpenArchive = { activeScreen = "archive" },
                                 onOpenSearch = { activeScreen = "search" },
+                                onOpenDoctor = { showDoctorDialog = true },
+                                onOpenBloodType = { showBloodTypeDialog = true },
                                 onCheckForUpdates = { showUpdateDialog = true },
                                 onExport = { showExport = true }
                             )
@@ -157,6 +165,28 @@ class MainActivity : ComponentActivity() {
 
                     if (showUpdateDialog) {
                         UpdateDialog(onDismiss = { showUpdateDialog = false })
+                    }
+
+                    if (showDoctorDialog) {
+                        DoctorDialog(
+                            profile = userProfile,
+                            onSave = {
+                                vm.saveProfile(it)
+                                scope.launch { snackbar.showSnackbar("Doktergegevens opgeslagen") }
+                            },
+                            onDismiss = { showDoctorDialog = false }
+                        )
+                    }
+
+                    if (showBloodTypeDialog) {
+                        BloodTypeDialog(
+                            profile = userProfile,
+                            onSave = {
+                                vm.saveProfile(it)
+                                scope.launch { snackbar.showSnackbar("Bloedgroep opgeslagen") }
+                            },
+                            onDismiss = { showBloodTypeDialog = false }
+                        )
                     }
 
                     if (sheetOpen) {

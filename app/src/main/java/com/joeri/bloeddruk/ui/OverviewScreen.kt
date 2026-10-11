@@ -92,7 +92,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.joeri.bloeddruk.data.BloodPressureEntry
 import kotlinx.coroutines.launch
+import androidx.compose.material.icons.filled.Bloodtype
+import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.SystemUpdate
+import com.joeri.bloeddruk.data.UserProfile
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -103,6 +106,7 @@ private val W = listOf(0.8f, 0.8f, 0.8f, 1.7f, 1.9f, 1.9f, 1.5f)
 @Composable
 fun OverviewScreen(
     entries: List<BloodPressureEntry>,
+    userProfile: UserProfile = UserProfile(),
     snackbarHostState: SnackbarHostState,
     onAdd: () -> Unit,
     onEdit: (BloodPressureEntry) -> Unit,
@@ -110,6 +114,8 @@ fun OverviewScreen(
     onOpenMedication: (initialTab: Int) -> Unit,
     onOpenArchive: () -> Unit,
     onOpenSearch: () -> Unit,
+    onOpenDoctor: () -> Unit = {},
+    onOpenBloodType: () -> Unit = {},
     onCheckForUpdates: () -> Unit,
     onExport: () -> Unit
 ) {
@@ -188,12 +194,17 @@ fun OverviewScreen(
                     )
 
                     NavigationDrawerItem(
-                        icon = { Icon(Icons.Filled.History, null) },
-                        label = { Text("Metingen Historie") },
+                        icon = { Icon(Icons.Filled.Bloodtype, null) },
+                        label = {
+                            Text(
+                                if (userProfile.bloodType.isNotBlank()) "Bloedgroep (${userProfile.bloodType})"
+                                else "Mijn Bloedgroep"
+                            )
+                        },
                         selected = false,
                         onClick = {
-                            tab = 0
                             scope.launch { drawerState.close() }
+                            onOpenBloodType()
                         }
                     )
 
@@ -223,6 +234,21 @@ fun OverviewScreen(
                         onClick = {
                             scope.launch { drawerState.close() }
                             onOpenMedication(0)
+                        }
+                    )
+
+                    NavigationDrawerItem(
+                        icon = { Icon(Icons.Filled.LocalHospital, null) },
+                        label = {
+                            Text(
+                                if (userProfile.doctorName.isNotBlank()) "Dokter (${userProfile.doctorName})"
+                                else "Dokter & Zorgverlener"
+                            )
+                        },
+                        selected = false,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            onOpenDoctor()
                         }
                     )
 

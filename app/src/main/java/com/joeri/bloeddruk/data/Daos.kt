@@ -44,3 +44,15 @@ interface MedicationDao {
     @Delete
     suspend fun delete(item: MedicationItem)
 }
+
+@Dao
+interface UserProfileDao {
+    @Query("SELECT * FROM user_profile WHERE id = 1")
+    fun observeProfile(): Flow<UserProfile?>
+
+    @Query("SELECT * FROM user_profile WHERE id = 1")
+    suspend fun getProfile(): UserProfile?
+
+    @Upsert
+    suspend fun upsert(profile: UserProfile)
+}

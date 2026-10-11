@@ -1,26 +1,22 @@
 [
     {
-        "merged": "C:\\Users\\wieri\\.gradle\\daemon\\9.6.0\\com.joeri.bloeddruk.app-debug-51:\\drawable_splash_background.xml.flat",
-        "source": "C:\\Users\\wieri\\.gradle\\daemon\\9.6.0\\com.joeri.bloeddruk.app-main-53:\\drawable\\splash_background.xml"
+        "merged": "com.joeri.bloeddruk.app-debug-51:/drawable_splash_background.xml.flat",
+        "source": "com.joeri.bloeddruk.app-main-53:/drawable/splash_background.xml"
     },
     {
-        "merged": "C:\\Users\\wieri\\.gradle\\daemon\\9.6.0\\com.joeri.bloeddruk.app-debug-51:\\drawable_splash_logo.png.flat",
-        "source": "C:\\Users\\wieri\\.gradle\\daemon\\9.6.0\\com.joeri.bloeddruk.app-main-53:\\drawable\\splash_logo.png"
-    },
-    {
-        "merged": "C:\\Users\\wieri\\.gradle\\daemon\\9.6.0\\com.joeri.bloeddruk.app-debug-51:\\drawable_splash_pattern.png.flat",
-        "source": "C:\\Users\\wieri\\.gradle\\daemon\\9.6.0\\com.joeri.bloeddruk.app-main-53:\\drawable\\splash_pattern.png"
+        "merged": "com.joeri.bloeddruk.app-debug-51:/drawable_ic_launcher.xml.flat",
+        "source": "com.joeri.bloeddruk.app-main-53:/drawable/ic_launcher.xml"
     },
     {
         "merged": "com.joeri.bloeddruk.app-debug-51:/xml_file_paths.xml.flat",
         "source": "com.joeri.bloeddruk.app-main-53:/xml/file_paths.xml"
     },
     {
-        "merged": "C:\\Users\\wieri\\.gradle\\daemon\\9.6.0\\com.joeri.bloeddruk.app-debug-51:\\drawable_ic_launcher.xml.flat",
-        "source": "C:\\Users\\wieri\\.gradle\\daemon\\9.6.0\\com.joeri.bloeddruk.app-main-53:\\drawable\\ic_launcher.xml"
+        "merged": "com.joeri.bloeddruk.app-debug-51:/drawable_splash_logo.png.flat",
+        "source": "com.joeri.bloeddruk.app-main-53:/drawable/splash_logo.png"
     },
     {
-        "merged": "C:\\Users\\wieri\\.gradle\\daemon\\9.6.0\\com.joeri.bloeddruk.app-debug-51:\\xml_file_paths.xml.flat",
-        "source": "C:\\Users\\wieri\\.gradle\\daemon\\9.6.0\\com.joeri.bloeddruk.app-main-53:\\xml\\file_paths.xml"
+        "merged": "com.joeri.bloeddruk.app-debug-51:/drawable_splash_pattern.png.flat",
+        "source": "com.joeri.bloeddruk.app-main-53:/drawable/splash_pattern.png"
     }
 ]
