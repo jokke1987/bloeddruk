@@ -7,7 +7,6 @@ import org.json.JSONObject
 import java.io.File
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 data class BackupData(
     val entries: List<BloodPressureEntry>,
@@ -166,30 +165,59 @@ object BackupManager {
         return BackupData(entries, medications, profile)
     }
 
-    /** Herstelt metingen direct vanuit een geëxporteerd CSV bestand */
+    /** Herstelt metingen flexibel vanuit elk type geëxporteerd CSV bestand */
     private fun parseCsv(csvText: String): List<BloodPressureEntry> {
         val entries = mutableListOf<BloodPressureEntry>()
-        val lines = csvText.lines().map { it.trim().removePrefix("\uFEFF") }.filter { it.isNotBlank() }
-        if (lines.size <= 1) return entries
+        val lines = csvText.lines()
+            .map { it.trim().removePrefix("\uFEFF").removePrefix("\uFFFE") }
+            .filter { it.isNotBlank() }
 
-        val dateFmt = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
+        if (lines.isEmpty()) return entries
 
-        for (i in 1 until lines.size) {
+        // Detecteer scheidingsteken (; of , of tab)
+        val firstLine = lines.first()
+        val delimiter = when {
+            firstLine.contains(";") -> ";"
+            firstLine.contains("\t") -> "\t"
+            else -> ","
+        }
+
+        val headerCols = firstLine.split(delimiter).map { it.removeSurrounding("\"").trim().lowercase() }
+
+        var dateIdx = headerCols.indexOfFirst { it.contains("datum") || it.contains("date") }
+        var timeIdx = headerCols.indexOfFirst { it.contains("tijd") || it.contains("time") }
+        var momentIdx = headerCols.indexOfFirst { it.contains("moment") }
+        var sysIdx = headerCols.indexOfFirst { it.contains("bovendruk") || it.contains("sys") }
+        var diaIdx = headerCols.indexOfFirst { it.contains("onderdruk") || it.contains("dia") }
+        var pulseIdx = headerCols.indexOfFirst { it.contains("pols") || it.contains("pulse") || it.contains("bpm") }
+        var tagsIdx = headerCols.indexOfFirst { it.contains("label") || it.contains("tag") }
+        var noteIdx = headerCols.indexOfFirst { it.contains("notitie") || it.contains("note") }
+
+        if (sysIdx == -1) sysIdx = 3
+        if (diaIdx == -1) diaIdx = 4
+        if (pulseIdx == -1) pulseIdx = 5
+        if (dateIdx == -1) dateIdx = 0
+        if (timeIdx == -1) timeIdx = 1
+
+        val startLineIndex = if (headerCols.any { it.contains("bovendruk") || it.contains("datum") || it.contains("sys") }) 1 else 0
+
+        for (i in startLineIndex until lines.size) {
+            val line = lines[i]
             try {
-                val cols = lines[i].split(";").map { it.removeSurrounding("\"").trim() }
-                if (cols.size >= 6) {
-                    val dateStr = cols[0]
-                    val timeStr = cols[1]
-                    val momentStr = cols[2]
-                    val sys = cols[3].toIntOrNull() ?: 120
-                    val dia = cols[4].toIntOrNull() ?: 80
-                    val pulse = cols[5].toIntOrNull() ?: 70
-                    val tags = if (cols.size >= 8) cols[7] else ""
-                    val note = if (cols.size >= 9) cols[8] else ""
+                val cols = line.split(delimiter).map { it.removeSurrounding("\"").trim() }
+                if (cols.size > sysIdx && cols.size > diaIdx) {
+                    val sys = cols.getOrNull(sysIdx)?.toIntOrNull() ?: continue
+                    val dia = cols.getOrNull(diaIdx)?.toIntOrNull() ?: continue
+                    val pulse = cols.getOrNull(pulseIdx)?.toIntOrNull() ?: 70
+                    val tags = if (tagsIdx != -1 && tagsIdx < cols.size) cols[tagsIdx] else ""
+                    val note = if (noteIdx != -1 && noteIdx < cols.size) cols[noteIdx] else ""
+                    val momentStr = if (momentIdx != -1 && momentIdx < cols.size) cols[momentIdx] else ""
 
-                    val dt = LocalDateTime.parse("$dateStr $timeStr", dateFmt)
-                    val timestamp = dt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-                    val isMorning = momentStr.equals("Ochtend", ignoreCase = true)
+                    val dateStr = cols.getOrNull(dateIdx) ?: ""
+                    val timeStr = cols.getOrNull(timeIdx) ?: "12:00"
+
+                    val timestamp = parseFlexibleTimestamp(dateStr, timeStr)
+                    val isMorning = momentStr.contains("Ochtend", ignoreCase = true) || (timeStr.take(2).toIntOrNull() ?: 12) < 12
 
                     entries.add(
                         BloodPressureEntry(
@@ -208,5 +236,39 @@ object BackupManager {
             }
         }
         return entries
+    }
+
+    private fun parseFlexibleTimestamp(dateStr: String, timeStr: String): Long {
+        val cleanDate = dateStr.replace("/", "-").trim()
+        val cleanTime = timeStr.trim().ifEmpty { "12:00" }
+
+        val dateParts = cleanDate.split("-")
+        var year = 2026
+        var month = 10
+        var day = 9
+
+        if (dateParts.size == 3) {
+            if (dateParts[0].length == 4) { // YYYY-MM-DD
+                year = dateParts[0].toIntOrNull() ?: 2026
+                month = dateParts[1].toIntOrNull() ?: 10
+                day = dateParts[2].toIntOrNull() ?: 9
+            } else { // DD-MM-YYYY of D-M-YYYY
+                day = dateParts[0].toIntOrNull() ?: 9
+                month = dateParts[1].toIntOrNull() ?: 10
+                val yRaw = dateParts[2].toIntOrNull() ?: 2026
+                year = if (yRaw < 100) 2000 + yRaw else yRaw
+            }
+        }
+
+        val timeParts = cleanTime.split(":")
+        val hour = timeParts.getOrNull(0)?.toIntOrNull()?.coerceIn(0, 23) ?: 12
+        val minute = timeParts.getOrNull(1)?.toIntOrNull()?.coerceIn(0, 59) ?: 0
+
+        return try {
+            val dt = LocalDateTime.of(year, month.coerceIn(1, 12), day.coerceIn(1, 31), hour, minute)
+            dt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        } catch (e: Exception) {
+            System.currentTimeMillis()
+        }
     }
 }
