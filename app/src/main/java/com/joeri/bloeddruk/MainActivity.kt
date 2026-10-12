@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.joeri.bloeddruk.alarm.AlarmPlayer
+import com.joeri.bloeddruk.data.BackupManager
 import com.joeri.bloeddruk.data.BloodPressureEntry
 import com.joeri.bloeddruk.export.Exporter
 import com.joeri.bloeddruk.ui.AlarmsScreen
@@ -166,6 +167,25 @@ class MainActivity : ComponentActivity() {
                                 onOpenAlarms = { activeScreen = "alarms" },
                                 onOpenDoctor = { showDoctorDialog = true },
                                 onOpenExport = { showExport = true },
+                                onCreateBackup = {
+                                    val json = BackupManager.createBackupJson(entries, medications, userProfile)
+                                    BackupManager.saveBackupToFile(context, json)
+                                    scope.launch { snackbar.showSnackbar("Back-up opgeslagen in Downloads/Bloeddruk") }
+                                },
+                                onRestoreBackupUri = { uri ->
+                                    scope.launch {
+                                        try {
+                                            val text = context.contentResolver.openInputStream(uri)?.use { it.bufferedReader().readText() }
+                                            if (text != null) {
+                                                val data = BackupManager.parseBackupJson(text)
+                                                vm.restoreBackup(data)
+                                                snackbar.showSnackbar("Back-up succesvol hersteld!")
+                                            }
+                                        } catch (e: Exception) {
+                                            snackbar.showSnackbar("Herstellen mislukt: ongeldig bestand")
+                                        }
+                                    }
+                                },
                                 onBack = { activeScreen = "overview" }
                             )
                         }

@@ -1,5 +1,8 @@
 package com.joeri.bloeddruk.ui
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,10 +21,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.CloudDownload
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.FolderZip
-import androidx.compose.material.icons.filled.MedicalServices
-import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.AlertDialog
@@ -42,13 +45,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,9 +63,19 @@ fun SettingsScreen(
     onOpenAlarms: () -> Unit,
     onOpenDoctor: () -> Unit,
     onOpenExport: () -> Unit,
+    onCreateBackup: () -> Unit,
+    onRestoreBackupUri: (Uri) -> Unit,
     onBack: () -> Unit
 ) {
     var showThresholdsDialog by remember { mutableStateOf(false) }
+
+    val restoreLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            onRestoreBackupUri(uri)
+        }
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -203,6 +214,40 @@ fun SettingsScreen(
                 elevation = CardDefaults.cardElevation(1.dp)
             ) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    // Volledige Back-up Maken
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onCreateBackup() },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.CloudUpload, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text("Volledige Back-up Maken", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                            Text("Sla al je metingen en medicatie op in Downloads/Bloeddruk", fontSize = 12.sp, color = InkSoft)
+                        }
+                    }
+
+                    HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
+
+                    // Back-up Herstellen
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { restoreLauncher.launch(arrayOf("application/json", "*/*")) },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.CloudDownload, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text("Back-up Herstellen", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                            Text("Herstel metingen en medicatie vanuit een back-up bestand", fontSize = 12.sp, color = InkSoft)
+                        }
+                    }
+
+                    HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
+
                     // Automatische maand-archivering
                     Row(
                         Modifier.fillMaxWidth(),
@@ -221,7 +266,7 @@ fun SettingsScreen(
 
                     HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
 
-                    // Back-up & Exporteren
+                    // Back-up & Exporteren PDF/CSV
                     Row(
                         Modifier
                             .fillMaxWidth()
@@ -231,8 +276,8 @@ fun SettingsScreen(
                         Icon(Icons.Filled.FolderZip, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) {
-                            Text("Back-up & Exporteren", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                            Text("Exporteer PDF-rapporten of CSV-bestanden", fontSize = 12.sp, color = InkSoft)
+                            Text("Exporteer PDF / CSV", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                            Text("Exporteer maandrapporten of CSV voor Excel", fontSize = 12.sp, color = InkSoft)
                         }
                         Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = InkSoft)
                     }

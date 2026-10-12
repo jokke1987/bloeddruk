@@ -58,6 +58,12 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     fun saveProfile(profile: UserProfile) = viewModelScope.launch { db.userProfileDao().upsert(profile) }
 
+    fun restoreBackup(data: com.joeri.bloeddruk.data.BackupData) = viewModelScope.launch {
+        data.entries.forEach { db.bloodPressureDao().upsert(it) }
+        data.medications.forEach { db.medicationDao().upsert(it) }
+        db.userProfileDao().upsert(data.userProfile)
+    }
+
     fun updateAlarm(alarm: AlarmSetting) = viewModelScope.launch {
         db.alarmDao().upsert(alarm)
         AlarmScheduler.schedule(getApplication(), alarm)
