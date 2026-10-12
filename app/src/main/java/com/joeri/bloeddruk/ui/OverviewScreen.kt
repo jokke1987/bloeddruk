@@ -1,6 +1,5 @@
 package com.joeri.bloeddruk.ui
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -37,8 +36,6 @@ import androidx.compose.material.icons.filled.Bloodtype
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Dashboard
-import androidx.compose.material.icons.filled.ExpandLess
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.LocalHospital
@@ -97,13 +94,8 @@ import androidx.compose.ui.unit.sp
 import com.joeri.bloeddruk.data.BloodPressureEntry
 import com.joeri.bloeddruk.data.UserProfile
 import kotlinx.coroutines.launch
-import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAdjusters
-import java.time.temporal.WeekFields
-import java.util.Locale
 
 // Kolombreedtes (gewichten): DD, MM, JJ, tijd, bovendruk, onderdruk, pols
 private val W = listOf(0.8f, 0.8f, 0.8f, 1.7f, 1.9f, 1.9f, 1.5f)
@@ -393,30 +385,17 @@ fun OverviewScreen(
 }
 
 @Composable
-private fun TableTab(
-    entries: List<BloodPressureEntry>,
-    onEdit: (BloodPressureEntry) -> Unit
-) {
-    val today = LocalDate.now(ZoneId.systemDefault())
-    val startOfCurrentWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+private fun TableTab(entries: List<BloodPressureEntry>, onEdit: (BloodPressureEntry) -> Unit) {
+    val monthNames = listOf(
+        "", "Januari", "Februari", "Maart", "April", "Mei", "Juni",
+        "Juli", "Augustus", "September", "Oktober", "November", "December"
+    )
 
-    // Scheid de metingen van de huidige week van eerdere weken
-    val (currentWeekEntries, previousWeekEntries) = remember(entries, startOfCurrentWeek) {
-        entries.sortedByDescending { it.timestamp }.partition {
-            val date = it.timestamp.toLocalDateTime().toLocalDate()
-            !date.isBefore(startOfCurrentWeek)
-        }
-    }
-
-    // Groepeer eerdere weken per weekbereik (Maandag - Zondag)
-    val previousWeeksGrouped = remember(previousWeekEntries) {
-        previousWeekEntries.groupBy { e ->
-            val dt = e.timestamp.toLocalDateTime().toLocalDate()
-            val mon = dt.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-            val sun = dt.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
-            val weekNo = dt.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear())
-            val fmt = DateTimeFormatter.ofPattern("d MMM")
-            "Week $weekNo (${mon.format(fmt)} – ${sun.format(fmt)})"
+    // Groepeer de metingen op Maand en Jaar
+    val groupedByMonth = remember(entries) {
+        entries.sortedByDescending { it.timestamp }.groupBy {
+            val dt = it.timestamp.toLocalDateTime()
+            dt.year to dt.monthValue
         }
     }
 
@@ -434,111 +413,33 @@ private fun TableTab(
             }
         } else {
             LazyColumn(Modifier.fillMaxSize().background(Surface)) {
-                // 1. Actieve huidige week (open en direct zichtbaar)
-                if (currentWeekEntries.isNotEmpty()) {
-                    item(key = "current_week_header") {
+                groupedByMonth.forEach { (yearMonth, monthEntries) ->
+                    val (year, month) = yearMonth
+                    val monthTitle = "${monthNames[month]} $year"
+
+                    // Maandtitel balk (bijv. "Oktober 2026")
+                    item(key = "month_header_${year}_${month}") {
                         Box(
                             Modifier
                                 .fillMaxWidth()
-                                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f))
+                                .background(Color(0xFFEFEFF4))
                                 .padding(vertical = 8.dp, horizontal = 16.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                "Huidige Week (Actief)",
+                                monthTitle,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.primary
+                                fontSize = 15.sp,
+                                color = Ink
                             )
                         }
                     }
 
-                    items(currentWeekEntries, key = { it.id }) { e ->
+                    items(monthEntries, key = { it.id }) { e ->
                         EntryRow(e, onClick = { onEdit(e) })
                     }
                 }
-
-                // 2. Vorige weken (ingeklapt per week-map)
-                if (previousWeeksGrouped.isNotEmpty()) {
-                    item(key = "previous_weeks_title") {
-                        Text(
-                            "Vorige Weken",
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = InkSoft,
-                            modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
-                        )
-                    }
-
-                    previousWeeksGrouped.forEach { (weekTitle, weekEntries) ->
-                        item(key = "week_folder_$weekTitle") {
-                            WeekFolderCard(
-                                title = weekTitle,
-                                entries = weekEntries,
-                                onEdit = onEdit
-                            )
-                        }
-                    }
-                }
-
                 item { Box(Modifier.height(16.dp)) }
-            }
-        }
-    }
-}
-
-@Composable
-private fun WeekFolderCard(
-    title: String,
-    entries: List<BloodPressureEntry>,
-    onEdit: (BloodPressureEntry) -> Unit
-) {
-    var isExpanded by remember { mutableStateOf(false) }
-
-    Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = Surface),
-        elevation = CardDefaults.cardElevation(1.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 4.dp)
-    ) {
-        Column {
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .clickable { isExpanded = !isExpanded }
-                    .padding(14.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        Icons.Filled.Folder,
-                        contentDescription = null,
-                        tint = Color(0xFFF2A93B),
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(Modifier.width(12.dp))
-                    Column {
-                        Text(title, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Ink)
-                        Text("${entries.size} metingen", fontSize = 12.sp, color = InkSoft)
-                    }
-                }
-                Icon(
-                    if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-                    contentDescription = if (isExpanded) "Inklappen" else "Uitklappen",
-                    tint = InkSoft
-                )
-            }
-
-            AnimatedVisibility(visible = isExpanded) {
-                Column {
-                    HorizontalDivider(color = Divider.copy(alpha = 0.5f))
-                    entries.forEach { e ->
-                        EntryRow(e, onClick = { onEdit(e) })
-                    }
-                }
             }
         }
     }
