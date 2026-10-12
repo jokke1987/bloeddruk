@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -219,7 +220,9 @@ private fun BpLineChart(
         progress.snapTo(0f)
         progress.animateTo(1f, tween(900, easing = FastOutSlowInEasing))
     }
-    val labelStyle = remember { TextStyle(fontSize = 10.sp, color = InkSoft) }
+    val inkSoftColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+    val dividerColor = MaterialTheme.colorScheme.outline
+    val labelStyle = remember(inkSoftColor) { TextStyle(fontSize = 10.sp, color = inkSoftColor) }
 
     val minT = data.first().timestamp
     val maxT = data.last().timestamp
@@ -258,7 +261,7 @@ private fun BpLineChart(
         // Raster en waarden op de Y-as
         var g = yMin
         while (g <= yMax) {
-            drawLine(Divider, Offset(left, y(g)), Offset(left + w, y(g)), strokeWidth = 1.dp.toPx())
+            drawLine(dividerColor, Offset(left, y(g)), Offset(left + w, y(g)), strokeWidth = 1.dp.toPx())
             val tl = measurer.measure(g.toString(), labelStyle)
             drawText(
                 tl,
@@ -301,7 +304,7 @@ private fun BpLineChart(
         selected?.let { si ->
             data.getOrNull(si)?.let { e ->
                 val x = xAt(e.timestamp, left, w)
-                drawLine(InkSoft.copy(alpha = 0.5f), Offset(x, top), Offset(x, top + h), strokeWidth = 1.5f.dp.toPx())
+                drawLine(inkSoftColor.copy(alpha = 0.5f), Offset(x, top), Offset(x, top + h), strokeWidth = 1.5f.dp.toPx())
             }
         }
 

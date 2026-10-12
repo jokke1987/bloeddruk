@@ -9,25 +9,32 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-// Windows 11 Fluent Design System Mica / Light Theme Colors
-val Background = Color(0xFFF3F3F4)
-val Surface = Color(0xFFFFFFFF)
-val Ink = Color(0xFF1A1A1A)
-val InkSoft = Color(0xFF5D5D5D)
-val Divider = Color(0xFFE5E5E5)
+// Windows 11 Fluent Design System Light Colors
+val LightBackground = Color(0xFFF3F3F4)
+val LightSurface = Color(0xFFFFFFFF)
+val LightInk = Color(0xFF1A1A1A)
+val LightInkSoft = Color(0xFF5D5D5D)
+val LightDivider = Color(0xFFE5E5E5)
 val Primary = Color(0xFF0078D4) // Windows 11 Fluent Blue Accent
 
 // Dark Mode Colors
-val DarkBackground = Color(0xFF202020)
-val DarkSurface = Color(0xFF2D2D2D)
-val DarkInk = Color(0xFFFFFFFF)
-val DarkInkSoft = Color(0xFFA0A0A0)
+val DarkBackground = Color(0xFF181818)
+val DarkSurface = Color(0xFF242424)
+val DarkInk = Color(0xFFF5F5F5)
+val DarkInkSoft = Color(0xFFA5A5A5)
 val DarkDivider = Color(0xFF383838)
+
+// Dynamische systeemkleuren die zich automatisch aanpassen aan Lichte of Donkere modus
+val Background: Color @Composable get() = MaterialTheme.colorScheme.background
+val Surface: Color @Composable get() = MaterialTheme.colorScheme.surface
+val Ink: Color @Composable get() = MaterialTheme.colorScheme.onSurface
+val InkSoft: Color @Composable get() = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
+val Divider: Color @Composable get() = MaterialTheme.colorScheme.outline
 
 // Windows 11 Fluent Accent Colors voor de tabelkoppen & status
 val DateColor = Color(0xFFE81123)     // Fluent Red
 val TimeColor = Color(0xFF0078D4)     // Fluent Blue
-val PressureColor = Color(0xFFEAEAEA)  // Fluent Soft Neutral
+val PressureColor: Color @Composable get() = if (MaterialTheme.colorScheme.background == DarkBackground) Color(0xFF383838) else Color(0xFFEAEAEA)
 val PulseColor = Color(0xFF107C10)    // Fluent Green
 val HeartRed = Color(0xFFE81123)      // Fluent Accent Red
 
@@ -35,12 +42,12 @@ private val LightScheme = lightColorScheme(
     primary = Primary,
     onPrimary = Color.White,
     secondary = PulseColor,
-    background = Background,
-    surface = Surface,
-    onBackground = Ink,
-    onSurface = Ink,
+    background = LightBackground,
+    surface = LightSurface,
+    onBackground = LightInk,
+    onSurface = LightInk,
     surfaceVariant = Color(0xFFF3F3F4),
-    outline = Divider
+    outline = LightDivider
 )
 
 private val DarkScheme = darkColorScheme(
@@ -51,7 +58,7 @@ private val DarkScheme = darkColorScheme(
     surface = DarkSurface,
     onBackground = DarkInk,
     onSurface = DarkInk,
-    surfaceVariant = Color(0xFF383838),
+    surfaceVariant = Color(0xFF2A2A2A),
     outline = DarkDivider
 )
 

@@ -1,5 +1,6 @@
 package com.joeri.bloeddruk.ui
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -32,13 +33,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.Bloodtype
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Dashboard
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Schedule
@@ -47,6 +50,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material.icons.filled.TableChart
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Card
@@ -91,13 +95,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.joeri.bloeddruk.data.BloodPressureEntry
-import kotlinx.coroutines.launch
-import androidx.compose.material.icons.filled.Bloodtype
-import androidx.compose.material.icons.filled.LocalHospital
-import androidx.compose.material.icons.filled.SystemUpdate
 import com.joeri.bloeddruk.data.UserProfile
+import kotlinx.coroutines.launch
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjusters
+import java.time.temporal.WeekFields
+import java.util.Locale
 
 // Kolombreedtes (gewichten): DD, MM, JJ, tijd, bovendruk, onderdruk, pols
 private val W = listOf(0.8f, 0.8f, 0.8f, 1.7f, 1.9f, 1.9f, 1.5f)
@@ -328,7 +334,6 @@ fun OverviewScreen(
                 CenterAlignedTopAppBar(
                     title = { Text("Bloeddruk", fontWeight = FontWeight.SemiBold) },
                     navigationIcon = {
-                        // Drie streepjes (Hamburger Menu) linksboven
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(Icons.Filled.Menu, contentDescription = "Menu")
                         }
@@ -339,9 +344,6 @@ fun OverviewScreen(
                         }
                         IconButton(onClick = onExport) {
                             Icon(Icons.Filled.Share, contentDescription = "Exporteren")
-                        }
-                        IconButton(onClick = onOpenSettings) {
-                            Icon(Icons.Filled.Settings, contentDescription = "Instellingen")
                         }
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Background)
@@ -355,14 +357,12 @@ fun OverviewScreen(
                         icon = { Icon(Icons.Filled.TableChart, contentDescription = null) },
                         label = { Text("Overzicht") }
                     )
-                    // Medicatie snelkoppeling
                     NavigationBarItem(
                         selected = false,
                         onClick = { onOpenMedication(0) },
                         icon = { Icon(Icons.Filled.MedicalServices, contentDescription = null) },
                         label = { Text("Medicatie") }
                     )
-                    // Toevoegen
                     NavigationBarItem(
                         selected = false,
                         onClick = onAdd,
@@ -393,17 +393,30 @@ fun OverviewScreen(
 }
 
 @Composable
-private fun TableTab(entries: List<BloodPressureEntry>, onEdit: (BloodPressureEntry) -> Unit) {
-    val monthNames = listOf(
-        "", "Januari", "Februari", "Maart", "April", "Mei", "Juni",
-        "Juli", "Augustus", "September", "Oktober", "November", "December"
-    )
+private fun TableTab(
+    entries: List<BloodPressureEntry>,
+    onEdit: (BloodPressureEntry) -> Unit
+) {
+    val today = LocalDate.now(ZoneId.systemDefault())
+    val startOfCurrentWeek = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
-    // Groepeer de metingen op Maand en Jaar
-    val groupedByMonth = remember(entries) {
-        entries.sortedByDescending { it.timestamp }.groupBy {
-            val dt = it.timestamp.toLocalDateTime()
-            dt.year to dt.monthValue
+    // Scheid de metingen van de huidige week van eerdere weken
+    val (currentWeekEntries, previousWeekEntries) = remember(entries, startOfCurrentWeek) {
+        entries.sortedByDescending { it.timestamp }.partition {
+            val date = it.timestamp.toLocalDateTime().toLocalDate()
+            !date.isBefore(startOfCurrentWeek)
+        }
+    }
+
+    // Groepeer eerdere weken per weekbereik (Maandag - Zondag)
+    val previousWeeksGrouped = remember(previousWeekEntries) {
+        previousWeekEntries.groupBy { e ->
+            val dt = e.timestamp.toLocalDateTime().toLocalDate()
+            val mon = dt.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+            val sun = dt.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+            val weekNo = dt.get(WeekFields.of(Locale.getDefault()).weekOfWeekBasedYear())
+            val fmt = DateTimeFormatter.ofPattern("d MMM")
+            "Week $weekNo (${mon.format(fmt)} – ${sun.format(fmt)})"
         }
     }
 
@@ -421,33 +434,111 @@ private fun TableTab(entries: List<BloodPressureEntry>, onEdit: (BloodPressureEn
             }
         } else {
             LazyColumn(Modifier.fillMaxSize().background(Surface)) {
-                groupedByMonth.forEach { (yearMonth, monthEntries) ->
-                    val (year, month) = yearMonth
-                    val monthTitle = "${monthNames[month]} $year"
-
-                    // Maandtitel balk (bijv. "Oktober 2026")
-                    item(key = "month_header_${year}_${month}") {
+                // 1. Actieve huidige week (open en direct zichtbaar)
+                if (currentWeekEntries.isNotEmpty()) {
+                    item(key = "current_week_header") {
                         Box(
                             Modifier
                                 .fillMaxWidth()
-                                .background(Color(0xFFEFEFF4))
+                                .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f))
                                 .padding(vertical = 8.dp, horizontal = 16.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                monthTitle,
+                                "Huidige Week (Actief)",
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 15.sp,
-                                color = Ink
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
 
-                    items(monthEntries, key = { it.id }) { e ->
+                    items(currentWeekEntries, key = { it.id }) { e ->
                         EntryRow(e, onClick = { onEdit(e) })
                     }
                 }
+
+                // 2. Vorige weken (ingeklapt per week-map)
+                if (previousWeeksGrouped.isNotEmpty()) {
+                    item(key = "previous_weeks_title") {
+                        Text(
+                            "Vorige Weken",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = InkSoft,
+                            modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
+                        )
+                    }
+
+                    previousWeeksGrouped.forEach { (weekTitle, weekEntries) ->
+                        item(key = "week_folder_$weekTitle") {
+                            WeekFolderCard(
+                                title = weekTitle,
+                                entries = weekEntries,
+                                onEdit = onEdit
+                            )
+                        }
+                    }
+                }
+
                 item { Box(Modifier.height(16.dp)) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun WeekFolderCard(
+    title: String,
+    entries: List<BloodPressureEntry>,
+    onEdit: (BloodPressureEntry) -> Unit
+) {
+    var isExpanded by remember { mutableStateOf(false) }
+
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = Surface),
+        elevation = CardDefaults.cardElevation(1.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 4.dp)
+    ) {
+        Column {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .clickable { isExpanded = !isExpanded }
+                    .padding(14.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Filled.Folder,
+                        contentDescription = null,
+                        tint = Color(0xFFF2A93B),
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Column {
+                        Text(title, fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Ink)
+                        Text("${entries.size} metingen", fontSize = 12.sp, color = InkSoft)
+                    }
+                }
+                Icon(
+                    if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+                    contentDescription = if (isExpanded) "Inklappen" else "Uitklappen",
+                    tint = InkSoft
+                )
+            }
+
+            AnimatedVisibility(visible = isExpanded) {
+                Column {
+                    HorizontalDivider(color = Divider.copy(alpha = 0.5f))
+                    entries.forEach { e ->
+                        EntryRow(e, onClick = { onEdit(e) })
+                    }
+                }
             }
         }
     }
@@ -468,7 +559,6 @@ private fun StatusCard(entries: List<BloodPressureEntry>) {
         label = "voortgang"
     )
 
-    // Continu kloppen: sneller zolang de dag nog niet compleet is.
     val transition = rememberInfiniteTransition(label = "hartslag")
     val beat by transition.animateFloat(
         initialValue = 1f,
@@ -479,7 +569,7 @@ private fun StatusCard(entries: List<BloodPressureEntry>) {
         ),
         label = "klop"
     )
-    // Extra "bump" telkens er een meting bijkomt.
+
     val bump = remember { Animatable(1f) }
     LaunchedEffect(entries.size) {
         bump.animateTo(1.6f, tween(150))
@@ -560,21 +650,18 @@ private fun Legend() {
 @Composable
 private fun TableHeader() {
     Column(Modifier.fillMaxWidth().background(Surface)) {
-        // Rij met pictogrammen
         Row(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
             IconCell(Icons.Filled.CalendarMonth, DateColor, W[0] + W[1] + W[2])
             IconCell(Icons.Filled.Schedule, TimeColor, W[3])
             IconCell(Icons.Filled.Speed, Color(0xFF6C63B5), W[4] + W[5])
             IconCell(Icons.Filled.Favorite, HeartRed, W[6])
         }
-        // Groepskoppen
         Row(Modifier.fillMaxWidth()) {
             Group("Datum", DateColor, Color.White, W[0] + W[1] + W[2])
             Group("Tijd", TimeColor, Color.White, W[3])
             Group("Bloeddruk", PressureColor, Ink, W[4] + W[5])
             Group("Pols", PulseColor, Color.White, W[6])
         }
-        // Subkoppen
         Row(Modifier.fillMaxWidth()) {
             Sub("DD", DateColor, Color.White, W[0])
             Sub("MM", DateColor, Color.White, W[1])
