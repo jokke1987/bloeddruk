@@ -177,9 +177,9 @@ class MainActivity : ComponentActivity() {
                                         try {
                                             val text = context.contentResolver.openInputStream(uri)?.use { it.bufferedReader().readText() }
                                             if (text != null) {
-                                                val data = BackupManager.parseBackupJson(text)
+                                                val data = BackupManager.parseFileOrJsonOrCsv(text)
                                                 vm.restoreBackup(data)
-                                                snackbar.showSnackbar("Back-up succesvol hersteld!")
+                                                snackbar.showSnackbar("Back-up hersteld (${data.entries.size} metingen)!")
                                             }
                                         } catch (e: Exception) {
                                             snackbar.showSnackbar("Herstellen mislukt: ongeldig bestand")

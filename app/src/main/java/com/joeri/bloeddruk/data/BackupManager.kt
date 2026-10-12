@@ -5,6 +5,9 @@ import com.joeri.bloeddruk.export.Exporter
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 data class BackupData(
     val entries: List<BloodPressureEntry>,
@@ -82,6 +85,21 @@ object BackupManager {
         return file
     }
 
+    /** Slimme herstel-functie voor zowel JSON back-up bestanden als CSV bestanden */
+    fun parseFileOrJsonOrCsv(text: String): BackupData {
+        return try {
+            if (text.trim().startsWith("{")) {
+                parseBackupJson(text)
+            } else {
+                val entries = parseCsv(text)
+                BackupData(entries, emptyList(), UserProfile())
+            }
+        } catch (e: Exception) {
+            val entries = parseCsv(text)
+            BackupData(entries, emptyList(), UserProfile())
+        }
+    }
+
     /** Lees en herstel back-up gegevens vanuit een JSON String */
     fun parseBackupJson(jsonString: String): BackupData {
         val root = JSONObject(jsonString)
@@ -146,5 +164,49 @@ object BackupManager {
         }
 
         return BackupData(entries, medications, profile)
+    }
+
+    /** Herstelt metingen direct vanuit een geëxporteerd CSV bestand */
+    private fun parseCsv(csvText: String): List<BloodPressureEntry> {
+        val entries = mutableListOf<BloodPressureEntry>()
+        val lines = csvText.lines().map { it.trim().removePrefix("\uFEFF") }.filter { it.isNotBlank() }
+        if (lines.size <= 1) return entries
+
+        val dateFmt = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm")
+
+        for (i in 1 until lines.size) {
+            try {
+                val cols = lines[i].split(";").map { it.removeSurrounding("\"").trim() }
+                if (cols.size >= 6) {
+                    val dateStr = cols[0]
+                    val timeStr = cols[1]
+                    val momentStr = cols[2]
+                    val sys = cols[3].toIntOrNull() ?: 120
+                    val dia = cols[4].toIntOrNull() ?: 80
+                    val pulse = cols[5].toIntOrNull() ?: 70
+                    val tags = if (cols.size >= 8) cols[7] else ""
+                    val note = if (cols.size >= 9) cols[8] else ""
+
+                    val dt = LocalDateTime.parse("$dateStr $timeStr", dateFmt)
+                    val timestamp = dt.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                    val isMorning = momentStr.equals("Ochtend", ignoreCase = true)
+
+                    entries.add(
+                        BloodPressureEntry(
+                            timestamp = timestamp,
+                            isMorning = isMorning,
+                            systolic = sys,
+                            diastolic = dia,
+                            pulse = pulse,
+                            note = note,
+                            tags = tags
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        return entries
     }
 }
