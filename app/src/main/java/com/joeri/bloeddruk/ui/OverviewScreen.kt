@@ -117,6 +117,7 @@ fun OverviewScreen(
     onOpenSearch: () -> Unit,
     onOpenDoctor: () -> Unit = {},
     onOpenBloodType: () -> Unit = {},
+    onOpenSettings: () -> Unit = {},
     onCheckForUpdates: () -> Unit,
     onExport: () -> Unit
 ) {
@@ -158,8 +159,11 @@ fun OverviewScreen(
                                 Text("& Medicatie", fontSize = 13.sp, color = InkSoft)
                             }
                         }
-                        IconButton(onClick = { scope.launch { drawerState.close() } }) {
-                            Icon(Icons.Filled.Settings, contentDescription = null, tint = InkSoft)
+                        IconButton(onClick = {
+                            scope.launch { drawerState.close() }
+                            onOpenSettings()
+                        }) {
+                            Icon(Icons.Filled.Settings, contentDescription = "Instellingen", tint = InkSoft)
                         }
                     }
 
@@ -272,16 +276,6 @@ fun OverviewScreen(
                         }
                     )
 
-                    NavigationDrawerItem(
-                        icon = { Icon(Icons.Filled.Alarm, null) },
-                        label = { Text("Alarmen & Herinneringen") },
-                        selected = false,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            onOpenAlarms()
-                        }
-                    )
-
                     // Sectie: Extra
                     Text(
                         "Extra",
@@ -346,8 +340,8 @@ fun OverviewScreen(
                         IconButton(onClick = onExport) {
                             Icon(Icons.Filled.Share, contentDescription = "Exporteren")
                         }
-                        IconButton(onClick = onOpenAlarms) {
-                            Icon(Icons.Filled.Alarm, contentDescription = "Alarmen")
+                        IconButton(onClick = onOpenSettings) {
+                            Icon(Icons.Filled.Settings, contentDescription = "Instellingen")
                         }
                     },
                     colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Background)

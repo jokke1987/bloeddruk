@@ -40,7 +40,7 @@ public final class UserProfileDao_Impl implements UserProfileDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT INTO `user_profile` (`id`,`bloodType`,`doctorName`,`doctorPhone`,`doctorEmail`,`doctorAddress`,`doctorNotes`) VALUES (?,?,?,?,?,?,?)";
+        return "INSERT INTO `user_profile` (`id`,`bloodType`,`doctorName`,`doctorPhone`,`doctorEmail`,`doctorAddress`,`doctorNotes`,`emergencyContact`,`isDarkMode`,`autoArchive`,`sysNormalMax`,`diaNormalMax`,`sysElevatedMax`,`diaElevatedMax`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -53,12 +53,21 @@ public final class UserProfileDao_Impl implements UserProfileDao {
         statement.bindString(5, entity.getDoctorEmail());
         statement.bindString(6, entity.getDoctorAddress());
         statement.bindString(7, entity.getDoctorNotes());
+        statement.bindString(8, entity.getEmergencyContact());
+        final int _tmp = entity.isDarkMode() ? 1 : 0;
+        statement.bindLong(9, _tmp);
+        final int _tmp_1 = entity.getAutoArchive() ? 1 : 0;
+        statement.bindLong(10, _tmp_1);
+        statement.bindLong(11, entity.getSysNormalMax());
+        statement.bindLong(12, entity.getDiaNormalMax());
+        statement.bindLong(13, entity.getSysElevatedMax());
+        statement.bindLong(14, entity.getDiaElevatedMax());
       }
     }, new EntityDeletionOrUpdateAdapter<UserProfile>(__db) {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE `user_profile` SET `id` = ?,`bloodType` = ?,`doctorName` = ?,`doctorPhone` = ?,`doctorEmail` = ?,`doctorAddress` = ?,`doctorNotes` = ? WHERE `id` = ?";
+        return "UPDATE `user_profile` SET `id` = ?,`bloodType` = ?,`doctorName` = ?,`doctorPhone` = ?,`doctorEmail` = ?,`doctorAddress` = ?,`doctorNotes` = ?,`emergencyContact` = ?,`isDarkMode` = ?,`autoArchive` = ?,`sysNormalMax` = ?,`diaNormalMax` = ?,`sysElevatedMax` = ?,`diaElevatedMax` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -71,7 +80,16 @@ public final class UserProfileDao_Impl implements UserProfileDao {
         statement.bindString(5, entity.getDoctorEmail());
         statement.bindString(6, entity.getDoctorAddress());
         statement.bindString(7, entity.getDoctorNotes());
-        statement.bindLong(8, entity.getId());
+        statement.bindString(8, entity.getEmergencyContact());
+        final int _tmp = entity.isDarkMode() ? 1 : 0;
+        statement.bindLong(9, _tmp);
+        final int _tmp_1 = entity.getAutoArchive() ? 1 : 0;
+        statement.bindLong(10, _tmp_1);
+        statement.bindLong(11, entity.getSysNormalMax());
+        statement.bindLong(12, entity.getDiaNormalMax());
+        statement.bindLong(13, entity.getSysElevatedMax());
+        statement.bindLong(14, entity.getDiaElevatedMax());
+        statement.bindLong(15, entity.getId());
       }
     });
   }
@@ -111,6 +129,13 @@ public final class UserProfileDao_Impl implements UserProfileDao {
           final int _cursorIndexOfDoctorEmail = CursorUtil.getColumnIndexOrThrow(_cursor, "doctorEmail");
           final int _cursorIndexOfDoctorAddress = CursorUtil.getColumnIndexOrThrow(_cursor, "doctorAddress");
           final int _cursorIndexOfDoctorNotes = CursorUtil.getColumnIndexOrThrow(_cursor, "doctorNotes");
+          final int _cursorIndexOfEmergencyContact = CursorUtil.getColumnIndexOrThrow(_cursor, "emergencyContact");
+          final int _cursorIndexOfIsDarkMode = CursorUtil.getColumnIndexOrThrow(_cursor, "isDarkMode");
+          final int _cursorIndexOfAutoArchive = CursorUtil.getColumnIndexOrThrow(_cursor, "autoArchive");
+          final int _cursorIndexOfSysNormalMax = CursorUtil.getColumnIndexOrThrow(_cursor, "sysNormalMax");
+          final int _cursorIndexOfDiaNormalMax = CursorUtil.getColumnIndexOrThrow(_cursor, "diaNormalMax");
+          final int _cursorIndexOfSysElevatedMax = CursorUtil.getColumnIndexOrThrow(_cursor, "sysElevatedMax");
+          final int _cursorIndexOfDiaElevatedMax = CursorUtil.getColumnIndexOrThrow(_cursor, "diaElevatedMax");
           final UserProfile _result;
           if (_cursor.moveToFirst()) {
             final int _tmpId;
@@ -127,7 +152,25 @@ public final class UserProfileDao_Impl implements UserProfileDao {
             _tmpDoctorAddress = _cursor.getString(_cursorIndexOfDoctorAddress);
             final String _tmpDoctorNotes;
             _tmpDoctorNotes = _cursor.getString(_cursorIndexOfDoctorNotes);
-            _result = new UserProfile(_tmpId,_tmpBloodType,_tmpDoctorName,_tmpDoctorPhone,_tmpDoctorEmail,_tmpDoctorAddress,_tmpDoctorNotes);
+            final String _tmpEmergencyContact;
+            _tmpEmergencyContact = _cursor.getString(_cursorIndexOfEmergencyContact);
+            final boolean _tmpIsDarkMode;
+            final int _tmp;
+            _tmp = _cursor.getInt(_cursorIndexOfIsDarkMode);
+            _tmpIsDarkMode = _tmp != 0;
+            final boolean _tmpAutoArchive;
+            final int _tmp_1;
+            _tmp_1 = _cursor.getInt(_cursorIndexOfAutoArchive);
+            _tmpAutoArchive = _tmp_1 != 0;
+            final int _tmpSysNormalMax;
+            _tmpSysNormalMax = _cursor.getInt(_cursorIndexOfSysNormalMax);
+            final int _tmpDiaNormalMax;
+            _tmpDiaNormalMax = _cursor.getInt(_cursorIndexOfDiaNormalMax);
+            final int _tmpSysElevatedMax;
+            _tmpSysElevatedMax = _cursor.getInt(_cursorIndexOfSysElevatedMax);
+            final int _tmpDiaElevatedMax;
+            _tmpDiaElevatedMax = _cursor.getInt(_cursorIndexOfDiaElevatedMax);
+            _result = new UserProfile(_tmpId,_tmpBloodType,_tmpDoctorName,_tmpDoctorPhone,_tmpDoctorEmail,_tmpDoctorAddress,_tmpDoctorNotes,_tmpEmergencyContact,_tmpIsDarkMode,_tmpAutoArchive,_tmpSysNormalMax,_tmpDiaNormalMax,_tmpSysElevatedMax,_tmpDiaElevatedMax);
           } else {
             _result = null;
           }
@@ -162,6 +205,13 @@ public final class UserProfileDao_Impl implements UserProfileDao {
           final int _cursorIndexOfDoctorEmail = CursorUtil.getColumnIndexOrThrow(_cursor, "doctorEmail");
           final int _cursorIndexOfDoctorAddress = CursorUtil.getColumnIndexOrThrow(_cursor, "doctorAddress");
           final int _cursorIndexOfDoctorNotes = CursorUtil.getColumnIndexOrThrow(_cursor, "doctorNotes");
+          final int _cursorIndexOfEmergencyContact = CursorUtil.getColumnIndexOrThrow(_cursor, "emergencyContact");
+          final int _cursorIndexOfIsDarkMode = CursorUtil.getColumnIndexOrThrow(_cursor, "isDarkMode");
+          final int _cursorIndexOfAutoArchive = CursorUtil.getColumnIndexOrThrow(_cursor, "autoArchive");
+          final int _cursorIndexOfSysNormalMax = CursorUtil.getColumnIndexOrThrow(_cursor, "sysNormalMax");
+          final int _cursorIndexOfDiaNormalMax = CursorUtil.getColumnIndexOrThrow(_cursor, "diaNormalMax");
+          final int _cursorIndexOfSysElevatedMax = CursorUtil.getColumnIndexOrThrow(_cursor, "sysElevatedMax");
+          final int _cursorIndexOfDiaElevatedMax = CursorUtil.getColumnIndexOrThrow(_cursor, "diaElevatedMax");
           final UserProfile _result;
           if (_cursor.moveToFirst()) {
             final int _tmpId;
@@ -178,7 +228,25 @@ public final class UserProfileDao_Impl implements UserProfileDao {
             _tmpDoctorAddress = _cursor.getString(_cursorIndexOfDoctorAddress);
             final String _tmpDoctorNotes;
             _tmpDoctorNotes = _cursor.getString(_cursorIndexOfDoctorNotes);
-            _result = new UserProfile(_tmpId,_tmpBloodType,_tmpDoctorName,_tmpDoctorPhone,_tmpDoctorEmail,_tmpDoctorAddress,_tmpDoctorNotes);
+            final String _tmpEmergencyContact;
+            _tmpEmergencyContact = _cursor.getString(_cursorIndexOfEmergencyContact);
+            final boolean _tmpIsDarkMode;
+            final int _tmp;
+            _tmp = _cursor.getInt(_cursorIndexOfIsDarkMode);
+            _tmpIsDarkMode = _tmp != 0;
+            final boolean _tmpAutoArchive;
+            final int _tmp_1;
+            _tmp_1 = _cursor.getInt(_cursorIndexOfAutoArchive);
+            _tmpAutoArchive = _tmp_1 != 0;
+            final int _tmpSysNormalMax;
+            _tmpSysNormalMax = _cursor.getInt(_cursorIndexOfSysNormalMax);
+            final int _tmpDiaNormalMax;
+            _tmpDiaNormalMax = _cursor.getInt(_cursorIndexOfDiaNormalMax);
+            final int _tmpSysElevatedMax;
+            _tmpSysElevatedMax = _cursor.getInt(_cursorIndexOfSysElevatedMax);
+            final int _tmpDiaElevatedMax;
+            _tmpDiaElevatedMax = _cursor.getInt(_cursorIndexOfDiaElevatedMax);
+            _result = new UserProfile(_tmpId,_tmpBloodType,_tmpDoctorName,_tmpDoctorPhone,_tmpDoctorEmail,_tmpDoctorAddress,_tmpDoctorNotes,_tmpEmergencyContact,_tmpIsDarkMode,_tmpAutoArchive,_tmpSysNormalMax,_tmpDiaNormalMax,_tmpSysElevatedMax,_tmpDiaElevatedMax);
           } else {
             _result = null;
           }

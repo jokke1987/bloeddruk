@@ -37,15 +37,15 @@ public final class AppDatabase_Impl extends AppDatabase {
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(6) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(7) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `metingen` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL, `isMorning` INTEGER NOT NULL, `systolic` INTEGER NOT NULL, `diastolic` INTEGER NOT NULL, `pulse` INTEGER NOT NULL, `note` TEXT NOT NULL, `tags` TEXT NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `alarmen` (`id` INTEGER NOT NULL, `hour` INTEGER NOT NULL, `minute` INTEGER NOT NULL, `enabled` INTEGER NOT NULL, `isMorning` INTEGER NOT NULL, `soundUri` TEXT NOT NULL, `soundTitle` TEXT NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `medicatie` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `dosage` TEXT NOT NULL, `slot` TEXT NOT NULL, `note` TEXT NOT NULL, `purpose` TEXT NOT NULL)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS `user_profile` (`id` INTEGER NOT NULL, `bloodType` TEXT NOT NULL, `doctorName` TEXT NOT NULL, `doctorPhone` TEXT NOT NULL, `doctorEmail` TEXT NOT NULL, `doctorAddress` TEXT NOT NULL, `doctorNotes` TEXT NOT NULL, PRIMARY KEY(`id`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `user_profile` (`id` INTEGER NOT NULL, `bloodType` TEXT NOT NULL, `doctorName` TEXT NOT NULL, `doctorPhone` TEXT NOT NULL, `doctorEmail` TEXT NOT NULL, `doctorAddress` TEXT NOT NULL, `doctorNotes` TEXT NOT NULL, `emergencyContact` TEXT NOT NULL, `isDarkMode` INTEGER NOT NULL, `autoArchive` INTEGER NOT NULL, `sysNormalMax` INTEGER NOT NULL, `diaNormalMax` INTEGER NOT NULL, `sysElevatedMax` INTEGER NOT NULL, `diaElevatedMax` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0fe23e236c79dbf4fac43087ab8cef6f')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a21bd47d5727a211280efba775b73c6f')");
       }
 
       @Override
@@ -148,7 +148,7 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoMedicatie + "\n"
                   + " Found:\n" + _existingMedicatie);
         }
-        final HashMap<String, TableInfo.Column> _columnsUserProfile = new HashMap<String, TableInfo.Column>(7);
+        final HashMap<String, TableInfo.Column> _columnsUserProfile = new HashMap<String, TableInfo.Column>(14);
         _columnsUserProfile.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsUserProfile.put("bloodType", new TableInfo.Column("bloodType", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsUserProfile.put("doctorName", new TableInfo.Column("doctorName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -156,6 +156,13 @@ public final class AppDatabase_Impl extends AppDatabase {
         _columnsUserProfile.put("doctorEmail", new TableInfo.Column("doctorEmail", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsUserProfile.put("doctorAddress", new TableInfo.Column("doctorAddress", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsUserProfile.put("doctorNotes", new TableInfo.Column("doctorNotes", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("emergencyContact", new TableInfo.Column("emergencyContact", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("isDarkMode", new TableInfo.Column("isDarkMode", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("autoArchive", new TableInfo.Column("autoArchive", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("sysNormalMax", new TableInfo.Column("sysNormalMax", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("diaNormalMax", new TableInfo.Column("diaNormalMax", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("sysElevatedMax", new TableInfo.Column("sysElevatedMax", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsUserProfile.put("diaElevatedMax", new TableInfo.Column("diaElevatedMax", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         final HashSet<TableInfo.ForeignKey> _foreignKeysUserProfile = new HashSet<TableInfo.ForeignKey>(0);
         final HashSet<TableInfo.Index> _indicesUserProfile = new HashSet<TableInfo.Index>(0);
         final TableInfo _infoUserProfile = new TableInfo("user_profile", _columnsUserProfile, _foreignKeysUserProfile, _indicesUserProfile);
@@ -167,7 +174,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "0fe23e236c79dbf4fac43087ab8cef6f", "ec58597e7203d9946bba27a450a7ffea");
+    }, "a21bd47d5727a211280efba775b73c6f", "ff84d642fec9ee3d3313ee7efb03e805");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;

@@ -46,7 +46,7 @@ data class MedicationItem(
     val purpose: String = "" // Waarvoor dient het (bv. "Voor hoge bloeddruk")
 )
 
-/** Medisch profiel van de gebruiker (bloedgroep en doktergegevens). */
+/** Medisch profiel en instellingen van de gebruiker. */
 @Entity(tableName = "user_profile")
 data class UserProfile(
     @PrimaryKey val id: Int = 1,
@@ -55,5 +55,12 @@ data class UserProfile(
     val doctorPhone: String = "",     // e.g. "0123456789"
     val doctorEmail: String = "",     // e.g. "dokter@praktijk.be"
     val doctorAddress: String = "",   // e.g. "Medisch Centrum"
-    val doctorNotes: String = ""      // e.g. "Spreekuur op dinsdag"
+    val doctorNotes: String = "",     // e.g. "Spreekuur op dinsdag"
+    val emergencyContact: String = "",// e.g. "Partner: 0471234567"
+    val isDarkMode: Boolean = false,  // Donkere modus aan/uit
+    val autoArchive: Boolean = true,  // Automatische maand-archivering
+    val sysNormalMax: Int = 120,      // Normaal bovendruk bovengrens
+    val diaNormalMax: Int = 80,       // Normaal onderdruk bovengrens
+    val sysElevatedMax: Int = 139,    // Licht verhoogd bovendruk bovengrens
+    val diaElevatedMax: Int = 89      // Licht verhoogd onderdruk bovengrens
 )

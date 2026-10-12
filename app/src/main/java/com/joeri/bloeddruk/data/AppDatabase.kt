@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [BloodPressureEntry::class, AlarmSetting::class, MedicationItem::class, UserProfile::class],
-    version = 6,
+    version = 7,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -74,6 +74,19 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        /** Versie 7: instellingen toegevoegd aan 'user_profile' (donkere modus, streefwaarden, noodcontact, auto-archiveren). */
+        private val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE user_profile ADD COLUMN emergencyContact TEXT NOT NULL DEFAULT ''")
+                db.execSQL("ALTER TABLE user_profile ADD COLUMN isDarkMode INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE user_profile ADD COLUMN autoArchive INTEGER NOT NULL DEFAULT 1")
+                db.execSQL("ALTER TABLE user_profile ADD COLUMN sysNormalMax INTEGER NOT NULL DEFAULT 120")
+                db.execSQL("ALTER TABLE user_profile ADD COLUMN diaNormalMax INTEGER NOT NULL DEFAULT 80")
+                db.execSQL("ALTER TABLE user_profile ADD COLUMN sysElevatedMax INTEGER NOT NULL DEFAULT 139")
+                db.execSQL("ALTER TABLE user_profile ADD COLUMN diaElevatedMax INTEGER NOT NULL DEFAULT 89")
+            }
+        }
+
         @Volatile
         private var instance: AppDatabase? = null
 
@@ -84,7 +97,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "bloeddruk.db"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
                     .fallbackToDestructiveMigrationOnDowngrade()
                     .build().also { instance = it }
             }

@@ -39,6 +39,7 @@ import com.joeri.bloeddruk.ui.OverviewScreen
 import com.joeri.bloeddruk.ui.SearchScreen
 import com.joeri.bloeddruk.ui.BloodTypeDialog
 import com.joeri.bloeddruk.ui.DoctorDialog
+import com.joeri.bloeddruk.ui.SettingsScreen
 import com.joeri.bloeddruk.ui.SplashScreen
 import com.joeri.bloeddruk.ui.UpdateDialog
 import com.joeri.bloeddruk.update.AppUpdater
@@ -58,12 +59,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            BloeddrukTheme {
-                val vm: MainViewModel = viewModel()
+            val vm: MainViewModel = viewModel()
+            val userProfile by vm.userProfile.collectAsStateWithLifecycle()
+
+            BloeddrukTheme(isDarkMode = userProfile.isDarkMode) {
                 val entries by vm.entries.collectAsStateWithLifecycle()
                 val alarms by vm.alarms.collectAsStateWithLifecycle()
                 val medications by vm.medications.collectAsStateWithLifecycle()
-                val userProfile by vm.userProfile.collectAsStateWithLifecycle()
                 val context = LocalContext.current
 
                 var showSplash by remember { mutableStateOf(true) }
@@ -157,6 +159,16 @@ class MainActivity : ComponentActivity() {
                                 onBack = { activeScreen = "overview" }
                             )
                         }
+                        "settings" -> {
+                            SettingsScreen(
+                                userProfile = userProfile,
+                                onSaveProfile = vm::saveProfile,
+                                onOpenAlarms = { activeScreen = "alarms" },
+                                onOpenDoctor = { showDoctorDialog = true },
+                                onOpenExport = { showExport = true },
+                                onBack = { activeScreen = "overview" }
+                            )
+                        }
                         else -> {
                             OverviewScreen(
                                 entries = entries,
@@ -174,6 +186,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenSearch = { activeScreen = "search" },
                                 onOpenDoctor = { showDoctorDialog = true },
                                 onOpenBloodType = { showBloodTypeDialog = true },
+                                onOpenSettings = { activeScreen = "settings" },
                                 onCheckForUpdates = { showUpdateDialog = true },
                                 onExport = { showExport = true }
                             )
