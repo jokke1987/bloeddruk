@@ -1,0 +1,22 @@
+[
+    {
+        "merged": "com.joeri.bloeddruk.app-release-48:/xml_file_paths.xml.flat",
+        "source": "com.joeri.bloeddruk.app-main-49:/xml/file_paths.xml"
+    },
+    {
+        "merged": "com.joeri.bloeddruk.app-release-48:/drawable_splash_logo.png.flat",
+        "source": "com.joeri.bloeddruk.app-main-49:/drawable/splash_logo.png"
+    },
+    {
+        "merged": "com.joeri.bloeddruk.app-release-48:/drawable_ic_launcher.xml.flat",
+        "source": "com.joeri.bloeddruk.app-main-49:/drawable/ic_launcher.xml"
+    },
+    {
+        "merged": "com.joeri.bloeddruk.app-release-48:/drawable_splash_pattern.png.flat",
+        "source": "com.joeri.bloeddruk.app-main-49:/drawable/splash_pattern.png"
+    },
+    {
+        "merged": "com.joeri.bloeddruk.app-release-48:/drawable_splash_background.xml.flat",
+        "source": "com.joeri.bloeddruk.app-main-49:/drawable/splash_background.xml"
+    }
+]

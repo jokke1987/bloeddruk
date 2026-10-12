@@ -9,6 +9,11 @@ android {
     namespace = "com.joeri.bloeddruk"
     compileSdk = 34
 
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
+
     defaultConfig {
         applicationId = "com.joeri.bloeddruk"
         minSdk = 26

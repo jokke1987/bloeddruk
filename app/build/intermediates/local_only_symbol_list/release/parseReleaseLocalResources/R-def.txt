@@ -1,0 +1,10 @@
+R_DEF: Internal format may change without notice
+local
+color splash_bg
+drawable ic_launcher
+drawable splash_background
+drawable splash_logo
+drawable splash_pattern
+string app_name
+style Theme.Bloeddruk.Splash
+xml file_paths

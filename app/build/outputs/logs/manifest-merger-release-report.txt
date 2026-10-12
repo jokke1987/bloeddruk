@@ -1,0 +1,378 @@
+-- Merging decision tree log ---
+provider#androidx.core.content.FileProvider
+INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:43:9-51:20
+	android:grantUriPermissions
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:47:13-47
+	android:authorities
+		INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:45:13-64
+	android:exported
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:46:13-37
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:44:13-62
+manifest
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:2:1-53:12
+INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:2:1-53:12
+INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:2:1-53:12
+INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:2:1-53:12
+MERGED from [androidx.activity:activity:1.9.2] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2a428545fd6e7a9cf18c9ed1c9fd1d67\transformed\activity-1.9.2\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.activity:activity-ktx:1.9.2] C:\Users\wieri\.gradle\caches\9.6.0\transforms\eef3896c079bfc3ee0985d52c40d44c2\transformed\activity-ktx-1.9.2\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material3:material3-android:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2d0242c39df1a6a40427a83d697ce29c\transformed\material3-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.activity:activity-compose:1.9.2] C:\Users\wieri\.gradle\caches\9.6.0\transforms\cd19e3297268bcfb6f3a524468aaccea\transformed\activity-compose-1.9.2\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bf0f51066e8badc6a0cbb9377cd0e4fb\transformed\savedstate-ktx-1.2.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aec5fe9a65bc2ac798641d665e462c0c\transformed\savedstate-1.2.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.animation:animation-core-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\e09a09ae0e8e85dbd089eb221014b8fe\transformed\animation-core-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-ripple-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bcc13d960cf20272550fd01655be0877\transformed\material-ripple-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.animation:animation-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2cddaf3811268e6328fff9af50f60c6f\transformed\animation-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1cc0095ee0aeec788c890907ba969b8e\transformed\foundation-layout-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.foundation:foundation-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\8a520ca2cfd469145cadf22f84507333\transformed\foundation-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-unit-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1477be788a6730e515a8c2e06649ab2b\transformed\ui-unit-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-graphics-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\0f597e933ab1529f484a126c561863f4\transformed\ui-graphics-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-geometry-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\fa18d2228f61c76c4ed3c4a8f7a6f1eb\transformed\ui-geometry-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-util-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\9dbe629c65707a50f942bab4708b5404\transformed\ui-util-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\3ec17ed4b59f73d3692601f428bb19d9\transformed\ui-tooling-preview-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.ui:ui-text-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\606d4fd3c3f43e140d7cbe4c36108fe4\transformed\ui-text-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f26e49795bbdc42a99373d8b6ab0ab8b\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bcc804cec7163edb0c647ac33ae925a6\transformed\lifecycle-livedata-core-2.8.6\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\834107a3f2dbe03c0af3efbeeac8b9b7\transformed\lifecycle-runtime-ktx-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a424865611b7e62e1a23dc626aa4b3ae\transformed\lifecycle-runtime-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\5db48738e664903c5dba74f1483855e6\transformed\lifecycle-viewmodel-release\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bcb059ac27ad7cd30b70a10e852412a0\transformed\lifecycle-viewmodel-savedstate-2.8.6\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\6f87be86f994d2bc7b3ccd654943ff08\transformed\lifecycle-viewmodel-ktx-2.8.6\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a90266e1feed04e545c0bf58362dc51e\transformed\lifecycle-runtime-compose-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\62cef4d600a5e50d1e4b9a7427300341\transformed\lifecycle-viewmodel-compose-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-icons-extended-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\51aec700187dc4eea08ff76b66b1a150\transformed\material-icons-extended-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\37dc154ee64b3ebc7dc80a75acb0e7b0\transformed\material-icons-core-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.ui:ui-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\66ec1d3dfe720b5f7b82ef706f308ef7\transformed\ui-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.autofill:autofill:1.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\7cded959c0b853707424ad67ade5b46a\transformed\autofill-1.0.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.graphics:graphics-path:1.0.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\fc2968cba9c1eab855254a5330be5fae\transformed\graphics-path-1.0.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2bf2642a6c1ae00d61aeafada6d65eae\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:17:1-23:12
+MERGED from [androidx.core:core-ktx:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\48fca60fed84166433d0a48f3b0fac62\transformed\core-ktx-1.13.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1a7675bf6ce456da9ec092f7f2c3e215\transformed\room-runtime-2.6.1\AndroidManifest.xml:17:1-31:12
+MERGED from [androidx.room:room-ktx:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c6680d40f6aedfadc9d9883dd000e5de\transformed\room-ktx-2.6.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.sqlite:sqlite-framework:2.4.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\ea254cbb03c4e733effd794ad58fc244\transformed\sqlite-framework-2.4.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.sqlite:sqlite:2.4.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\761e7bfb9a188da99d302a71bd6f010c\transformed\sqlite-2.4.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\ad4fa536d11b4c374c48d4173b558f8d\transformed\runtime-saveable-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.compose.runtime:runtime-android:1.7.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\37bf9ca42458dcd27ba176f6ef1b1fed\transformed\runtime-release\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c9a38b97a57dfbc5a1d1c0df47d77af2\transformed\core-runtime-2.2.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c899b6c05020ac6361707654dba488e9\transformed\interpolator-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\14bf62cfe48264c734e053251e5aa817\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f8a86069374f3a4290d8375bef3610f5\transformed\startup-runtime-1.1.1\AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\04b883b038788860f01263b821aa50a2\transformed\tracing-1.0.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\ab1aad2c972e9405a501fedfedfcb760\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:2:1-7:12
+	package
+		INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:2:11-69
+uses-permission#android.permission.INTERNET
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:4:5-67
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:4:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:5:5-79
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:5:22-76
+uses-permission#android.permission.REQUEST_INSTALL_PACKAGES
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:6:5-83
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:6:22-80
+uses-permission#android.permission.POST_NOTIFICATIONS
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:7:5-77
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:7:22-74
+uses-permission#android.permission.SCHEDULE_EXACT_ALARM
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:8:5-79
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:8:22-76
+uses-permission#android.permission.RECEIVE_BOOT_COMPLETED
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:9:5-81
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:9:22-78
+application
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:11:5-52:19
+INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:11:5-52:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f26e49795bbdc42a99373d8b6ab0ab8b\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f26e49795bbdc42a99373d8b6ab0ab8b\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:28:5-89
+MERGED from [androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1a7675bf6ce456da9ec092f7f2c3e215\transformed\room-runtime-2.6.1\AndroidManifest.xml:23:5-29:19
+MERGED from [androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1a7675bf6ce456da9ec092f7f2c3e215\transformed\room-runtime-2.6.1\AndroidManifest.xml:23:5-29:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\14bf62cfe48264c734e053251e5aa817\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\14bf62cfe48264c734e053251e5aa817\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f8a86069374f3a4290d8375bef3610f5\transformed\startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f8a86069374f3a4290d8375bef3610f5\transformed\startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
+	android:extractNativeLibs
+		INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+	android:supportsRtl
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:16:9-35
+	android:label
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:15:9-41
+	android:icon
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:14:9-45
+	android:allowBackup
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:13:9-35
+	android:theme
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:17:9-72
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:12:9-37
+activity#com.joeri.bloeddruk.MainActivity
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:19:9-28:20
+	android:windowSoftInputMode
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:23:13-55
+	android:exported
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:21:13-36
+	android:theme
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:22:13-58
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:20:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:24:13-27:29
+action#android.intent.action.MAIN
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:25:17-69
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:25:25-66
+category#android.intent.category.LAUNCHER
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:26:17-77
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:26:27-74
+receiver#com.joeri.bloeddruk.alarm.AlarmReceiver
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:30:9-32:40
+	android:exported
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:32:13-37
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:31:13-48
+receiver#com.joeri.bloeddruk.alarm.BootReceiver
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:34:9-40:20
+	android:exported
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:36:13-36
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:35:13-47
+intent-filter#action:name:android.intent.action.BOOT_COMPLETED
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:37:13-39:29
+action#android.intent.action.BOOT_COMPLETED
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:38:17-79
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:38:25-76
+meta-data#android.support.FILE_PROVIDER_PATHS
+ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:48:13-50:54
+	android:resource
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:50:17-51
+	android:name
+		ADDED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:49:17-67
+uses-sdk
+INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml
+INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml
+MERGED from [androidx.activity:activity:1.9.2] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2a428545fd6e7a9cf18c9ed1c9fd1d67\transformed\activity-1.9.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.9.2] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2a428545fd6e7a9cf18c9ed1c9fd1d67\transformed\activity-1.9.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity-ktx:1.9.2] C:\Users\wieri\.gradle\caches\9.6.0\transforms\eef3896c079bfc3ee0985d52c40d44c2\transformed\activity-ktx-1.9.2\AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-ktx:1.9.2] C:\Users\wieri\.gradle\caches\9.6.0\transforms\eef3896c079bfc3ee0985d52c40d44c2\transformed\activity-ktx-1.9.2\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material3:material3-android:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2d0242c39df1a6a40427a83d697ce29c\transformed\material3-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.material3:material3-android:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2d0242c39df1a6a40427a83d697ce29c\transformed\material3-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity-compose:1.9.2] C:\Users\wieri\.gradle\caches\9.6.0\transforms\cd19e3297268bcfb6f3a524468aaccea\transformed\activity-compose-1.9.2\AndroidManifest.xml:5:5-44
+MERGED from [androidx.activity:activity-compose:1.9.2] C:\Users\wieri\.gradle\caches\9.6.0\transforms\cd19e3297268bcfb6f3a524468aaccea\transformed\activity-compose-1.9.2\AndroidManifest.xml:5:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bf0f51066e8badc6a0cbb9377cd0e4fb\transformed\savedstate-ktx-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate-ktx:1.2.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bf0f51066e8badc6a0cbb9377cd0e4fb\transformed\savedstate-ktx-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aec5fe9a65bc2ac798641d665e462c0c\transformed\savedstate-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aec5fe9a65bc2ac798641d665e462c0c\transformed\savedstate-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\e09a09ae0e8e85dbd089eb221014b8fe\transformed\animation-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-core-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\e09a09ae0e8e85dbd089eb221014b8fe\transformed\animation-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bcc13d960cf20272550fd01655be0877\transformed\material-ripple-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-ripple-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bcc13d960cf20272550fd01655be0877\transformed\material-ripple-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2cddaf3811268e6328fff9af50f60c6f\transformed\animation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.animation:animation-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2cddaf3811268e6328fff9af50f60c6f\transformed\animation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1cc0095ee0aeec788c890907ba969b8e\transformed\foundation-layout-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-layout-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1cc0095ee0aeec788c890907ba969b8e\transformed\foundation-layout-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\8a520ca2cfd469145cadf22f84507333\transformed\foundation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.foundation:foundation-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\8a520ca2cfd469145cadf22f84507333\transformed\foundation-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1477be788a6730e515a8c2e06649ab2b\transformed\ui-unit-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-unit-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1477be788a6730e515a8c2e06649ab2b\transformed\ui-unit-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\0f597e933ab1529f484a126c561863f4\transformed\ui-graphics-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-graphics-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\0f597e933ab1529f484a126c561863f4\transformed\ui-graphics-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\fa18d2228f61c76c4ed3c4a8f7a6f1eb\transformed\ui-geometry-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-geometry-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\fa18d2228f61c76c4ed3c4a8f7a6f1eb\transformed\ui-geometry-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\9dbe629c65707a50f942bab4708b5404\transformed\ui-util-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-util-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\9dbe629c65707a50f942bab4708b5404\transformed\ui-util-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\3ec17ed4b59f73d3692601f428bb19d9\transformed\ui-tooling-preview-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-tooling-preview-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\3ec17ed4b59f73d3692601f428bb19d9\transformed\ui-tooling-preview-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\606d4fd3c3f43e140d7cbe4c36108fe4\transformed\ui-text-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-text-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\606d4fd3c3f43e140d7cbe4c36108fe4\transformed\ui-text-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f26e49795bbdc42a99373d8b6ab0ab8b\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f26e49795bbdc42a99373d8b6ab0ab8b\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bcc804cec7163edb0c647ac33ae925a6\transformed\lifecycle-livedata-core-2.8.6\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bcc804cec7163edb0c647ac33ae925a6\transformed\lifecycle-livedata-core-2.8.6\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\834107a3f2dbe03c0af3efbeeac8b9b7\transformed\lifecycle-runtime-ktx-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\834107a3f2dbe03c0af3efbeeac8b9b7\transformed\lifecycle-runtime-ktx-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a424865611b7e62e1a23dc626aa4b3ae\transformed\lifecycle-runtime-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a424865611b7e62e1a23dc626aa4b3ae\transformed\lifecycle-runtime-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\5db48738e664903c5dba74f1483855e6\transformed\lifecycle-viewmodel-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\5db48738e664903c5dba74f1483855e6\transformed\lifecycle-viewmodel-release\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bcb059ac27ad7cd30b70a10e852412a0\transformed\lifecycle-viewmodel-savedstate-2.8.6\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bcb059ac27ad7cd30b70a10e852412a0\transformed\lifecycle-viewmodel-savedstate-2.8.6\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\6f87be86f994d2bc7b3ccd654943ff08\transformed\lifecycle-viewmodel-ktx-2.8.6\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\6f87be86f994d2bc7b3ccd654943ff08\transformed\lifecycle-viewmodel-ktx-2.8.6\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a90266e1feed04e545c0bf58362dc51e\transformed\lifecycle-runtime-compose-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime-compose-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a90266e1feed04e545c0bf58362dc51e\transformed\lifecycle-runtime-compose-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\62cef4d600a5e50d1e4b9a7427300341\transformed\lifecycle-viewmodel-compose-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-compose-android:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\62cef4d600a5e50d1e4b9a7427300341\transformed\lifecycle-viewmodel-compose-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-extended-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\51aec700187dc4eea08ff76b66b1a150\transformed\material-icons-extended-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-extended-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\51aec700187dc4eea08ff76b66b1a150\transformed\material-icons-extended-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\37dc154ee64b3ebc7dc80a75acb0e7b0\transformed\material-icons-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.material:material-icons-core-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\37dc154ee64b3ebc7dc80a75acb0e7b0\transformed\material-icons-core-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\66ec1d3dfe720b5f7b82ef706f308ef7\transformed\ui-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.ui:ui-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\66ec1d3dfe720b5f7b82ef706f308ef7\transformed\ui-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.autofill:autofill:1.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\7cded959c0b853707424ad67ade5b46a\transformed\autofill-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.autofill:autofill:1.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\7cded959c0b853707424ad67ade5b46a\transformed\autofill-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.graphics:graphics-path:1.0.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\fc2968cba9c1eab855254a5330be5fae\transformed\graphics-path-1.0.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.graphics:graphics-path:1.0.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\fc2968cba9c1eab855254a5330be5fae\transformed\graphics-path-1.0.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2bf2642a6c1ae00d61aeafada6d65eae\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.customview:customview-poolingcontainer:1.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2bf2642a6c1ae00d61aeafada6d65eae\transformed\customview-poolingcontainer-1.0.0\AndroidManifest.xml:20:5-21:38
+MERGED from [androidx.core:core-ktx:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\48fca60fed84166433d0a48f3b0fac62\transformed\core-ktx-1.13.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\48fca60fed84166433d0a48f3b0fac62\transformed\core-ktx-1.13.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1a7675bf6ce456da9ec092f7f2c3e215\transformed\room-runtime-2.6.1\AndroidManifest.xml:21:5-44
+MERGED from [androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1a7675bf6ce456da9ec092f7f2c3e215\transformed\room-runtime-2.6.1\AndroidManifest.xml:21:5-44
+MERGED from [androidx.room:room-ktx:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c6680d40f6aedfadc9d9883dd000e5de\transformed\room-ktx-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.room:room-ktx:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c6680d40f6aedfadc9d9883dd000e5de\transformed\room-ktx-2.6.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite-framework:2.4.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\ea254cbb03c4e733effd794ad58fc244\transformed\sqlite-framework-2.4.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite-framework:2.4.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\ea254cbb03c4e733effd794ad58fc244\transformed\sqlite-framework-2.4.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite:2.4.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\761e7bfb9a188da99d302a71bd6f010c\transformed\sqlite-2.4.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.sqlite:sqlite:2.4.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\761e7bfb9a188da99d302a71bd6f010c\transformed\sqlite-2.4.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\ad4fa536d11b4c374c48d4173b558f8d\transformed\runtime-saveable-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-saveable-android:1.7.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\ad4fa536d11b4c374c48d4173b558f8d\transformed\runtime-saveable-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.7.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\37bf9ca42458dcd27ba176f6ef1b1fed\transformed\runtime-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.compose.runtime:runtime-android:1.7.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\37bf9ca42458dcd27ba176f6ef1b1fed\transformed\runtime-release\AndroidManifest.xml:5:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c9a38b97a57dfbc5a1d1c0df47d77af2\transformed\core-runtime-2.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c9a38b97a57dfbc5a1d1c0df47d77af2\transformed\core-runtime-2.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c899b6c05020ac6361707654dba488e9\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c899b6c05020ac6361707654dba488e9\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\14bf62cfe48264c734e053251e5aa817\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\14bf62cfe48264c734e053251e5aa817\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:21:5-44
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f8a86069374f3a4290d8375bef3610f5\transformed\startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f8a86069374f3a4290d8375bef3610f5\transformed\startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\04b883b038788860f01263b821aa50a2\transformed\tracing-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\04b883b038788860f01263b821aa50a2\transformed\tracing-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\ab1aad2c972e9405a501fedfedfcb760\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\ab1aad2c972e9405a501fedfedfcb760\transformed\annotation-experimental-1.4.1\AndroidManifest.xml:5:5-44
+	android:targetSdkVersion
+		INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f26e49795bbdc42a99373d8b6ab0ab8b\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f26e49795bbdc42a99373d8b6ab0ab8b\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f8a86069374f3a4290d8375bef3610f5\transformed\startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f8a86069374f3a4290d8375bef3610f5\transformed\startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+meta-data#androidx.emoji2.text.EmojiCompatInitializer
+ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f26e49795bbdc42a99373d8b6ab0ab8b\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f26e49795bbdc42a99373d8b6ab0ab8b\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f26e49795bbdc42a99373d8b6ab0ab8b\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:30:17-78
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+permission#com.joeri.bloeddruk.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+uses-permission#com.joeri.bloeddruk.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+service#androidx.room.MultiInstanceInvalidationService
+ADDED from [androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1a7675bf6ce456da9ec092f7f2c3e215\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
+	android:exported
+		ADDED from [androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1a7675bf6ce456da9ec092f7f2c3e215\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
+	tools:ignore
+		ADDED from [androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1a7675bf6ce456da9ec092f7f2c3e215\transformed\room-runtime-2.6.1\AndroidManifest.xml:28:13-60
+	android:directBootAware
+		ADDED from [androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1a7675bf6ce456da9ec092f7f2c3e215\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
+	android:name
+		ADDED from [androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1a7675bf6ce456da9ec092f7f2c3e215\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
