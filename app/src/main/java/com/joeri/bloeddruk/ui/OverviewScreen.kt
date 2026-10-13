@@ -1,5 +1,8 @@
 package com.joeri.bloeddruk.ui
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -34,10 +37,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bloodtype
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CloudDownload
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.Menu
@@ -116,12 +122,22 @@ fun OverviewScreen(
     onOpenDoctor: () -> Unit = {},
     onOpenBloodType: () -> Unit = {},
     onOpenSettings: () -> Unit = {},
+    onCreateBackup: () -> Unit = {},
+    onRestoreBackupUri: (Uri) -> Unit = {},
     onCheckForUpdates: () -> Unit,
     onExport: () -> Unit
 ) {
     var tab by rememberSaveable { mutableStateOf(0) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val restoreLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        if (uri != null) {
+            onRestoreBackupUri(uri)
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -177,7 +193,7 @@ fun OverviewScreen(
                     )
 
                     NavigationDrawerItem(
-                        icon = { Icon(Icons.Filled.Dashboard, null) },
+                        icon = { Icon(Icons.Filled.Home, null) },
                         label = { Text("Dashboard / Overzicht") },
                         selected = tab == 0,
                         onClick = {
@@ -193,21 +209,6 @@ fun OverviewScreen(
                         onClick = {
                             tab = 1
                             scope.launch { drawerState.close() }
-                        }
-                    )
-
-                    NavigationDrawerItem(
-                        icon = { Icon(Icons.Filled.Bloodtype, null) },
-                        label = {
-                            Text(
-                                if (userProfile.bloodType.isNotBlank()) "Bloedgroep (${userProfile.bloodType})"
-                                else "Mijn Bloedgroep"
-                            )
-                        },
-                        selected = false,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            onOpenBloodType()
                         }
                     )
 
@@ -242,12 +243,7 @@ fun OverviewScreen(
 
                     NavigationDrawerItem(
                         icon = { Icon(Icons.Filled.LocalHospital, null) },
-                        label = {
-                            Text(
-                                if (userProfile.doctorName.isNotBlank()) "Dokter (${userProfile.doctorName})"
-                                else "Dokter & Zorgverlener"
-                            )
-                        },
+                        label = { Text("Mijn Huisarts / Zorgverlener") },
                         selected = false,
                         onClick = {
                             scope.launch { drawerState.close() }
@@ -271,6 +267,26 @@ fun OverviewScreen(
                         onClick = {
                             scope.launch { drawerState.close() }
                             onOpenArchive()
+                        }
+                    )
+
+                    NavigationDrawerItem(
+                        icon = { Icon(Icons.Filled.CloudUpload, null) },
+                        label = { Text("Back-up Maken") },
+                        selected = false,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            onCreateBackup()
+                        }
+                    )
+
+                    NavigationDrawerItem(
+                        icon = { Icon(Icons.Filled.CloudDownload, null) },
+                        label = { Text("Back-up Herstellen (CSV/JSON)") },
+                        selected = false,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            restoreLauncher.launch(arrayOf("*/*"))
                         }
                     )
 

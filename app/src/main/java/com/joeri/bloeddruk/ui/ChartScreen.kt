@@ -78,8 +78,10 @@ private fun List<BloodPressureEntry>.avg(): Avg? =
 @Composable
 fun ChartTab(entries: List<BloodPressureEntry>) {
     var range by rememberSaveable { mutableStateOf(1) }
+    var trendWindow by rememberSaveable { mutableStateOf(0) } // 0 = Geen, 1 = 7d Trend, 2 = 30d Trend
     var selected by remember { mutableStateOf<Int?>(null) }
     val labels = listOf("7 d", "30 d", "90 d", "Alles")
+    val trendLabels = listOf("Losse M.", "7d Trend", "30d Trend")
 
     val data = remember(entries, range) {
         val days = when (range) { 0 -> 7; 1 -> 30; 2 -> 90; else -> null }
@@ -105,6 +107,17 @@ fun ChartTab(entries: List<BloodPressureEntry>) {
             }
         }
 
+        // Trend / Voortschrijdend Gemiddelde Knoppen
+        SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+            trendLabels.forEachIndexed { i, l ->
+                SegmentedButton(
+                    selected = trendWindow == i,
+                    onClick = { trendWindow = i },
+                    shape = SegmentedButtonDefaults.itemShape(i, trendLabels.size)
+                ) { Text(l, fontSize = 12.sp) }
+            }
+        }
+
         if (data.isEmpty()) {
             Box(Modifier.fillMaxWidth().padding(vertical = 48.dp), contentAlignment = Alignment.Center) {
                 Text("Nog geen metingen in deze periode.", color = InkSoft)
@@ -119,7 +132,7 @@ fun ChartTab(entries: List<BloodPressureEntry>) {
             ) {
                 Column(Modifier.padding(12.dp)) {
                     SelectionInfo(selected?.let { data.getOrNull(it) })
-                    BpLineChart(data, selected) { selected = it }
+                    BpLineChart(data, selected, trendWindow) { selected = it }
                     ChartLegend()
                 }
             }
@@ -178,33 +191,15 @@ private fun SelectionInfo(e: BloodPressureEntry?) {
             }
             Text(
                 "${e.systolic}/${e.diastolic} mmHg · pols ${e.pulse} · ${lvl.label}",
-                fontSize = 13.sp,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
                 color = lvl.ink
             )
-            val extra = (e.tags.tagList() + listOfNotNull(e.note.trim().ifEmpty { null })).joinToString(" · ")
-            if (extra.isNotEmpty()) Text(extra, fontSize = 12.sp, color = InkSoft)
+            if (e.note.isNotBlank() || e.tags.isNotBlank()) {
+                val sub = (e.tags.tagList() + listOfNotNull(e.note.trim().ifEmpty { null })).joinToString(" · ")
+                Text(sub, fontSize = 12.sp, color = InkSoft, maxLines = 1)
+            }
         }
-    }
-}
-
-@Composable
-private fun ChartLegend() {
-    Row(
-        Modifier.fillMaxWidth().padding(top = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        LegendItem(SysColor, "Bovendruk")
-        LegendItem(DiaColor, "Onderdruk")
-        Text("┄ grens 140 / 90", fontSize = 11.sp, color = BpLevel.HIGH.ink)
-    }
-}
-
-@Composable
-private fun LegendItem(color: Color, text: String) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Box(Modifier.size(10.dp).clip(CircleShape).background(color))
-        Text("  $text", fontSize = 11.sp, color = InkSoft)
     }
 }
 
@@ -212,6 +207,7 @@ private fun LegendItem(color: Color, text: String) {
 private fun BpLineChart(
     data: List<BloodPressureEntry>,
     selected: Int?,
+    trendWindow: Int,
     onSelect: (Int?) -> Unit
 ) {
     val measurer = rememberTextMeasurer()
@@ -256,16 +252,16 @@ private fun BpLineChart(
         val w = size.width - left - right
         val h = size.height - top - bottom
 
-        fun y(v: Int): Float = top + h * (1f - (v - yMin).toFloat() / (yMax - yMin).toFloat())
+        fun y(v: Float): Float = top + h * (1f - (v - yMin) / (yMax - yMin).toFloat())
 
         // Raster en waarden op de Y-as
         var g = yMin
         while (g <= yMax) {
-            drawLine(dividerColor, Offset(left, y(g)), Offset(left + w, y(g)), strokeWidth = 1.dp.toPx())
+            drawLine(dividerColor, Offset(left, y(g.toFloat())), Offset(left + w, y(g.toFloat())), strokeWidth = 1.dp.toPx())
             val tl = measurer.measure(g.toString(), labelStyle)
             drawText(
                 tl,
-                topLeft = Offset(left - tl.size.width - 6.dp.toPx(), y(g) - tl.size.height / 2f)
+                topLeft = Offset(left - tl.size.width - 6.dp.toPx(), y(g.toFloat()) - tl.size.height / 2f)
             )
             g += 20
         }
@@ -276,8 +272,8 @@ private fun BpLineChart(
             if (lim in yMin..yMax) {
                 drawLine(
                     BpLevel.HIGH.color.copy(alpha = 0.55f),
-                    Offset(left, y(lim)),
-                    Offset(left + w, y(lim)),
+                    Offset(left, y(lim.toFloat())),
+                    Offset(left + w, y(lim.toFloat())),
                     strokeWidth = 1.5f.dp.toPx(),
                     pathEffect = dash
                 )
@@ -313,34 +309,93 @@ private fun BpLineChart(
                 val path = Path()
                 data.forEachIndexed { i, e ->
                     val px = xAt(e.timestamp, left, w)
-                    val py = y(value(e))
+                    val py = y(value(e).toFloat())
                     if (i == 0) path.moveTo(px, py) else path.lineTo(px, py)
                 }
                 drawPath(
                     path,
-                    color,
+                    color.copy(alpha = if (trendWindow > 0) 0.35f else 1f),
                     style = Stroke(width = 2.5f.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
                 )
             }
-            data.forEachIndexed { i, e ->
-                val c = Offset(xAt(e.timestamp, left, w), y(value(e)))
-                val big = i == selected
-                val outerRadius: Dp = if (big) 7.dp else 5.dp
-                val innerRadius: Dp = if (big) 5.dp else 3.dp
-                drawCircle(Color.White, outerRadius.toPx(), c)
-                drawCircle(color, innerRadius.toPx(), c)
-            }
         }
 
-        // De lijnen "tekenen zich" van links naar rechts
-        clipRect(
-            left = 0f,
-            top = 0f,
-            right = left + w * progress.value + 10.dp.toPx(),
-            bottom = size.height
-        ) {
+        clipRect(left, top, left + w * progress.value, top + h) {
             drawSeries({ it.systolic }, SysColor)
             drawSeries({ it.diastolic }, DiaColor)
+
+            // Voortschrijdend gemiddelde trendlijn (7d of 30d)
+            if (trendWindow > 0 && data.size >= 2) {
+                val windowDays = if (trendWindow == 1) 7 else 30
+                val windowMillis = windowDays * 86_400_000L
+
+                val sysTrendPath = Path()
+                val diaTrendPath = Path()
+
+                data.forEachIndexed { i, e ->
+                    val cutoff = e.timestamp - windowMillis
+                    val inWindow = data.filter { it.timestamp in cutoff..e.timestamp }
+                    val avgSys = inWindow.map { it.systolic }.average().toFloat()
+                    val avgDia = inWindow.map { it.diastolic }.average().toFloat()
+
+                    val px = xAt(e.timestamp, left, w)
+                    val pySys = y(avgSys)
+                    val pyDia = y(avgDia)
+
+                    if (i == 0) {
+                        sysTrendPath.moveTo(px, pySys)
+                        diaTrendPath.moveTo(px, pyDia)
+                    } else {
+                        sysTrendPath.lineTo(px, pySys)
+                        diaTrendPath.lineTo(px, pyDia)
+                    }
+                }
+
+                val trendEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 6f))
+                drawPath(sysTrendPath, SysColor, style = Stroke(width = 3.5f.dp.toPx(), cap = StrokeCap.Round, pathEffect = trendEffect))
+                drawPath(diaTrendPath, DiaColor, style = Stroke(width = 3.5f.dp.toPx(), cap = StrokeCap.Round, pathEffect = trendEffect))
+            }
+
+            // Punten op de lijnen
+            data.forEachIndexed { i, e ->
+                val px = xAt(e.timestamp, left, w)
+                val isSel = i == selected
+                val r = if (isSel) 6.dp.toPx() else 3.5f.dp.toPx()
+
+                drawCircle(SysColor, r, Offset(px, y(e.systolic.toFloat())))
+                drawCircle(Color.White, r * 0.5f, Offset(px, y(e.systolic.toFloat())))
+
+                drawCircle(DiaColor, r, Offset(px, y(e.diastolic.toFloat())))
+                drawCircle(Color.White, r * 0.5f, Offset(px, y(e.diastolic.toFloat())))
+            }
         }
+    }
+}
+
+@Composable
+private fun ChartLegend() {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        LegendDot("Bovendruk", SysColor)
+        LegendDot("Onderdruk", DiaColor)
+        Text("┄ Trend", color = InkSoft, fontSize = 12.sp)
+    }
+}
+
+@Composable
+private fun LegendDot(label: String, color: Color) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(
+            Modifier
+                .size(8.dp)
+                .clip(CircleShape)
+                .background(color)
+        )
+        Text("  $label", color = InkSoft, fontSize = 12.sp)
     }
 }

@@ -111,10 +111,24 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
-                    // Automatische achtergrondcontrole op GitHub Releases (geen pop-up, wel rode badge '1' in het menu)
+                    // Automatische achtergrondcontrole op GitHub Releases
                     var updateReleaseInfo by remember { mutableStateOf<GitHubReleaseInfo?>(null) }
                     var updateDownloadUrl by remember { mutableStateOf("https://github.com/jokke1987/bloeddruk/releases/latest/download/app-debug.apk") }
                     var hasUpdateAvailable by rememberSaveable { mutableStateOf(false) }
+
+                    // Wekelijkse Automatische Lokale Back-up
+                    LaunchedEffect(entries, medications, userProfile) {
+                        if (entries.isNotEmpty()) {
+                            val prefs = context.getSharedPreferences("bloeddruk_prefs", android.content.Context.MODE_PRIVATE)
+                            val lastBackup = prefs.getLong("last_weekly_backup", 0L)
+                            val now = System.currentTimeMillis()
+                            if (now - lastBackup >= 7 * 86_400_000L) {
+                                val json = BackupManager.createBackupJson(entries, medications, userProfile)
+                                BackupManager.saveBackupToFile(context, json)
+                                prefs.edit().putLong("last_weekly_backup", now).apply()
+                            }
+                        }
+                    }
 
                     LaunchedEffect(Unit) {
                         val release = AppUpdater.checkForUpdates(context)
@@ -186,6 +200,13 @@ class MainActivity : ComponentActivity() {
                                         }
                                     }
                                 },
+                                onUploadGitHubBackup = { token, repo ->
+                                    scope.launch {
+                                        val json = BackupManager.createBackupJson(entries, medications, userProfile)
+                                        val ok = BackupManager.uploadBackupToGitHub(token, repo, json)
+                                        snackbar.showSnackbar(if (ok) "Back-up geüpload naar GitHub!" else "GitHub upload mislukt: controleer PAT en repo")
+                                    }
+                                },
                                 onBack = { activeScreen = "overview" }
                             )
                         }
@@ -207,6 +228,25 @@ class MainActivity : ComponentActivity() {
                                 onOpenDoctor = { showDoctorDialog = true },
                                 onOpenBloodType = { showBloodTypeDialog = true },
                                 onOpenSettings = { activeScreen = "settings" },
+                                onCreateBackup = {
+                                    val json = BackupManager.createBackupJson(entries, medications, userProfile)
+                                    BackupManager.saveBackupToFile(context, json)
+                                    scope.launch { snackbar.showSnackbar("Back-up opgeslagen in Downloads/Bloeddruk") }
+                                },
+                                onRestoreBackupUri = { uri ->
+                                    scope.launch {
+                                        try {
+                                            val text = context.contentResolver.openInputStream(uri)?.use { it.bufferedReader().readText() }
+                                            if (text != null) {
+                                                val data = BackupManager.parseFileOrJsonOrCsv(text)
+                                                vm.restoreBackup(data)
+                                                snackbar.showSnackbar("Back-up hersteld (${data.entries.size} metingen)!")
+                                            }
+                                        } catch (e: Exception) {
+                                            snackbar.showSnackbar("Herstellen mislukt: ongeldig bestand")
+                                        }
+                                    }
+                                },
                                 onCheckForUpdates = { showUpdateDialog = true },
                                 onExport = { showExport = true }
                             )

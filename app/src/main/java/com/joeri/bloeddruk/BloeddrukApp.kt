@@ -16,13 +16,8 @@ class BloeddrukApp : Application() {
         ).apply {
             description = "Herinnering om je bloeddruk te meten"
             enableVibration(true)
-            setSound(
-                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM),
-                AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_ALARM)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build()
-            )
+            // Geen kanaalgeluid, zodat AlarmPlayer als enige het gekozen geluid afspeelt zonder dubbele tonen.
+            setSound(null, null)
         }
         getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
     }

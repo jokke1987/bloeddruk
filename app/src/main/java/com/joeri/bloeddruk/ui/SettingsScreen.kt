@@ -47,6 +47,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,9 +66,12 @@ fun SettingsScreen(
     onOpenExport: () -> Unit,
     onCreateBackup: () -> Unit,
     onRestoreBackupUri: (Uri) -> Unit,
+    onUploadGitHubBackup: (token: String, repo: String) -> Unit = { _, _ -> },
     onBack: () -> Unit
 ) {
     var showThresholdsDialog by remember { mutableStateOf(false) }
+    var githubRepo by rememberSaveable { mutableStateOf("") }
+    var githubToken by rememberSaveable { mutableStateOf("") }
 
     val restoreLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
@@ -235,14 +239,14 @@ fun SettingsScreen(
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .clickable { restoreLauncher.launch(arrayOf("application/json", "*/*")) },
+                            .clickable { restoreLauncher.launch(arrayOf("*/*")) },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(Icons.Filled.CloudDownload, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) {
-                            Text("Back-up Herstellen", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                            Text("Herstel metingen en medicatie vanuit een back-up bestand", fontSize = 12.sp, color = InkSoft)
+                            Text("Back-up Herstellen (CSV of JSON)", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                            Text("Herstel metingen en medicatie vanuit een CSV- of JSON-bestand", fontSize = 12.sp, color = InkSoft)
                         }
                     }
 
@@ -280,6 +284,50 @@ fun SettingsScreen(
                             Text("Exporteer maandrapporten of CSV voor Excel", fontSize = 12.sp, color = InkSoft)
                         }
                         Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = InkSoft)
+                    }
+                }
+            }
+
+            // 5. Privé GitHub Back-up
+            SettingsCategoryHeader("Privé Back-up naar GitHub")
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(1.dp)
+            ) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text(
+                        "Upload je back-up veilig naar een privé GitHub repository via een Personal Access Token.",
+                        fontSize = 12.sp,
+                        color = InkSoft
+                    )
+
+                    OutlinedTextField(
+                        value = githubRepo,
+                        onValueChange = { githubRepo = it },
+                        label = { Text("GitHub Repository (eigenaar/repo)") },
+                        placeholder = { Text("bv. jokke1987/bloeddruk-backup") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    OutlinedTextField(
+                        value = githubToken,
+                        onValueChange = { githubToken = it },
+                        label = { Text("Personal Access Token (PAT)") },
+                        placeholder = { Text("ghp_xxxxxxxxxxxxxx") },
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Button(
+                        enabled = githubRepo.isNotBlank() && githubToken.isNotBlank(),
+                        onClick = { onUploadGitHubBackup(githubToken, githubRepo) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(Icons.Filled.CloudUpload, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Uploaden naar GitHub")
                     }
                 }
             }

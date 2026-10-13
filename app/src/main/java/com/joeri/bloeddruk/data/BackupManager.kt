@@ -84,6 +84,53 @@ object BackupManager {
         return file
     }
 
+    /** Uploadt het back-up bestand direct naar een privé GitHub repository via een Personal Access Token */
+    suspend fun uploadBackupToGitHub(
+        token: String,
+        repoOwnerRepo: String,
+        jsonString: String
+    ): Boolean = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+        try {
+            val cleanRepo = repoOwnerRepo.trim().removePrefix("https://github.com/").removeSuffix(".git").trim()
+            if (!cleanRepo.contains("/")) return@withContext false
+
+            val url = java.net.URL("https://api.github.com/repos/$cleanRepo/contents/bloeddruk_backup.json")
+            val base64Content = android.util.Base64.encodeToString(jsonString.toByteArray(Charsets.UTF_8), android.util.Base64.NO_WRAP)
+
+            var sha: String? = null
+            try {
+                val getConn = url.openConnection() as java.net.HttpURLConnection
+                getConn.setRequestProperty("Authorization", "Bearer ${token.trim()}")
+                getConn.setRequestProperty("Accept", "application/vnd.github+json")
+                if (getConn.responseCode == 200) {
+                    val resp = getConn.inputStream.bufferedReader().readText()
+                    sha = JSONObject(resp).optString("sha")
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            val putConn = url.openConnection() as java.net.HttpURLConnection
+            putConn.requestMethod = "PUT"
+            putConn.setRequestProperty("Authorization", "Bearer ${token.trim()}")
+            putConn.setRequestProperty("Content-Type", "application/json")
+            putConn.doOutput = true
+
+            val body = JSONObject().apply {
+                put("message", "Automatische Bloeddruk Back-up ${System.currentTimeMillis()}")
+                put("content", base64Content)
+                if (!sha.isNullOrEmpty()) put("sha", sha)
+            }
+
+            putConn.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
+            val code = putConn.responseCode
+            code == 200 || code == 201
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
     /** Slimme herstel-functie voor zowel JSON back-up bestanden als CSV bestanden */
     fun parseFileOrJsonOrCsv(text: String): BackupData {
         return try {
