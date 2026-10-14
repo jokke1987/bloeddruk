@@ -336,7 +336,27 @@ fun SettingsScreen(
                             }
                         }
                     }
+                    HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
+                    Text(
+                        "Created by Wierinckx Joeri 10/2026",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = InkSoft,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
                 }
+            }
+
+            Column(
+                Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    "Created by Wierinckx Joeri 10/2026",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = InkSoft
+                )
             }
 
             Spacer(Modifier.height(24.dp))
