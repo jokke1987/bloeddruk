@@ -131,6 +131,44 @@ object BackupManager {
         }
     }
 
+    /** Downloadt en herstelt het back-up bestand vanuit een privé GitHub repository */
+    suspend fun downloadFromGitHub(
+        token: String,
+        repoOwnerRepo: String
+    ): BackupData? = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+        try {
+            val cleanRepo = repoOwnerRepo.trim().removePrefix("https://github.com/").removeSuffix(".git").trim()
+            if (!cleanRepo.contains("/")) return@withContext null
+
+            val url = java.net.URL("https://api.github.com/repos/$cleanRepo/contents/bloeddruk_backup.json")
+            val conn = url.openConnection() as java.net.HttpURLConnection
+            conn.setRequestProperty("Authorization", "Bearer ${token.trim()}")
+            conn.setRequestProperty("Accept", "application/vnd.github+json")
+
+            if (conn.responseCode == 200) {
+                val resp = conn.inputStream.bufferedReader().readText()
+                val json = JSONObject(resp)
+                val base64Content = json.optString("content").replace("\n", "").replace("\r", "")
+                val decodedBytes = android.util.Base64.decode(base64Content, android.util.Base64.DEFAULT)
+                val jsonText = String(decodedBytes, Charsets.UTF_8)
+                parseBackupJson(jsonText)
+            } else null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun getGitHubCredentials(context: Context): Pair<String, String> {
+        val prefs = context.getSharedPreferences("bloeddruk_prefs", Context.MODE_PRIVATE)
+        return (prefs.getString("github_token", "") ?: "") to (prefs.getString("github_repo", "") ?: "")
+    }
+
+    fun saveGitHubCredentials(context: Context, token: String, repo: String) {
+        val prefs = context.getSharedPreferences("bloeddruk_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putString("github_token", token.trim()).putString("github_repo", repo.trim()).apply()
+    }
+
     /** Slimme herstel-functie voor zowel JSON back-up bestanden als CSV bestanden */
     fun parseFileOrJsonOrCsv(text: String): BackupData {
         return try {

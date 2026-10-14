@@ -53,6 +53,7 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.Speed
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material.icons.filled.TableChart
 import androidx.compose.material.icons.filled.WbSunny
@@ -124,6 +125,7 @@ fun OverviewScreen(
     onOpenSettings: () -> Unit = {},
     onCreateBackup: () -> Unit = {},
     onRestoreBackupUri: (Uri) -> Unit = {},
+    onSyncGitHub: () -> Unit = {},
     onCheckForUpdates: () -> Unit,
     onExport: () -> Unit
 ) {
@@ -270,26 +272,6 @@ fun OverviewScreen(
                         }
                     )
 
-                    NavigationDrawerItem(
-                        icon = { Icon(Icons.Filled.CloudUpload, null) },
-                        label = { Text("Back-up Maken") },
-                        selected = false,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            onCreateBackup()
-                        }
-                    )
-
-                    NavigationDrawerItem(
-                        icon = { Icon(Icons.Filled.CloudDownload, null) },
-                        label = { Text("Back-up Herstellen (CSV/JSON)") },
-                        selected = false,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            restoreLauncher.launch(arrayOf("*/*"))
-                        }
-                    )
-
                     // Sectie: Extra
                     Text(
                         "Extra",
@@ -347,6 +329,9 @@ fun OverviewScreen(
                         }
                     },
                     actions = {
+                        IconButton(onClick = onSyncGitHub) {
+                            Icon(Icons.Filled.Sync, contentDescription = "Synchroniseren")
+                        }
                         IconButton(onClick = onOpenSearch) {
                             Icon(Icons.Filled.Search, contentDescription = "Zoeken")
                         }

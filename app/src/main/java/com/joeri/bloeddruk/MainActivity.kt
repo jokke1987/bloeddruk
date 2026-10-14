@@ -130,6 +130,26 @@ class MainActivity : ComponentActivity() {
                         }
                     }
 
+                    // Automatische GitHub Privé Synchronisatie op opstart (Pull)
+                    LaunchedEffect(Unit) {
+                        val (token, repo) = BackupManager.getGitHubCredentials(context)
+                        if (token.isNotBlank() && repo.isNotBlank()) {
+                            val remoteData = BackupManager.downloadFromGitHub(token, repo)
+                            if (remoteData != null && remoteData.entries.isNotEmpty()) {
+                                vm.restoreBackup(remoteData)
+                            }
+                        }
+                    }
+
+                    // Automatische GitHub Privé Synchronisatie bij wijzigingen (Push)
+                    LaunchedEffect(entries.size, medications.size, userProfile) {
+                        val (token, repo) = BackupManager.getGitHubCredentials(context)
+                        if (token.isNotBlank() && repo.isNotBlank() && entries.isNotEmpty()) {
+                            val json = BackupManager.createBackupJson(entries, medications, userProfile)
+                            BackupManager.uploadBackupToGitHub(token, repo, json)
+                        }
+                    }
+
                     LaunchedEffect(Unit) {
                         val release = AppUpdater.checkForUpdates(context)
                         if (release != null) {
@@ -228,6 +248,22 @@ class MainActivity : ComponentActivity() {
                                 onOpenDoctor = { showDoctorDialog = true },
                                 onOpenBloodType = { showBloodTypeDialog = true },
                                 onOpenSettings = { activeScreen = "settings" },
+                                onSyncGitHub = {
+                                    val (token, repo) = BackupManager.getGitHubCredentials(context)
+                                    if (token.isBlank() || repo.isBlank()) {
+                                        scope.launch { snackbar.showSnackbar("Koppel eerst je GitHub account in Instellingen ⚙️") }
+                                    } else {
+                                        scope.launch {
+                                            val remoteData = BackupManager.downloadFromGitHub(token, repo)
+                                            if (remoteData != null && remoteData.entries.isNotEmpty()) {
+                                                vm.restoreBackup(remoteData)
+                                            }
+                                            val json = BackupManager.createBackupJson(entries, medications, userProfile)
+                                            val ok = BackupManager.uploadBackupToGitHub(token, repo, json)
+                                            snackbar.showSnackbar(if (ok) "Metingen gesynchroniseerd met GitHub ✓" else "Synchronisatie mislukt")
+                                        }
+                                    }
+                                },
                                 onCreateBackup = {
                                     val json = BackupManager.createBackupJson(entries, medications, userProfile)
                                     BackupManager.saveBackupToFile(context, json)

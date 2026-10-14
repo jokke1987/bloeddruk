@@ -69,9 +69,11 @@ fun SettingsScreen(
     onUploadGitHubBackup: (token: String, repo: String) -> Unit = { _, _ -> },
     onBack: () -> Unit
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val (savedToken, savedRepo) = remember { com.joeri.bloeddruk.data.BackupManager.getGitHubCredentials(context) }
     var showThresholdsDialog by remember { mutableStateOf(false) }
-    var githubRepo by rememberSaveable { mutableStateOf("") }
-    var githubToken by rememberSaveable { mutableStateOf("") }
+    var githubRepo by rememberSaveable { mutableStateOf(savedRepo) }
+    var githubToken by rememberSaveable { mutableStateOf(savedToken) }
 
     val restoreLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenDocument()
@@ -322,12 +324,15 @@ fun SettingsScreen(
 
                     Button(
                         enabled = githubRepo.isNotBlank() && githubToken.isNotBlank(),
-                        onClick = { onUploadGitHubBackup(githubToken, githubRepo) },
+                        onClick = {
+                            com.joeri.bloeddruk.data.BackupManager.saveGitHubCredentials(context, githubToken, githubRepo)
+                            onUploadGitHubBackup(githubToken, githubRepo)
+                        },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Icon(Icons.Filled.CloudUpload, contentDescription = null)
                         Spacer(Modifier.width(8.dp))
-                        Text("Uploaden naar GitHub")
+                        Text("Koppelen & Uploaden naar GitHub")
                     }
                 }
             }
