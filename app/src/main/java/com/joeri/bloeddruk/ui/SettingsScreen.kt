@@ -25,7 +25,9 @@ import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.FolderZip
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phonelink
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -87,7 +89,7 @@ fun SettingsScreen(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Instellingen", fontWeight = FontWeight.SemiBold) },
+                title = { Text("INSTELLINGEN", fontWeight = FontWeight.Bold, letterSpacing = 0.5.sp) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Terug")
@@ -105,14 +107,57 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // 1. Weergave & Thema (Donkere Modus)
-            SettingsCategoryHeader("Weergave & Thema")
+            // 1. Account & Profiel
+            SettingsCategoryHeader("Account & Profiel")
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(1.dp)
             ) {
-                Column(Modifier.padding(16.dp)) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onOpenDoctor() },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.Person, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text("Account, Huisarts & Bloedgroep", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                            Text(
+                                if (userProfile.doctorName.isNotBlank()) "Dokter: ${userProfile.doctorName}"
+                                else "Voer profiel- en doktersgegevens in",
+                                fontSize = 12.sp,
+                                color = InkSoft
+                            )
+                        }
+                        Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = InkSoft)
+                    }
+
+                    HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
+
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { showThresholdsDialog = true },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.Speed, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text("Aangepaste Streefwaarden", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                            Text(
+                                "Normaal: < ${userProfile.sysNormalMax}/${userProfile.diaNormalMax} mmHg",
+                                fontSize = 12.sp,
+                                color = InkSoft
+                            )
+                        }
+                        Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = InkSoft)
+                    }
+
+                    HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
+
                     Row(
                         Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -134,67 +179,14 @@ fun SettingsScreen(
                 }
             }
 
-            // 2. Persoonlijke Gegevens & Streefwaarden
-            SettingsCategoryHeader("Persoonlijke Gegevens & Streefwaarden")
+            // 2. Meldingen & Wekker
+            SettingsCategoryHeader("Meldingen & Wekker")
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(1.dp)
             ) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    // Profiel & Noodcontacten
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { onOpenDoctor() },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Filled.Person, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
-                        Spacer(Modifier.width(12.dp))
-                        Column(Modifier.weight(1f)) {
-                            Text("Profiel, Dokter & Noodcontacten", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                            Text(
-                                if (userProfile.doctorName.isNotBlank()) "Dokter: ${userProfile.doctorName}"
-                                else "Voer profiel- en doktersgegevens in voor rapporten",
-                                fontSize = 12.sp,
-                                color = InkSoft
-                            )
-                        }
-                        Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = InkSoft)
-                    }
-
-                    HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
-
-                    // Aangepaste Streefwaarden
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { showThresholdsDialog = true },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Filled.Speed, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
-                        Spacer(Modifier.width(12.dp))
-                        Column(Modifier.weight(1f)) {
-                            Text("Aangepaste Streefwaarden", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                            Text(
-                                "Normaal: < ${userProfile.sysNormalMax}/${userProfile.diaNormalMax} mmHg",
-                                fontSize = 12.sp,
-                                color = InkSoft
-                            )
-                        }
-                        Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = InkSoft)
-                    }
-                }
-            }
-
-            // 3. Meldingen & Herinneringen (Centraal Beheer)
-            SettingsCategoryHeader("Meldingen & Herinneringen")
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(1.dp)
-            ) {
-                Column(Modifier.padding(16.dp)) {
                     Row(
                         Modifier
                             .fillMaxWidth()
@@ -204,102 +196,30 @@ fun SettingsScreen(
                         Icon(Icons.Filled.Alarm, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) {
-                            Text("Herinneringen & Alarmen", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                            Text("Stel meet- en medicatieherinneringen in", fontSize = 12.sp, color = InkSoft)
+                            Text("Ochtend & Avond Reminders", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                            Text("Herinneringen en wekkergeluiden instellen", fontSize = 12.sp, color = InkSoft)
                         }
                         Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = InkSoft)
                     }
                 }
             }
 
-            // 4. Gegevensbeheer & Back-up
-            SettingsCategoryHeader("Gegevensbeheer & Back-up")
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(1.dp)
-            ) {
-                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    // Volledige Back-up Maken
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { onCreateBackup() },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Filled.CloudUpload, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
-                        Spacer(Modifier.width(12.dp))
-                        Column(Modifier.weight(1f)) {
-                            Text("Volledige Back-up Maken", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                            Text("Sla al je metingen en medicatie op in Downloads/Bloeddruk", fontSize = 12.sp, color = InkSoft)
-                        }
-                    }
-
-                    HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
-
-                    // Back-up Herstellen
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { restoreLauncher.launch(arrayOf("*/*")) },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Filled.CloudDownload, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
-                        Spacer(Modifier.width(12.dp))
-                        Column(Modifier.weight(1f)) {
-                            Text("Back-up Herstellen (CSV of JSON)", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                            Text("Herstel metingen en medicatie vanuit een CSV- of JSON-bestand", fontSize = 12.sp, color = InkSoft)
-                        }
-                    }
-
-                    HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
-
-                    // Automatische maand-archivering
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(Modifier.weight(1f)) {
-                            Text("Automatische Maand-archivering", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                            Text("Sla maandrapport automatisch op aan het einde van de maand", fontSize = 12.sp, color = InkSoft)
-                        }
-                        Switch(
-                            checked = userProfile.autoArchive,
-                            onCheckedChange = { onSaveProfile(userProfile.copy(autoArchive = it)) }
-                        )
-                    }
-
-                    HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
-
-                    // Back-up & Exporteren PDF/CSV
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .clickable { onOpenExport() },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Filled.FolderZip, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
-                        Spacer(Modifier.width(12.dp))
-                        Column(Modifier.weight(1f)) {
-                            Text("Exporteer PDF / CSV", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                            Text("Exporteer maandrapporten of CSV voor Excel", fontSize = 12.sp, color = InkSoft)
-                        }
-                        Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = InkSoft)
-                    }
-                }
-            }
-
-            // 5. Privé GitHub Back-up
-            SettingsCategoryHeader("Privé Back-up naar GitHub")
+            // 3. Apparaten Koppelen & GitHub Sync
+            SettingsCategoryHeader("Apparaten Koppelen & Synchronisatie")
             Card(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(1.dp)
             ) {
                 Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.Phonelink, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
+                        Spacer(Modifier.width(12.dp))
+                        Text("Privé GitHub Back-up & Sync", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                    }
+
                     Text(
-                        "Upload je back-up veilig naar een privé GitHub repository via een Personal Access Token.",
+                        "Koppel je apparaten veilig via een privé GitHub repository.",
                         fontSize = 12.sp,
                         color = InkSoft
                     )
@@ -333,6 +253,88 @@ fun SettingsScreen(
                         Icon(Icons.Filled.CloudUpload, contentDescription = null)
                         Spacer(Modifier.width(8.dp))
                         Text("Koppelen & Uploaden naar GitHub")
+                    }
+                }
+            }
+
+            // 4. Data-export & Back-up
+            SettingsCategoryHeader("Data-export & Back-up")
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(1.dp)
+            ) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onCreateBackup() },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.CloudUpload, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text("Volledige Back-up Maken", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                            Text("Sla al je metingen en medicatie op in Downloads/Bloeddruk", fontSize = 12.sp, color = InkSoft)
+                        }
+                    }
+
+                    HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
+
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { restoreLauncher.launch(arrayOf("*/*")) },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.CloudDownload, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text("Back-up Herstellen (CSV of JSON)", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                            Text("Herstel metingen en medicatie vanuit een CSV- of JSON-bestand", fontSize = 12.sp, color = InkSoft)
+                        }
+                    }
+
+                    HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
+
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onOpenExport() },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.FolderZip, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text("Exporteer PDF / CSV", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                            Text("Exporteer maandrapporten of CSV voor Excel", fontSize = 12.sp, color = InkSoft)
+                        }
+                        Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = InkSoft)
+                    }
+                }
+            }
+
+            // 5. App Info
+            SettingsCategoryHeader("App Info")
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                elevation = CardDefaults.cardElevation(1.dp)
+            ) {
+                Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Filled.Info, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
+                            Spacer(Modifier.width(12.dp))
+                            Column {
+                                Text("Bloeddruk Assistent Pro", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                Text("Versie 1.0.1 (Build 2)", fontSize = 12.sp, color = InkSoft)
+                            }
+                        }
                     }
                 }
             }

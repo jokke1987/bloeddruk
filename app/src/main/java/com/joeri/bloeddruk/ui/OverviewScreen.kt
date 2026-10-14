@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Bloodtype
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CloudDownload
@@ -57,6 +58,7 @@ import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material.icons.filled.TableChart
 import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -76,6 +78,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -379,14 +382,18 @@ fun OverviewScreen(
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                if (tab == 0) TableTab(entries, onEdit) else ChartTab(entries)
+                if (tab == 0) TableTab(entries, onEdit, onAdd) else ChartTab(entries)
             }
         }
     }
 }
 
 @Composable
-private fun TableTab(entries: List<BloodPressureEntry>, onEdit: (BloodPressureEntry) -> Unit) {
+private fun TableTab(
+    entries: List<BloodPressureEntry>,
+    onEdit: (BloodPressureEntry) -> Unit,
+    onAdd: () -> Unit
+) {
     val monthNames = listOf(
         "", "Januari", "Februari", "Maart", "April", "Mei", "Juni",
         "Juli", "Augustus", "September", "Oktober", "November", "December"
@@ -401,6 +408,65 @@ private fun TableTab(entries: List<BloodPressureEntry>, onEdit: (BloodPressureEn
     }
 
     Column(Modifier.fillMaxSize()) {
+        // 🔔 Herinnering / Alarm Pop-up Banner
+        val now = LocalDate.now(ZoneId.systemDefault())
+        val todays = entries.filter { it.timestamp.toLocalDateTime().toLocalDate() == now }
+        val hasMorning = todays.any { it.isMorning }
+        val hasEvening = todays.any { !it.isMorning }
+
+        val currentHour = java.time.LocalDateTime.now().hour
+        var snoozed by rememberSaveable { mutableStateOf(false) }
+
+        if (!snoozed && ((currentHour in 5..12 && !hasMorning) || (currentHour in 17..23 && !hasEvening))) {
+            val isMorningReminder = currentHour in 5..12
+            val reminderTitle = if (isMorningReminder) "Tijd voor uw ochtendmeting! ☀️" else "Tijd voor uw avondmeting! 🌙"
+
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                elevation = CardDefaults.cardElevation(2.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+            ) {
+                Column(Modifier.padding(14.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            Icons.Filled.Alarm,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(Modifier.width(10.dp))
+                        Text(
+                            reminderTitle,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    Spacer(Modifier.height(10.dp))
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = onAdd,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Meting Invoeren", fontSize = 12.sp)
+                        }
+                        TextButton(
+                            onClick = { snoozed = true },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Snooze (15 min)", fontSize = 12.sp)
+                        }
+                    }
+                }
+            }
+        }
+
         StatusCard(entries)
         Legend()
         TableHeader()
