@@ -1,6 +1,7 @@
 package com.joeri.bloeddruk.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -29,10 +31,12 @@ import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.NightlightRound
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material.icons.filled.WbTwilight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,6 +45,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SecondaryTabRow
@@ -64,6 +69,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.joeri.bloeddruk.data.MedicationItem
+import com.joeri.bloeddruk.data.MedicationLog
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+
+private val logTimeFmt = DateTimeFormatter.ofPattern("HH:mm")
 
 private data class SlotConfig(
     val id: String,
@@ -77,8 +89,11 @@ private data class SlotConfig(
 @Composable
 fun MedicationScreen(
     medications: List<MedicationItem>,
+    medicationLogs: List<MedicationLog> = emptyList(),
     onSave: (MedicationItem) -> Unit,
     onDelete: (MedicationItem) -> Unit,
+    onLogIntake: (medication: MedicationItem, slot: String, status: String) -> Unit = { _, _, _ -> },
+    onUndoIntake: (medication: MedicationItem, slot: String) -> Unit = { _, _ -> },
     onBack: () -> Unit
 ) {
     var tabIndex by remember { mutableIntStateOf(0) }
@@ -127,6 +142,7 @@ fun MedicationScreen(
             if (tabIndex == 0) {
                 InnamemomentenTab(
                     medications = medications,
+                    medicationLogs = medicationLogs,
                     onEdit = {
                         editingItem = it
                         showDialog = true
@@ -135,7 +151,9 @@ fun MedicationScreen(
                         editingItem = null
                         defaultSlotForAdd = slotId
                         showDialog = true
-                    }
+                    },
+                    onLogIntake = onLogIntake,
+                    onUndoIntake = onUndoIntake
                 )
             } else {
                 MedicationListTab(
@@ -172,12 +190,15 @@ fun MedicationScreen(
     }
 }
 
-/** Tab 1: De 4 inklapbare vakken (Ochtend, Middag, Avond, Nacht) */
+/** Tab 1: De 4 inklapbare vakken met 1-tik innameregistratie */
 @Composable
 private fun InnamemomentenTab(
     medications: List<MedicationItem>,
+    medicationLogs: List<MedicationLog>,
     onEdit: (MedicationItem) -> Unit,
-    onAddForSlot: (String) -> Unit
+    onAddForSlot: (String) -> Unit,
+    onLogIntake: (MedicationItem, String, String) -> Unit,
+    onUndoIntake: (MedicationItem, String) -> Unit
 ) {
     val slots = listOf(
         SlotConfig("MORNING", "Ochtend", "’s Morgens", Icons.Filled.WbSunny, Color(0xFFF2A93B)),
@@ -197,23 +218,29 @@ private fun InnamemomentenTab(
             SlotCard(
                 config = cfg,
                 items = itemsForSlot,
+                medicationLogs = medicationLogs,
                 onEdit = onEdit,
-                onAdd = { onAddForSlot(cfg.id) }
+                onAdd = { onAddForSlot(cfg.id) },
+                onLogIntake = onLogIntake,
+                onUndoIntake = onUndoIntake
             )
         }
         item { Spacer(Modifier.height(24.dp)) }
     }
 }
 
-/** Inklapbaar kaartvak voor één dagdeel */
+/** Inklapbaar kaartvak voor één dagdeel met registratiestatus */
 @Composable
 private fun SlotCard(
     config: SlotConfig,
     items: List<MedicationItem>,
+    medicationLogs: List<MedicationLog>,
     onEdit: (MedicationItem) -> Unit,
-    onAdd: () -> Unit
+    onAdd: () -> Unit,
+    onLogIntake: (MedicationItem, String, String) -> Unit,
+    onUndoIntake: (MedicationItem, String) -> Unit
 ) {
-    var isExpanded by remember { mutableStateOf(false) }
+    var isExpanded by remember { mutableStateOf(true) }
 
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -233,17 +260,17 @@ private fun SlotCard(
                     Modifier
                         .size(40.dp)
                         .clip(CircleShape)
-                        .clickable { isExpanded = !isExpanded },
+                        .background(config.color.copy(alpha = 0.15f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(config.icon, contentDescription = null, tint = config.color, modifier = Modifier.size(26.dp))
+                    Icon(config.icon, contentDescription = null, tint = config.color, modifier = Modifier.size(24.dp))
                 }
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
                     Text(config.title, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Ink)
                     Text(
-                        if (items.isEmpty()) "Geen medicatie ingesteld"
-                        else "${items.size} medicijn(en) · ${config.subtitle}",
+                        if (items.isEmpty()) "Geen medicatie gepland"
+                        else "${items.size} gepland · ${config.subtitle}",
                         fontSize = 12.sp,
                         color = InkSoft
                     )
@@ -265,14 +292,22 @@ private fun SlotCard(
                     HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
                     if (items.isEmpty()) {
                         Text(
-                            "Nog geen medicatie voor ${config.title.lowercase()}.\nTik op + om toe te voegen.",
+                            "Nog geen medicatie gepland voor ${config.title.lowercase()}.\nTik op + om toe te voegen.",
                             fontSize = 12.sp,
                             color = InkSoft,
                             modifier = Modifier.padding(vertical = 12.dp)
                         )
                     } else {
                         items.forEach { m ->
-                            CompactMedicationRow(item = m, onClick = { onEdit(m) })
+                            val activeLog = medicationLogs.find { it.medicationId == m.id && it.slot == config.id }
+                            CompactMedicationIntakeRow(
+                                item = m,
+                                slot = config.id,
+                                log = activeLog,
+                                onEdit = { onEdit(m) },
+                                onLogIntake = { status -> onLogIntake(m, config.id, status) },
+                                onUndoIntake = { onUndoIntake(m, config.id) }
+                            )
                         }
                     }
                 }
@@ -282,27 +317,123 @@ private fun SlotCard(
 }
 
 @Composable
-private fun CompactMedicationRow(item: MedicationItem, onClick: () -> Unit) {
-    Row(
+private fun CompactMedicationIntakeRow(
+    item: MedicationItem,
+    slot: String,
+    log: MedicationLog?,
+    onEdit: () -> Unit,
+    onLogIntake: (status: String) -> Unit,
+    onUndoIntake: () -> Unit
+) {
+    Column(
         Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(vertical = 8.dp)
     ) {
-        Column(Modifier.weight(1f)) {
-            Text(item.name, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = Ink)
-            if (item.dosage.isNotBlank()) {
-                Text("Dosering: ${item.dosage}", fontSize = 12.sp, color = InkSoft)
+        Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(Modifier.weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(item.name, fontWeight = FontWeight.SemiBold, fontSize = 15.sp, color = Ink)
+                    if (item.dosage.isNotBlank()) {
+                        Spacer(Modifier.width(6.dp))
+                        Text("(${item.dosage})", fontSize = 12.sp, color = InkSoft)
+                    }
+                }
+                if (item.purpose.isNotBlank()) {
+                    Text("Waarvoor: ${item.purpose}", fontSize = 11.sp, color = Primary, fontWeight = FontWeight.Medium)
+                }
             }
-            if (item.purpose.isNotBlank()) {
-                Text("Waarvoor: ${item.purpose}", fontSize = 12.sp, color = Primary, fontWeight = FontWeight.Medium)
+
+            IconButton(onClick = onEdit) {
+                Icon(Icons.Filled.Edit, contentDescription = "Bewerken", tint = InkSoft, modifier = Modifier.size(18.dp))
             }
         }
-        Icon(Icons.Filled.Edit, contentDescription = "Bewerken", tint = InkSoft, modifier = Modifier.size(18.dp))
+
+        Spacer(Modifier.height(4.dp))
+
+        // Innamestatus & 1-tik Registratie Knoppen
+        if (log != null && log.status == "TAKEN") {
+            val logTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(log.timestamp), ZoneId.systemDefault()).format(logTimeFmt)
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(StatusPositiveBg)
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Filled.Check, contentDescription = null, tint = StatusPositiveText, modifier = Modifier.size(14.dp))
+                            Spacer(Modifier.width(4.dp))
+                            Text("Ingenomen om $logTime", fontSize = 11.5.sp, fontWeight = FontWeight.Bold, color = StatusPositiveText)
+                        }
+                    }
+                }
+
+                TextButton(onClick = onUndoIntake) {
+                    Icon(Icons.Filled.Undo, contentDescription = null, modifier = Modifier.size(14.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("Corrigeren", fontSize = 11.5.sp)
+                }
+            }
+        } else if (log != null && log.status == "SKIPPED") {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(StatusAttentionBg)
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text("⚪ Overgeslagen", fontSize = 11.5.sp, fontWeight = FontWeight.Bold, color = StatusAttentionText)
+                }
+
+                TextButton(onClick = { onLogIntake("TAKEN") }) {
+                    Text("Alsnog Ingenomen", fontSize = 11.5.sp)
+                }
+            }
+        } else {
+            // Nog niet geregistreerd
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Button(
+                    onClick = { onLogIntake("TAKEN") },
+                    colors = ButtonDefaults.buttonColors(containerColor = StatusPositiveBg, contentColor = StatusPositiveText),
+                    elevation = ButtonDefaults.buttonElevation(0.dp),
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(Icons.Filled.Check, contentDescription = null, modifier = Modifier.size(14.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("Ingenomen", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                }
+
+                OutlinedButton(
+                    onClick = { onLogIntake("SKIPPED") },
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Overslaan", fontSize = 12.sp, color = InkSoft)
+                }
+            }
+        }
+
+        HorizontalDivider(Modifier.padding(top = 8.dp), color = InkSoft.copy(alpha = 0.1f))
     }
-    HorizontalDivider(color = InkSoft.copy(alpha = 0.1f))
 }
 
 /** Tab 2: Volledige overzichtslijst */
@@ -451,7 +582,7 @@ private fun MedicationDialog(
                 OutlinedTextField(
                     value = dosage,
                     onValueChange = { dosage = it },
-                    label = { Text("Dosering") },
+                    label = { Text("Sterkte / Dosering") },
                     placeholder = { Text("bv. 5 mg - 1 tablet") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -490,7 +621,7 @@ private fun MedicationDialog(
 
                 OutlinedTextField(
                     value = note,
-                    onValueChange = { note = it },
+                    onValueChange = { if (it.length <= 200) note = it },
                     label = { Text("Opmerking / Instructies") },
                     placeholder = { Text("bv. Innemen met water bij het ontbijt") },
                     singleLine = true,

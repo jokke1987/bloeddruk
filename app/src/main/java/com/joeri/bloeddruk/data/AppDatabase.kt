@@ -8,8 +8,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
-    entities = [BloodPressureEntry::class, AlarmSetting::class, MedicationItem::class, UserProfile::class],
-    version = 7,
+    entities = [BloodPressureEntry::class, AlarmSetting::class, MedicationItem::class, UserProfile::class, MedicationLog::class],
+    version = 8,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -17,6 +17,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun alarmDao(): AlarmDao
     abstract fun medicationDao(): MedicationDao
     abstract fun userProfileDao(): UserProfileDao
+    abstract fun medicationLogDao(): MedicationLogDao
 
     companion object {
         /** Versie 2: notitie en labels bij een meting. Bestaande metingen blijven behouden. */
@@ -87,6 +88,23 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        /** Versie 8: FASE 3 - tabel 'medicatie_logs' voor daadwerkelijke innameregistraties per dag/dagdeel. */
+        private val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("""
+                    CREATE TABLE IF NOT EXISTS `medicatie_logs` (
+                        `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                        `medicationId` INTEGER NOT NULL,
+                        `medicationName` TEXT NOT NULL,
+                        `dateStr` TEXT NOT NULL,
+                        `slot` TEXT NOT NULL,
+                        `timestamp` INTEGER NOT NULL,
+                        `status` TEXT NOT NULL DEFAULT 'TAKEN'
+                    )
+                """.trimIndent())
+            }
+        }
+
         @Volatile
         private var instance: AppDatabase? = null
 
@@ -97,7 +115,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "bloeddruk.db"
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
                     .fallbackToDestructiveMigrationOnDowngrade()
                     .build().also { instance = it }
             }

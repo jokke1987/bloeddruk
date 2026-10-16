@@ -31,6 +31,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         .map { it ?: UserProfile() }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), UserProfile())
 
+    val todayStr = java.time.LocalDate.now().toString()
+    val todayMedicationLogs: StateFlow<List<com.joeri.bloeddruk.data.MedicationLog>> = db.medicationLogDao().observeLogsForDate(todayStr)
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
     init {
         // Eerste keer opstarten: 2 ochtend- en 2 avondalarmen aanmaken.
         viewModelScope.launch {
@@ -55,6 +59,23 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun saveMedication(item: MedicationItem) = viewModelScope.launch { db.medicationDao().upsert(item) }
 
     fun deleteMedication(item: MedicationItem) = viewModelScope.launch { db.medicationDao().delete(item) }
+
+    fun logMedicationIntake(medication: MedicationItem, slot: String, status: String = "TAKEN") = viewModelScope.launch {
+        db.medicationLogDao().upsert(
+            com.joeri.bloeddruk.data.MedicationLog(
+                medicationId = medication.id,
+                medicationName = medication.name,
+                dateStr = todayStr,
+                slot = slot,
+                timestamp = System.currentTimeMillis(),
+                status = status
+            )
+        )
+    }
+
+    fun undoMedicationIntake(medication: MedicationItem, slot: String) = viewModelScope.launch {
+        db.medicationLogDao().deleteLogForSlot(medication.id, todayStr, slot)
+    }
 
     fun saveProfile(profile: UserProfile) = viewModelScope.launch { db.userProfileDao().upsert(profile) }
 

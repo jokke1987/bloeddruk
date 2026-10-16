@@ -34,18 +34,21 @@ public final class AppDatabase_Impl extends AppDatabase {
 
   private volatile UserProfileDao _userProfileDao;
 
+  private volatile MedicationLogDao _medicationLogDao;
+
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(7) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(8) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS `metingen` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `timestamp` INTEGER NOT NULL, `isMorning` INTEGER NOT NULL, `systolic` INTEGER NOT NULL, `diastolic` INTEGER NOT NULL, `pulse` INTEGER NOT NULL, `note` TEXT NOT NULL, `tags` TEXT NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `alarmen` (`id` INTEGER NOT NULL, `hour` INTEGER NOT NULL, `minute` INTEGER NOT NULL, `enabled` INTEGER NOT NULL, `isMorning` INTEGER NOT NULL, `soundUri` TEXT NOT NULL, `soundTitle` TEXT NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE TABLE IF NOT EXISTS `medicatie` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `dosage` TEXT NOT NULL, `slot` TEXT NOT NULL, `note` TEXT NOT NULL, `purpose` TEXT NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS `user_profile` (`id` INTEGER NOT NULL, `bloodType` TEXT NOT NULL, `doctorName` TEXT NOT NULL, `doctorPhone` TEXT NOT NULL, `doctorEmail` TEXT NOT NULL, `doctorAddress` TEXT NOT NULL, `doctorNotes` TEXT NOT NULL, `emergencyContact` TEXT NOT NULL, `isDarkMode` INTEGER NOT NULL, `autoArchive` INTEGER NOT NULL, `sysNormalMax` INTEGER NOT NULL, `diaNormalMax` INTEGER NOT NULL, `sysElevatedMax` INTEGER NOT NULL, `diaElevatedMax` INTEGER NOT NULL, PRIMARY KEY(`id`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `medicatie_logs` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `medicationId` INTEGER NOT NULL, `medicationName` TEXT NOT NULL, `dateStr` TEXT NOT NULL, `slot` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `status` TEXT NOT NULL)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a21bd47d5727a211280efba775b73c6f')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'df22a6457edbda53563eceef1ccab2c5')");
       }
 
       @Override
@@ -54,6 +57,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("DROP TABLE IF EXISTS `alarmen`");
         db.execSQL("DROP TABLE IF EXISTS `medicatie`");
         db.execSQL("DROP TABLE IF EXISTS `user_profile`");
+        db.execSQL("DROP TABLE IF EXISTS `medicatie_logs`");
         final List<? extends RoomDatabase.Callback> _callbacks = mCallbacks;
         if (_callbacks != null) {
           for (RoomDatabase.Callback _callback : _callbacks) {
@@ -172,9 +176,26 @@ public final class AppDatabase_Impl extends AppDatabase {
                   + " Expected:\n" + _infoUserProfile + "\n"
                   + " Found:\n" + _existingUserProfile);
         }
+        final HashMap<String, TableInfo.Column> _columnsMedicatieLogs = new HashMap<String, TableInfo.Column>(7);
+        _columnsMedicatieLogs.put("id", new TableInfo.Column("id", "INTEGER", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsMedicatieLogs.put("medicationId", new TableInfo.Column("medicationId", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsMedicatieLogs.put("medicationName", new TableInfo.Column("medicationName", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsMedicatieLogs.put("dateStr", new TableInfo.Column("dateStr", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsMedicatieLogs.put("slot", new TableInfo.Column("slot", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsMedicatieLogs.put("timestamp", new TableInfo.Column("timestamp", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsMedicatieLogs.put("status", new TableInfo.Column("status", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        final HashSet<TableInfo.ForeignKey> _foreignKeysMedicatieLogs = new HashSet<TableInfo.ForeignKey>(0);
+        final HashSet<TableInfo.Index> _indicesMedicatieLogs = new HashSet<TableInfo.Index>(0);
+        final TableInfo _infoMedicatieLogs = new TableInfo("medicatie_logs", _columnsMedicatieLogs, _foreignKeysMedicatieLogs, _indicesMedicatieLogs);
+        final TableInfo _existingMedicatieLogs = TableInfo.read(db, "medicatie_logs");
+        if (!_infoMedicatieLogs.equals(_existingMedicatieLogs)) {
+          return new RoomOpenHelper.ValidationResult(false, "medicatie_logs(com.joeri.bloeddruk.data.MedicationLog).\n"
+                  + " Expected:\n" + _infoMedicatieLogs + "\n"
+                  + " Found:\n" + _existingMedicatieLogs);
+        }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "a21bd47d5727a211280efba775b73c6f", "ff84d642fec9ee3d3313ee7efb03e805");
+    }, "df22a6457edbda53563eceef1ccab2c5", "46309e474d278d3fe27fb38414bc6ccc");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;
@@ -185,7 +206,7 @@ public final class AppDatabase_Impl extends AppDatabase {
   protected InvalidationTracker createInvalidationTracker() {
     final HashMap<String, String> _shadowTablesMap = new HashMap<String, String>(0);
     final HashMap<String, Set<String>> _viewTables = new HashMap<String, Set<String>>(0);
-    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "metingen","alarmen","medicatie","user_profile");
+    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, "metingen","alarmen","medicatie","user_profile","medicatie_logs");
   }
 
   @Override
@@ -198,6 +219,7 @@ public final class AppDatabase_Impl extends AppDatabase {
       _db.execSQL("DELETE FROM `alarmen`");
       _db.execSQL("DELETE FROM `medicatie`");
       _db.execSQL("DELETE FROM `user_profile`");
+      _db.execSQL("DELETE FROM `medicatie_logs`");
       super.setTransactionSuccessful();
     } finally {
       super.endTransaction();
@@ -216,6 +238,7 @@ public final class AppDatabase_Impl extends AppDatabase {
     _typeConvertersMap.put(AlarmDao.class, AlarmDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(MedicationDao.class, MedicationDao_Impl.getRequiredConverters());
     _typeConvertersMap.put(UserProfileDao.class, UserProfileDao_Impl.getRequiredConverters());
+    _typeConvertersMap.put(MedicationLogDao.class, MedicationLogDao_Impl.getRequiredConverters());
     return _typeConvertersMap;
   }
 
@@ -286,6 +309,20 @@ public final class AppDatabase_Impl extends AppDatabase {
           _userProfileDao = new UserProfileDao_Impl(this);
         }
         return _userProfileDao;
+      }
+    }
+  }
+
+  @Override
+  public MedicationLogDao medicationLogDao() {
+    if (_medicationLogDao != null) {
+      return _medicationLogDao;
+    } else {
+      synchronized(this) {
+        if(_medicationLogDao == null) {
+          _medicationLogDao = new MedicationLogDao_Impl(this);
+        }
+        return _medicationLogDao;
       }
     }
   }

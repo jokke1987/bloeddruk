@@ -46,6 +46,18 @@ data class MedicationItem(
     val purpose: String = "" // Waarvoor dient het (bv. "Voor hoge bloeddruk")
 )
 
+/** FASE 3: Registratie van daadwerkelijke medicatie-inname per dag en dagdeel. */
+@Entity(tableName = "medicatie_logs")
+data class MedicationLog(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    val medicationId: Long,
+    val medicationName: String,
+    val dateStr: String, // "YYYY-MM-DD" voor snelle dagelijkse opzoeking
+    val slot: String,    // "MORNING", "AFTERNOON", "EVENING", "NIGHT"
+    val timestamp: Long = System.currentTimeMillis(),
+    val status: String = "TAKEN" // "TAKEN" of "SKIPPED"
+)
+
 /** Medisch profiel en instellingen van de gebruiker. */
 @Entity(tableName = "user_profile")
 data class UserProfile(

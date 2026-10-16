@@ -68,6 +68,7 @@ class MainActivity : ComponentActivity() {
                 val entries by vm.entries.collectAsStateWithLifecycle()
                 val alarms by vm.alarms.collectAsStateWithLifecycle()
                 val medications by vm.medications.collectAsStateWithLifecycle()
+                val medicationLogs by vm.todayMedicationLogs.collectAsStateWithLifecycle()
                 val context = LocalContext.current
 
                 var showSplash by remember { mutableStateOf(true) }
@@ -175,8 +176,11 @@ class MainActivity : ComponentActivity() {
                         "medication" -> {
                             MedicationScreen(
                                 medications = medications,
+                                medicationLogs = medicationLogs,
                                 onSave = vm::saveMedication,
                                 onDelete = vm::deleteMedication,
+                                onLogIntake = { med, slot, status -> vm.logMedicationIntake(med, slot, status) },
+                                onUndoIntake = { med, slot -> vm.undoMedicationIntake(med, slot) },
                                 onBack = { activeScreen = "overview" }
                             )
                         }

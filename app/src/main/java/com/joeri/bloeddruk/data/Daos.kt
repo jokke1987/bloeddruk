@@ -56,3 +56,21 @@ interface UserProfileDao {
     @Upsert
     suspend fun upsert(profile: UserProfile)
 }
+
+@Dao
+interface MedicationLogDao {
+    @Query("SELECT * FROM medicatie_logs WHERE dateStr = :dateStr")
+    fun observeLogsForDate(dateStr: String): Flow<List<MedicationLog>>
+
+    @Query("SELECT * FROM medicatie_logs ORDER BY timestamp DESC")
+    fun observeAllLogs(): Flow<List<MedicationLog>>
+
+    @Upsert
+    suspend fun upsert(log: MedicationLog)
+
+    @Delete
+    suspend fun delete(log: MedicationLog)
+
+    @Query("DELETE FROM medicatie_logs WHERE medicationId = :medId AND dateStr = :dateStr AND slot = :slot")
+    suspend fun deleteLogForSlot(medId: Long, dateStr: String, slot: String)
+}
