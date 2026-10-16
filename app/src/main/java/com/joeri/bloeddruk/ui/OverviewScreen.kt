@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -463,7 +464,7 @@ private fun DashboardScreen(
     }
 }
 
-/** Halve Cirkel Boog Gauge Card overeenkomstig het Gezondheidsdashboard ontwerp */
+/** Nieuwe Gezondheidsdashboard Kaart met Horizontale Status-Balk en SYS / DIA weergave */
 @Composable
 private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
     val today = LocalDate.now(ZoneId.systemDefault())
@@ -472,79 +473,122 @@ private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
     val hasEvening = todays.any { !it.isMorning }
     val count = (if (hasMorning) 1 else 0) + (if (hasEvening) 1 else 0)
 
-    val avgSys = if (todays.isNotEmpty()) todays.map { it.systolic }.average().roundToInt() else 128
-    val avgDia = if (todays.isNotEmpty()) todays.map { it.diastolic }.average().roundToInt() else 85
-    val lvl = overallLevel(avgSys, avgDia)
+    val avgSys = if (todays.isNotEmpty()) todays.map { it.systolic }.average().roundToInt() else 113
+    val avgDia = if (todays.isNotEmpty()) todays.map { it.diastolic }.average().roundToInt() else 92
+
+    // Bepaal de relatieve positie van de aanwijzer (0.0f tot 1.0f)
+    val pointerPosition = when {
+        avgSys < 120 -> 0.18f
+        avgSys in 120..129 -> 0.42f
+        avgSys in 130..139 -> 0.68f
+        else -> 0.88f
+    }
 
     Card(
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Surface),
         elevation = CardDefaults.cardElevation(2.dp),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp)
     ) {
         Column(
-            Modifier.padding(16.dp),
+            Modifier.padding(18.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("GEZONDHEIDSDASHBOARD", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 0.5.sp)
+            Text(
+                "GEZONDHEIDSDASHBOARD",
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Bold,
+                color = InkSoft,
+                letterSpacing = 0.5.sp
+            )
+
             Spacer(Modifier.height(12.dp))
 
-            // Halve Cirkel Boog Gauge
-            Box(
-                Modifier.size(190.dp, 100.dp),
-                contentAlignment = Alignment.BottomCenter
+            // Labels boven de balk: Vaag / Gemiddeld / Hoog
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Canvas(Modifier.fillMaxSize()) {
-                    val stroke = 14.dp.toPx()
-                    val diameter = size.width - stroke
-                    val topPx = size.height - diameter / 2f
+                Text("Vaag", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Ink)
+                Text("Gemiddeld", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Ink)
+                Text("Hoog", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Ink)
+            }
 
-                    drawArc(
-                        color = Color(0xFF4C5BD4),
-                        startAngle = 180f,
-                        sweepAngle = 45f,
-                        useCenter = false,
-                        topLeft = Offset(stroke / 2f, topPx),
-                        size = androidx.compose.ui.geometry.Size(diameter, diameter),
-                        style = Stroke(stroke, cap = StrokeCap.Butt)
-                    )
-                    drawArc(
-                        color = Color(0xFF4CAF50),
-                        startAngle = 225f,
-                        sweepAngle = 45f,
-                        useCenter = false,
-                        topLeft = Offset(stroke / 2f, topPx),
-                        size = androidx.compose.ui.geometry.Size(diameter, diameter),
-                        style = Stroke(stroke, cap = StrokeCap.Butt)
-                    )
-                    drawArc(
-                        color = Color(0xFFFF9800),
-                        startAngle = 270f,
-                        sweepAngle = 45f,
-                        useCenter = false,
-                        topLeft = Offset(stroke / 2f, topPx),
-                        size = androidx.compose.ui.geometry.Size(diameter, diameter),
-                        style = Stroke(stroke, cap = StrokeCap.Butt)
-                    )
-                    drawArc(
-                        color = Color(0xFFE53935),
-                        startAngle = 315f,
-                        sweepAngle = 45f,
-                        useCenter = false,
-                        topLeft = Offset(stroke / 2f, topPx),
-                        size = androidx.compose.ui.geometry.Size(diameter, diameter),
-                        style = Stroke(stroke, cap = StrokeCap.Butt)
-                    )
+            Spacer(Modifier.height(6.dp))
+
+            // Horizontale Kleurenbalk (Groen, Geel, Oranje, Rood)
+            Column(Modifier.fillMaxWidth()) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(12.dp)
+                        .clip(RoundedCornerShape(6.dp))
+                ) {
+                    Box(Modifier.weight(1f).fillMaxHeight().background(Color(0xFF4CAF50)))
+                    Box(Modifier.weight(1f).fillMaxHeight().background(Color(0xFFFFCA28)))
+                    Box(Modifier.weight(1f).fillMaxHeight().background(Color(0xFFFFA726)))
+                    Box(Modifier.weight(1f).fillMaxHeight().background(Color(0xFFEF5350)))
                 }
 
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("$avgSys/$avgDia", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Ink)
-                    Text("Vandaag Gemiddeld - ${lvl.label}", fontSize = 12.sp, color = lvl.color, fontWeight = FontWeight.SemiBold)
+                // Driehoekige Aanwijzer (▲)
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 2.dp)
+                ) {
+                    Text(
+                        "▲",
+                        fontSize = 16.sp,
+                        color = Ink,
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(start = (pointerPosition * 260).dp)
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            Text(
+                "BLOEDDRUKSTATUS",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = Ink,
+                letterSpacing = 0.5.sp,
+                modifier = Modifier.align(Alignment.Start)
+            )
+
+            Spacer(Modifier.height(10.dp))
+
+            // SYS | DIA Cijfers
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
+                    Text("$avgSys", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Ink)
+                    Text("SYS", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = InkSoft)
+                }
+
+                Box(
+                    Modifier
+                        .width(1.dp)
+                        .height(48.dp)
+                        .background(Divider)
+                )
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
+                    Text("$avgDia", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Ink)
+                    Text("DIA", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = InkSoft)
                 }
             }
 
             Spacer(Modifier.height(14.dp))
 
+            // Voortgangsbalk (Groen voor gedaan, grijs voor te doen)
             LinearProgressIndicator(
                 progress = { count / 2f },
                 modifier = Modifier
@@ -556,8 +600,9 @@ private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
                 strokeCap = StrokeCap.Round
             )
 
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(12.dp))
 
+            // Onderste rij: ☀️ 1 van 2 metingen   🌙 Avond –
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
