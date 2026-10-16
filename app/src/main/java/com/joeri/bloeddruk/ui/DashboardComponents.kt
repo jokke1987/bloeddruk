@@ -5,8 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,7 +18,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.MedicalServices
@@ -29,18 +30,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,8 +44,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.joeri.bloeddruk.data.BloodPressureEntry
 import com.joeri.bloeddruk.data.MedicationItem
-import java.time.LocalDate
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 private val detailFmt: DateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy · HH:mm")
@@ -87,7 +78,8 @@ fun LatestBloodPressureCard(
                     "Nog geen metingen geregistreerd",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = Ink
+                    color = Ink,
+                    textAlign = TextAlign.Center
                 )
                 Text(
                     "Voeg je eerste bloeddrukmeting toe om je gezondheid op te volgen.",
@@ -96,10 +88,13 @@ fun LatestBloodPressureCard(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(top = 4.dp, bottom = 12.dp)
                 )
-                Button(onClick = onAddFirst) {
+                Button(
+                    onClick = onAddFirst,
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
+                ) {
                     Icon(Icons.Filled.Add, contentDescription = null)
                     Spacer(Modifier.width(6.dp))
-                    Text("Eerste meting toevoegen")
+                    Text("Eerste meting toevoegen", fontSize = 13.sp)
                 }
             }
         } else {
@@ -143,17 +138,17 @@ fun LatestBloodPressureCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
+                    Column(Modifier.weight(1f, fill = false)) {
                         Row(verticalAlignment = Alignment.Bottom) {
                             Text(
                                 "${latestEntry.systolic}/${latestEntry.diastolic}",
-                                fontSize = 32.sp,
+                                fontSize = 30.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Ink
                             )
                             Text(
                                 " mmHg",
-                                fontSize = 14.sp,
+                                fontSize = 13.sp,
                                 color = InkSoft,
                                 modifier = Modifier.padding(bottom = 4.dp, start = 4.dp)
                             )
@@ -165,6 +160,8 @@ fun LatestBloodPressureCard(
                             modifier = Modifier.padding(top = 2.dp)
                         )
                     }
+
+                    Spacer(Modifier.width(8.dp))
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
@@ -190,7 +187,7 @@ fun LatestBloodPressureCard(
     }
 }
 
-/** Component 2: Snelacties Balk */
+/** Component 2: Snelacties Balk - Flexibel en Volledig Zichtbaar */
 @Composable
 fun QuickActionsBar(
     onNewMeasurement: () -> Unit,
@@ -199,19 +196,31 @@ fun QuickActionsBar(
 ) {
     Row(
         Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Button(
             onClick = onNewMeasurement,
             colors = ButtonDefaults.buttonColors(containerColor = Primary),
             shape = RoundedCornerShape(14.dp),
+            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
             modifier = Modifier
                 .weight(1.2f)
-                .height(48.dp)
+                .defaultMinSize(minHeight = 48.dp)
         ) {
-            Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(20.dp))
-            Spacer(Modifier.width(6.dp))
-            Text("Nieuwe meting", fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    "Nieuwe meting",
+                    fontSize = 12.5.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 2,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
 
         Button(
@@ -219,13 +228,26 @@ fun QuickActionsBar(
             colors = ButtonDefaults.buttonColors(containerColor = Surface),
             elevation = ButtonDefaults.buttonElevation(1.dp),
             shape = RoundedCornerShape(14.dp),
+            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
             modifier = Modifier
                 .weight(1f)
-                .height(48.dp)
+                .defaultMinSize(minHeight = 48.dp)
         ) {
-            Icon(Icons.Filled.MedicalServices, contentDescription = null, tint = Primary, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(6.dp))
-            Text("Medicatie", fontSize = 13.sp, color = Ink, fontWeight = FontWeight.Medium)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(Icons.Filled.MedicalServices, contentDescription = null, tint = Primary, modifier = Modifier.size(16.dp))
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    "Medicatie",
+                    fontSize = 12.5.sp,
+                    color = Ink,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 2,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
 
         Button(
@@ -233,13 +255,26 @@ fun QuickActionsBar(
             colors = ButtonDefaults.buttonColors(containerColor = Surface),
             elevation = ButtonDefaults.buttonElevation(1.dp),
             shape = RoundedCornerShape(14.dp),
+            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
             modifier = Modifier
                 .weight(1f)
-                .height(48.dp)
+                .defaultMinSize(minHeight = 48.dp)
         ) {
-            Icon(Icons.Filled.PictureAsPdf, contentDescription = null, tint = Primary, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(6.dp))
-            Text("Rapport", fontSize = 13.sp, color = Ink, fontWeight = FontWeight.Medium)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(Icons.Filled.PictureAsPdf, contentDescription = null, tint = Primary, modifier = Modifier.size(16.dp))
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    "Rapport",
+                    fontSize = 12.5.sp,
+                    color = Ink,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 2,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
@@ -363,7 +398,10 @@ private fun RecentMeasurementRowCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                Modifier.weight(1f, fill = false),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Box(
                     Modifier
                         .size(10.dp)
@@ -397,6 +435,8 @@ private fun RecentMeasurementRowCard(
                     }
                 }
             }
+
+            Spacer(Modifier.width(8.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(horizontalAlignment = Alignment.End) {

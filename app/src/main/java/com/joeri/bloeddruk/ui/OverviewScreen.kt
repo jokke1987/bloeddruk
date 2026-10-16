@@ -77,6 +77,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -316,8 +317,16 @@ fun OverviewScreen(
         Scaffold(
             containerColor = Background,
             topBar = {
-                CenterAlignedTopAppBar(
-                    title = { Text("BLOEDDRUK ASSISTENT PRO", fontWeight = FontWeight.Bold, fontSize = 16.sp, letterSpacing = 0.5.sp) },
+                TopAppBar(
+                    title = {
+                        Text(
+                            "Bloeddruk Assistent Pro",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(Icons.Filled.Menu, contentDescription = "Menu")
@@ -334,7 +343,7 @@ fun OverviewScreen(
                             Icon(Icons.Filled.Share, contentDescription = "Exporteren")
                         }
                     },
-                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = Background)
+                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Background)
                 )
             },
             bottomBar = {
