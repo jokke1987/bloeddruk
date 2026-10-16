@@ -19,6 +19,7 @@ import android.text.TextUtils
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.FileProvider
 import com.joeri.bloeddruk.data.BloodPressureEntry
+import com.joeri.bloeddruk.data.UserProfile
 import com.joeri.bloeddruk.ui.BpLevel
 import com.joeri.bloeddruk.ui.diastolicLevel
 import com.joeri.bloeddruk.ui.overallLevel
@@ -78,7 +79,11 @@ object Exporter {
 
     // ---------- PDF ----------
 
-    fun exportPdf(context: Context, entries: List<BloodPressureEntry>): File {
+    fun exportPdf(
+        context: Context,
+        entries: List<BloodPressureEntry>,
+        userProfile: UserProfile = UserProfile()
+    ): File {
         val sorted = entries.sortedBy { it.timestamp }
         val file = File(exportDir(context), "bloeddruk_rapport_${stamp()}.pdf")
 
@@ -98,6 +103,20 @@ object Exporter {
         w.newPage()
         w.canvas.drawText("Bloeddruk-rapport", w.margin, w.y + 18f, titleP)
         w.y += 30f
+
+        if (userProfile.doctorName.isNotBlank() || userProfile.doctorAddress.isNotBlank()) {
+            val docStr = "Behandelend arts: ${userProfile.doctorName.ifBlank { "Niet opgegeven" }} · ${userProfile.doctorAddress}"
+            w.canvas.drawText(docStr, w.margin, w.y + 10f, bodyP)
+            w.y += 14f
+        }
+        if (userProfile.bloodType.isNotBlank() || userProfile.emergencyContact.isNotBlank()) {
+            val extraStr = listOfNotNull(
+                if (userProfile.bloodType.isNotBlank()) "Bloedgroep: ${userProfile.bloodType}" else null,
+                if (userProfile.emergencyContact.isNotBlank()) "Noodcontact: ${userProfile.emergencyContact}" else null
+            ).joinToString("  ·  ")
+            w.canvas.drawText(extraStr, w.margin, w.y + 10f, bodyP)
+            w.y += 14f
+        }
 
         if (sorted.isEmpty()) {
             w.canvas.drawText("Geen metingen in deze periode.", w.margin, w.y + 12f, bodyP)

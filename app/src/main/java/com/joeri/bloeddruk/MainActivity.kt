@@ -377,7 +377,7 @@ class MainActivity : ComponentActivity() {
                                         try {
                                             val mime = if (pdf) "application/pdf" else "text/csv"
                                             val file = withContext(Dispatchers.IO) {
-                                                if (pdf) Exporter.exportPdf(context, list)
+                                                if (pdf) Exporter.exportPdf(context, list, userProfile)
                                                 else Exporter.exportCsv(context, list)
                                             }
                                             when (action) {
