@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.Analytics
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.CloudUpload
@@ -66,6 +67,7 @@ fun SettingsScreen(
     onOpenAlarms: () -> Unit,
     onOpenDoctor: () -> Unit,
     onOpenExport: () -> Unit,
+    onOpenTrends: () -> Unit = {},
     onCreateBackup: () -> Unit,
     onRestoreBackupUri: (Uri) -> Unit,
     onUploadGitHubBackup: (token: String, repo: String) -> Unit = { _, _ -> },
@@ -308,6 +310,23 @@ fun SettingsScreen(
                         Column(Modifier.weight(1f)) {
                             Text("Exporteer PDF / CSV", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
                             Text("Exporteer maandrapporten of CSV voor Excel", fontSize = 12.sp, color = InkSoft)
+                        }
+                        Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = InkSoft)
+                    }
+
+                    HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
+
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onOpenTrends() },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.Analytics, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text("Trends & Historische Analyse", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                            Text("Bekijk maandelijkse trends, dag vs nacht en variatie", fontSize = 12.sp, color = InkSoft)
                         }
                         Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = InkSoft)
                     }

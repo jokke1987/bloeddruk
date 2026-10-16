@@ -43,6 +43,7 @@ import com.joeri.bloeddruk.ui.BloodTypeDialog
 import com.joeri.bloeddruk.ui.DoctorDialog
 import com.joeri.bloeddruk.ui.SettingsScreen
 import com.joeri.bloeddruk.ui.SplashScreen
+import com.joeri.bloeddruk.ui.TrendsScreen
 import com.joeri.bloeddruk.ui.UpdateDialog
 import com.joeri.bloeddruk.update.AppUpdater
 import com.joeri.bloeddruk.update.GitHubReleaseInfo
@@ -200,6 +201,12 @@ class MainActivity : ComponentActivity() {
                                 onBack = { activeScreen = "overview" }
                             )
                         }
+                        "trends" -> {
+                            TrendsScreen(
+                                entries = entries,
+                                onBack = { activeScreen = "overview" }
+                            )
+                        }
                         "settings" -> {
                             SettingsScreen(
                                 userProfile = userProfile,
@@ -207,6 +214,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenAlarms = { activeScreen = "alarms" },
                                 onOpenDoctor = { showDoctorDialog = true },
                                 onOpenExport = { showExport = true },
+                                onOpenTrends = { activeScreen = "trends" },
                                 onCreateBackup = {
                                     val json = BackupManager.createBackupJson(entries, medications, userProfile)
                                     BackupManager.saveBackupToFile(context, json)
