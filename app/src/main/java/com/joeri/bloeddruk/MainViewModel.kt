@@ -36,17 +36,14 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     init {
-        // Eerste keer opstarten: 2 ochtend- en 2 avondalarmen aanmaken.
+        // Schakel alle automatische interne 7u30 / 19u30 alarmen uit
         viewModelScope.launch {
-            if (db.alarmDao().count() == 0) {
-                listOf(
-                    AlarmSetting(0, 7, 30, enabled = true, isMorning = true),
-                    AlarmSetting(1, 8, 30, enabled = false, isMorning = true),
-                    AlarmSetting(2, 19, 30, enabled = true, isMorning = false),
-                    AlarmSetting(3, 20, 30, enabled = false, isMorning = false)
-                ).forEach {
-                    db.alarmDao().upsert(it)
-                    AlarmScheduler.schedule(getApplication(), it)
+            val allAlarms = db.alarmDao().getAll()
+            allAlarms.forEach { alarm ->
+                if (alarm.enabled) {
+                    val disabledAlarm = alarm.copy(enabled = false)
+                    db.alarmDao().upsert(disabledAlarm)
+                    AlarmScheduler.schedule(getApplication(), disabledAlarm)
                 }
             }
         }
