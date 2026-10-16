@@ -233,6 +233,7 @@ class MainActivity : ComponentActivity() {
                         else -> {
                             OverviewScreen(
                                 entries = entries,
+                                medications = medications,
                                 userProfile = userProfile,
                                 hasUpdateAvailable = hasUpdateAvailable,
                                 snackbarHostState = snackbar,

@@ -9,20 +9,27 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-// Windows 11 Fluent Design System Light Colors
-val LightBackground = Color(0xFFF3F3F4)
-val LightSurface = Color(0xFFFFFFFF)
-val LightInk = Color(0xFF1A1A1A)
-val LightInkSoft = Color(0xFF5D5D5D)
-val LightDivider = Color(0xFFE5E5E5)
-val Primary = Color(0xFF0078D4) // Windows 11 Fluent Blue Accent
+// FASE 1 — Professionele Visuele Stijl (Design System Tokens)
+val Primary = Color(0xFF1679C5)              // Primaire kleur blauw
+val LightBackground = Color(0xFFF3F5F8)      // Achtergrond lichtgrijs
+val LightSurface = Color(0xFFFFFFFF)         // Kaarten puur wit
+val LightInk = Color(0xFF25364A)             // Hoofdtekst donkerblauw
+val LightInkSoft = Color(0xFF667085)         // Secundaire tekst grijs
+val LightDivider = Color(0xFFE9EDF2)         // Scheidingslijnen #E9EDF2
+
+// Statusthema Kleuren
+val StatusPositiveText = Color(0xFF216E46)  // Positieve status tekst
+val StatusPositiveBg = Color(0xFFE1F3E8)    // Positieve status achtergrond
+val StatusAttentionText = Color(0xFFA9670A) // Aandacht status tekst
+val StatusAttentionBg = Color(0xFFFFF1D6)   // Aandacht status achtergrond
+val StatusErrorText = Color(0xFFB42318)     // Foutmeldingen / Hoog
 
 // Dark Mode Colors
-val DarkBackground = Color(0xFF181818)
-val DarkSurface = Color(0xFF242424)
-val DarkInk = Color(0xFFF5F5F5)
-val DarkInkSoft = Color(0xFFA5A5A5)
-val DarkDivider = Color(0xFF383838)
+val DarkBackground = Color(0xFF141D26)
+val DarkSurface = Color(0xFF1D2936)
+val DarkInk = Color(0xFFF3F5F8)
+val DarkInkSoft = Color(0xFF98A2B3)
+val DarkDivider = Color(0xFF2E3D4E)
 
 // Dynamische systeemkleuren die zich automatisch aanpassen aan Lichte of Donkere modus
 val Background: Color @Composable get() = MaterialTheme.colorScheme.background
@@ -31,12 +38,12 @@ val Ink: Color @Composable get() = MaterialTheme.colorScheme.onSurface
 val InkSoft: Color @Composable get() = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
 val Divider: Color @Composable get() = MaterialTheme.colorScheme.outline
 
-// Windows 11 Fluent Accent Colors voor de tabelkoppen & status
-val DateColor = Color(0xFFE81123)     // Fluent Red
-val TimeColor = Color(0xFF0078D4)     // Fluent Blue
-val PressureColor: Color @Composable get() = if (MaterialTheme.colorScheme.background == DarkBackground) Color(0xFF383838) else Color(0xFFEAEAEA)
-val PulseColor = Color(0xFF107C10)    // Fluent Green
-val HeartRed = Color(0xFFE81123)      // Fluent Accent Red
+// Tabelkoppen & status
+val DateColor = Color(0xFFB42318)     // Accent Red
+val TimeColor = Primary               // Accent Blue
+val PressureColor: Color @Composable get() = if (MaterialTheme.colorScheme.background == DarkBackground) Color(0xFF2E3D4E) else Color(0xFFEFEFF4)
+val PulseColor = Color(0xFF216E46)    // Accent Green
+val HeartRed = Color(0xFFB42318)      // Accent Red
 
 private val LightScheme = lightColorScheme(
     primary = Primary,
@@ -46,7 +53,7 @@ private val LightScheme = lightColorScheme(
     surface = LightSurface,
     onBackground = LightInk,
     onSurface = LightInk,
-    surfaceVariant = Color(0xFFF3F3F4),
+    surfaceVariant = Color(0xFFE9EDF2),
     outline = LightDivider
 )
 
@@ -58,7 +65,7 @@ private val DarkScheme = darkColorScheme(
     surface = DarkSurface,
     onBackground = DarkInk,
     onSurface = DarkInk,
-    surfaceVariant = Color(0xFF2A2A2A),
+    surfaceVariant = Color(0xFF2E3D4E),
     outline = DarkDivider
 )
 

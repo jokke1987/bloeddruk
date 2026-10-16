@@ -13,6 +13,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -90,27 +91,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.joeri.bloeddruk.data.BloodPressureEntry
+import com.joeri.bloeddruk.data.MedicationItem
 import com.joeri.bloeddruk.data.UserProfile
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.ZoneId
-
-// Kolombreedtes (gewichten): DD, MM, JJ, tijd, bovendruk, onderdruk, pols
-private val W = listOf(0.8f, 0.8f, 0.8f, 1.7f, 1.9f, 1.9f, 1.5f)
+import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OverviewScreen(
     entries: List<BloodPressureEntry>,
+    medications: List<MedicationItem> = emptyList(),
     userProfile: UserProfile = UserProfile(),
     hasUpdateAvailable: Boolean = false,
     snackbarHostState: SnackbarHostState,
@@ -132,14 +135,6 @@ fun OverviewScreen(
     var tab by rememberSaveable { mutableStateOf(0) }
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
-    val restoreLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument()
-    ) { uri ->
-        if (uri != null) {
-            onRestoreBackupUri(uri)
-        }
-    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -171,8 +166,8 @@ fun OverviewScreen(
                             )
                             Spacer(Modifier.width(12.dp))
                             Column {
-                                Text("Bloeddruk", fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Ink)
-                                Text("& Medicatie", fontSize = 13.sp, color = InkSoft)
+                                Text("Bloeddruk Assistent", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Ink)
+                                Text("Pro", fontSize = 12.sp, color = Primary, fontWeight = FontWeight.Bold)
                             }
                         }
                         IconButton(onClick = {
@@ -206,7 +201,7 @@ fun OverviewScreen(
 
                     NavigationDrawerItem(
                         icon = { Icon(Icons.Filled.ShowChart, null) },
-                        label = { Text("Grafiek") },
+                        label = { Text("Grafieken") },
                         selected = tab == 1,
                         onClick = {
                             tab = 1
@@ -322,7 +317,7 @@ fun OverviewScreen(
             containerColor = Background,
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text("Bloeddruk", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+                    title = { Text("BLOEDDRUK ASSISTENT PRO", fontWeight = FontWeight.Bold, fontSize = 16.sp, letterSpacing = 0.5.sp) },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(Icons.Filled.Menu, contentDescription = "Menu")
@@ -351,18 +346,16 @@ fun OverviewScreen(
                         label = { Text("Overzicht") }
                     )
                     NavigationBarItem(
+                        selected = tab == 1,
+                        onClick = { tab = 1 },
+                        icon = { Icon(Icons.Filled.ShowChart, contentDescription = null) },
+                        label = { Text("Grafieken") }
+                    )
+                    NavigationBarItem(
                         selected = false,
-                        onClick = onAdd,
-                        icon = {
-                            Box(
-                                Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.primary),
-                                contentAlignment = Alignment.Center
-                            ) { Icon(Icons.Filled.Add, contentDescription = null, tint = Color.White) }
-                        },
-                        label = { Text("Toevoegen") }
+                        onClick = { onOpenMedication(0) },
+                        icon = { Icon(Icons.Filled.MedicalServices, contentDescription = null) },
+                        label = { Text("Medicatie") }
                     )
                     NavigationBarItem(
                         selected = false,
@@ -379,170 +372,211 @@ fun OverviewScreen(
                     .fillMaxSize()
                     .padding(padding)
             ) {
-                if (tab == 0) TableTab(entries, onEdit, onAdd) else ChartTab(entries)
-            }
-        }
-    }
-}
-
-@Composable
-private fun TableTab(
-    entries: List<BloodPressureEntry>,
-    onEdit: (BloodPressureEntry) -> Unit,
-    onAdd: () -> Unit
-) {
-    val monthNames = listOf(
-        "", "Januari", "Februari", "Maart", "April", "Mei", "Juni",
-        "Juli", "Augustus", "September", "Oktober", "November", "December"
-    )
-
-    // Groepeer de metingen op Maand en Jaar
-    val groupedByMonth = remember(entries) {
-        entries.sortedByDescending { it.timestamp }.groupBy {
-            val dt = it.timestamp.toLocalDateTime()
-            dt.year to dt.monthValue
-        }
-    }
-
-    Column(Modifier.fillMaxSize()) {
-        StatusCard(entries)
-        Legend()
-        TableHeader()
-        if (entries.isEmpty()) {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(
-                    "Nog geen metingen.\nTik op Toevoegen om te starten.",
-                    color = InkSoft,
-                    textAlign = TextAlign.Center
-                )
-            }
-        } else {
-            LazyColumn(Modifier.fillMaxSize().background(Surface)) {
-                groupedByMonth.forEach { (yearMonth, monthEntries) ->
-                    val (year, month) = yearMonth
-                    val monthTitle = "${monthNames[month]} $year"
-
-                    // Maandtitel balk (bijv. "Oktober 2026")
-                    item(key = "month_header_${year}_${month}") {
-                        Box(
-                            Modifier
-                                .fillMaxWidth()
-                                .background(Color(0xFFEFEFF4))
-                                .padding(vertical = 8.dp, horizontal = 16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                monthTitle,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 15.sp,
-                                color = Ink
-                            )
-                        }
-                    }
-
-                    items(monthEntries, key = { it.id }) { e ->
-                        EntryRow(e, onClick = { onEdit(e) })
-                    }
+                if (tab == 0) {
+                    DashboardScreen(
+                        entries = entries,
+                        medications = medications,
+                        onEdit = onEdit,
+                        onAdd = onAdd,
+                        onOpenMedication = { onOpenMedication(0) },
+                        onOpenReport = onExport
+                    )
+                } else {
+                    ChartTab(entries)
                 }
-                item { Box(Modifier.height(16.dp)) }
             }
         }
     }
 }
 
-/** Kaart met kloppend hart + geanimeerde voortgangsbalk voor de metingen van vandaag. */
+/** FASE 1: Gezondheidsdashboard Hoofdscherm Componenten */
 @Composable
-private fun StatusCard(entries: List<BloodPressureEntry>) {
+private fun DashboardScreen(
+    entries: List<BloodPressureEntry>,
+    medications: List<MedicationItem>,
+    onEdit: (BloodPressureEntry) -> Unit,
+    onAdd: () -> Unit,
+    onOpenMedication: () -> Unit,
+    onOpenReport: () -> Unit
+) {
+    val latestEntry = remember(entries) { entries.maxByOrNull { it.timestamp } }
+
+    LazyColumn(
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        // 1. Snelacties Balk
+        item(key = "quick_actions") {
+            QuickActionsBar(
+                onNewMeasurement = onAdd,
+                onOpenMedication = onOpenMedication,
+                onOpenReport = onOpenReport
+            )
+        }
+
+        // 2. Laatste Bloeddrukmeting
+        item(key = "latest_card") {
+            LatestBloodPressureCard(
+                latestEntry = latestEntry,
+                onAddFirst = onAdd
+            )
+        }
+
+        // 3. Halve Cirkel Boog Gauge (Gezondheidsdashboard Status)
+        item(key = "dashboard_gauge") {
+            DashboardGaugeCard(entries)
+        }
+
+        // 4. Medicatie Vandaag Status
+        item(key = "medication_today") {
+            MedicationTodayCard(
+                medications = medications,
+                onOpenMedication = onOpenMedication
+            )
+        }
+
+        // 5. Recente Meetgeschiedenis
+        item(key = "recent_section") {
+            RecentMeasurementsSection(
+                entries = entries,
+                onEdit = onEdit
+            )
+        }
+
+        // 6. Legenda
+        item(key = "legend") {
+            Legend()
+        }
+
+        item { Spacer(Modifier.height(16.dp)) }
+    }
+}
+
+/** Halve Cirkel Boog Gauge Card overeenkomstig het Gezondheidsdashboard ontwerp */
+@Composable
+private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
     val today = LocalDate.now(ZoneId.systemDefault())
     val todays = entries.filter { it.timestamp.toLocalDateTime().toLocalDate() == today }
     val hasMorning = todays.any { it.isMorning }
     val hasEvening = todays.any { !it.isMorning }
-    val done = (if (hasMorning) 1 else 0) + (if (hasEvening) 1 else 0)
+    val count = (if (hasMorning) 1 else 0) + (if (hasEvening) 1 else 0)
 
-    val progress by animateFloatAsState(
-        targetValue = done / 2f,
-        animationSpec = tween(900, easing = FastOutSlowInEasing),
-        label = "voortgang"
-    )
-
-    val transition = rememberInfiniteTransition(label = "hartslag")
-    val beat by transition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.18f,
-        animationSpec = infiniteRepeatable(
-            tween(if (done == 2) 1100 else 700, easing = FastOutSlowInEasing),
-            RepeatMode.Reverse
-        ),
-        label = "klop"
-    )
-
-    val bump = remember { Animatable(1f) }
-    LaunchedEffect(entries.size) {
-        bump.animateTo(1.6f, tween(150))
-        bump.animateTo(1f, spring(Spring.DampingRatioMediumBouncy, Spring.StiffnessLow))
-    }
+    val avgSys = if (todays.isNotEmpty()) todays.map { it.systolic }.average().roundToInt() else 128
+    val avgDia = if (todays.isNotEmpty()) todays.map { it.diastolic }.average().roundToInt() else 85
+    val lvl = overallLevel(avgSys, avgDia)
 
     Card(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = Surface),
-        elevation = CardDefaults.cardElevation(1.dp)
+        elevation = CardDefaults.cardElevation(2.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Column(Modifier.padding(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    Icons.Filled.Favorite,
-                    contentDescription = null,
-                    tint = HeartRed,
-                    modifier = Modifier
-                        .size(34.dp)
-                        .scale(beat * bump.value)
-                )
-                Column(Modifier.padding(start = 14.dp)) {
-                    Text("Vandaag", color = InkSoft, fontSize = 12.sp)
-                    Text(
-                        if (done == 2) "Beide metingen gedaan" else "$done van 2 metingen",
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 17.sp
+        Column(
+            Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text("GEZONDHEIDSDASHBOARD", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Ink, letterSpacing = 0.5.sp)
+            Spacer(Modifier.height(12.dp))
+
+            // Halve Cirkel Boog Gauge
+            Box(
+                Modifier.size(190.dp, 100.dp),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                Canvas(Modifier.fillMaxSize()) {
+                    val stroke = 14.dp.toPx()
+                    val diameter = size.width - stroke
+                    val topPx = size.height - diameter / 2f
+
+                    drawArc(
+                        color = Color(0xFF4C5BD4),
+                        startAngle = 180f,
+                        sweepAngle = 45f,
+                        useCenter = false,
+                        topLeft = Offset(stroke / 2f, topPx),
+                        size = androidx.compose.ui.geometry.Size(diameter, diameter),
+                        style = Stroke(stroke, cap = StrokeCap.Butt)
+                    )
+                    drawArc(
+                        color = Color(0xFF4CAF50),
+                        startAngle = 225f,
+                        sweepAngle = 45f,
+                        useCenter = false,
+                        topLeft = Offset(stroke / 2f, topPx),
+                        size = androidx.compose.ui.geometry.Size(diameter, diameter),
+                        style = Stroke(stroke, cap = StrokeCap.Butt)
+                    )
+                    drawArc(
+                        color = Color(0xFFFF9800),
+                        startAngle = 270f,
+                        sweepAngle = 45f,
+                        useCenter = false,
+                        topLeft = Offset(stroke / 2f, topPx),
+                        size = androidx.compose.ui.geometry.Size(diameter, diameter),
+                        style = Stroke(stroke, cap = StrokeCap.Butt)
+                    )
+                    drawArc(
+                        color = Color(0xFFE53935),
+                        startAngle = 315f,
+                        sweepAngle = 45f,
+                        useCenter = false,
+                        topLeft = Offset(stroke / 2f, topPx),
+                        size = androidx.compose.ui.geometry.Size(diameter, diameter),
+                        style = Stroke(stroke, cap = StrokeCap.Butt)
                     )
                 }
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("$avgSys/$avgDia", fontSize = 30.sp, fontWeight = FontWeight.Bold, color = Ink)
+                    Text("Vandaag Gemiddeld - ${lvl.label}", fontSize = 12.sp, color = lvl.color, fontWeight = FontWeight.SemiBold)
+                }
             }
+
+            Spacer(Modifier.height(14.dp))
+
             LinearProgressIndicator(
-                progress = { progress },
+                progress = { count / 2f },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 14.dp)
-                    .height(10.dp)
+                    .height(8.dp)
                     .clip(CircleShape),
-                color = PulseColor,
+                color = Color(0xFF4CAF50),
                 trackColor = Divider,
                 strokeCap = StrokeCap.Round
             )
+
+            Spacer(Modifier.height(10.dp))
+
             Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                StatusChip("Ochtend", Icons.Filled.WbSunny, hasMorning)
-                StatusChip("Avond", Icons.Filled.DarkMode, hasEvening)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Filled.WbSunny,
+                        contentDescription = null,
+                        tint = if (hasMorning) Color(0xFF4CAF50) else Color(0xFFF2A93B),
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text("$count van 2 metingen", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Ink)
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Filled.DarkMode,
+                        contentDescription = null,
+                        tint = if (hasEvening) Color(0xFF4CAF50) else Color(0xFF6C63B5),
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(if (hasEvening) "Avond ✓" else "Avond –", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = InkSoft)
+                }
             }
         }
-    }
-}
-
-@Composable
-private fun StatusChip(label: String, icon: ImageVector, done: Boolean) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, null, tint = if (done) PulseColor else InkSoft, modifier = Modifier.size(18.dp))
-        Text(
-            "  $label ${if (done) "✓" else "–"}",
-            color = if (done) PulseColor else InkSoft,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium
-        )
     }
 }
 
@@ -552,7 +586,7 @@ private fun Legend() {
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp),
+            .padding(horizontal = 8.dp, vertical = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -568,145 +602,4 @@ private fun Legend() {
             }
         }
     }
-}
-
-@Composable
-private fun TableHeader() {
-    Column(Modifier.fillMaxWidth().background(Surface)) {
-        Row(Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-            IconCell(Icons.Filled.CalendarMonth, DateColor, W[0] + W[1] + W[2])
-            IconCell(Icons.Filled.Schedule, TimeColor, W[3])
-            IconCell(Icons.Filled.Speed, Color(0xFF6C63B5), W[4] + W[5])
-            IconCell(Icons.Filled.Favorite, HeartRed, W[6])
-        }
-        Row(Modifier.fillMaxWidth()) {
-            Group("Datum", DateColor, Color.White, W[0] + W[1] + W[2])
-            Group("Tijd", TimeColor, Color.White, W[3])
-            Group("Bloeddruk", PressureColor, Ink, W[4] + W[5])
-            Group("Pols", PulseColor, Color.White, W[6])
-        }
-        Row(Modifier.fillMaxWidth()) {
-            Sub("DD", DateColor, Color.White, W[0])
-            Sub("MM", DateColor, Color.White, W[1])
-            Sub("JJ", DateColor, Color.White, W[2])
-            Sub("UU:MM", TimeColor, Color.White, W[3])
-            Sub("Bovendruk", PressureColor, Ink, W[4])
-            Sub("Onderdruk", PressureColor, Ink, W[5])
-            Sub("BPM", PulseColor, Color.White, W[6])
-        }
-    }
-}
-
-@Composable
-private fun RowScope.IconCell(icon: ImageVector, tint: Color, weight: Float) {
-    Box(Modifier.weight(weight), contentAlignment = Alignment.Center) {
-        Box(
-            Modifier
-                .size(38.dp)
-                .clip(CircleShape)
-                .background(tint.copy(alpha = 0.14f)),
-            contentAlignment = Alignment.Center
-        ) { Icon(icon, null, tint = tint, modifier = Modifier.size(22.dp)) }
-    }
-}
-
-@Composable
-private fun RowScope.Group(text: String, bg: Color, fg: Color, weight: Float) {
-    Box(
-        Modifier
-            .weight(weight)
-            .background(bg)
-            .padding(vertical = 6.dp),
-        contentAlignment = Alignment.Center
-    ) { Text(text, color = fg, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, maxLines = 1) }
-}
-
-@Composable
-private fun RowScope.Sub(text: String, bg: Color, fg: Color, weight: Float) {
-    Box(
-        Modifier
-            .weight(weight)
-            .background(bg.copy(alpha = if (bg == PressureColor) 0.7f else 0.85f))
-            .padding(vertical = 5.dp),
-        contentAlignment = Alignment.Center
-    ) { Text(text, color = fg, fontSize = 10.5.sp, maxLines = 1, softWrap = false) }
-}
-
-@Composable
-private fun EntryRow(e: BloodPressureEntry, onClick: () -> Unit) {
-    val dt = e.timestamp.toLocalDateTime()
-    val extra = (e.tags.tagList() + listOfNotNull(e.note.trim().ifEmpty { null }))
-        .joinToString(" · ")
-
-    Column(Modifier.clickable(onClick = onClick)) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 12.dp, bottom = if (extra.isEmpty()) 12.dp else 4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Cell(two(dt.dayOfMonth), W[0])
-            Cell(two(dt.monthValue), W[1])
-            Cell(two(dt.year % 100), W[2])
-            Row(
-                Modifier.weight(W[3]),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    if (e.isMorning) Icons.Filled.WbSunny else Icons.Filled.DarkMode,
-                    contentDescription = if (e.isMorning) "Ochtend" else "Avond",
-                    tint = if (e.isMorning) Color(0xFFF2A93B) else Color(0xFF6C63B5),
-                    modifier = Modifier.size(14.dp)
-                )
-                Text(" ${two(dt.hour)}:${two(dt.minute)}", fontSize = 13.sp)
-            }
-            ValueCell(e.systolic, systolicLevel(e.systolic), W[4])
-            ValueCell(e.diastolic, diastolicLevel(e.diastolic), W[5])
-            Cell(e.pulse.toString(), W[6])
-        }
-        if (extra.isNotEmpty()) {
-            Text(
-                extra,
-                fontSize = 11.sp,
-                color = InkSoft,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
-            )
-        }
-        HorizontalDivider(color = Divider.copy(alpha = 0.6f))
-    }
-}
-
-/** Waarde met een subtiele gekleurde pil (groen / oranje / rood / blauw). */
-@Composable
-private fun RowScope.ValueCell(value: Int, level: BpLevel, weight: Float) {
-    Box(Modifier.weight(weight), contentAlignment = Alignment.Center) {
-        Box(
-            Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(level.color.copy(alpha = 0.14f))
-                .padding(horizontal = 9.dp, vertical = 3.dp)
-        ) {
-            Text(
-                value.toString(),
-                color = level.ink,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1
-            )
-        }
-    }
-}
-
-@Composable
-private fun RowScope.Cell(text: String, weight: Float) {
-    Text(
-        text,
-        modifier = Modifier.weight(weight),
-        textAlign = TextAlign.Center,
-        fontSize = 14.sp,
-        maxLines = 1
-    )
 }
