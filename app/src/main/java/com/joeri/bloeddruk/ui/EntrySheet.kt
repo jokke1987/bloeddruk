@@ -2,25 +2,33 @@ package com.joeri.bloeddruk.ui
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -39,11 +47,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.joeri.bloeddruk.data.BloodPressureEntry
 import java.time.LocalDateTime
 
@@ -73,7 +83,6 @@ fun EntrySheet(
     var selectedTags by remember { mutableStateOf(initial?.tags?.tagList()?.toSet() ?: emptySet()) }
     var triedSave by remember { mutableStateOf(false) }
 
-    // Vaste labels + eventuele eigen labels die al bij deze meting stonden.
     val allTags = remember {
         PresetTags + (initial?.tags?.tagList().orEmpty().filter { it !in PresetTags })
     }
@@ -85,6 +94,9 @@ fun EntrySheet(
     val diaOk = diaV != null && diaV in 30..160 && (sysV == null || diaV < sysV)
     val pulseOk = pulseV != null && pulseV in 30..220
     val valid = sysOk && diaOk && pulseOk
+
+    // Medische waarschuwing bij extreem afwijkende geldige waarden
+    val isExtremeValue = valid && (sysV!! >= 180 || diaV!! >= 120 || sysV <= 90 || diaV <= 60)
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -100,9 +112,10 @@ fun EntrySheet(
                 .navigationBarsPadding()
         ) {
             Text(
-                if (initial == null) "Nieuwe meting" else "Meting aanpassen",
+                if (initial == null) "Nieuwe meting invoeren" else "Meting bewerken",
                 style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold
+                fontWeight = FontWeight.Bold,
+                color = Ink
             )
 
             // Ochtend / Avond
@@ -121,7 +134,7 @@ fun EntrySheet(
                 ) { Text("Avond") }
             }
 
-            // Datum + tijd
+            // Datum + Tijd Knoppen
             Row(
                 Modifier.fillMaxWidth().padding(top = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -137,7 +150,7 @@ fun EntrySheet(
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(Icons.Filled.CalendarMonth, null, Modifier.size(18.dp))
-                    Text("  ${two(dateTime.dayOfMonth)} | ${two(dateTime.monthValue)} | ${two(dateTime.year % 100)}")
+                    Text("  ${two(dateTime.dayOfMonth)}|${two(dateTime.monthValue)}|${two(dateTime.year % 100)}")
                 }
                 OutlinedButton(
                     onClick = {
@@ -157,30 +170,55 @@ fun EntrySheet(
                 }
             }
 
-            // Waarden
+            // Invoervelden Waarden
             Row(
                 Modifier.fillMaxWidth().padding(top = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 NumberField("Bovendruk", sys, { sys = it }, triedSave && !sysOk, Modifier.weight(1f))
                 NumberField("Onderdruk", dia, { dia = it }, triedSave && !diaOk, Modifier.weight(1f))
-                NumberField("Pols / Hartslag", pulse, { pulse = it }, triedSave && !pulseOk, Modifier.weight(1f))
+                NumberField("Pols / BPM", pulse, { pulse = it }, triedSave && !pulseOk, Modifier.weight(1f))
             }
+
+            // Invoerfout melding (rood)
             if (triedSave && !valid) {
                 Text(
-                    "Controleer de waarden: bovendruk 50–260, onderdruk 30–160 (lager dan bovendruk), pols 30–220.",
+                    "Controleer de invoer: bovendruk 50–260, onderdruk 30–160 (lager dan bovendruk), pols 30–220.",
                     color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
+                    fontSize = 12.sp,
                     modifier = Modifier.padding(top = 8.dp)
                 )
             }
 
+            // Medische Informatieve Waarschuwing (oranje banner bij extreem geldige waarde)
+            if (isExtremeValue) {
+                Card(
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = StatusAttentionBg),
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
+                ) {
+                    Row(
+                        Modifier.padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.Warning, contentDescription = null, tint = StatusAttentionText, modifier = Modifier.size(22.dp))
+                        Spacer(Modifier.width(10.dp))
+                        Text(
+                            "Let op: Deze bloeddrukwaarde is erg afwijkend. Neem bij twijfel of lichamelijke klachten contact op met je arts.",
+                            fontSize = 12.sp,
+                            color = StatusAttentionText,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+            }
+
             // Labels
             Text(
-                "Labels",
+                "Labels / Context",
                 style = MaterialTheme.typography.labelLarge,
                 color = InkSoft,
-                modifier = Modifier.padding(top = 20.dp, bottom = 6.dp)
+                modifier = Modifier.padding(top = 18.dp, bottom = 6.dp)
             )
             FlowRow(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -226,13 +264,13 @@ fun EntrySheet(
                     }
                 },
                 modifier = Modifier.fillMaxWidth().padding(top = 20.dp).height(52.dp)
-            ) { Text("Opslaan", fontWeight = FontWeight.SemiBold) }
+            ) { Text("Meting Opslaan", fontWeight = FontWeight.SemiBold, fontSize = 15.sp) }
 
             if (initial != null) {
                 TextButton(
                     onClick = { onDelete(initial) },
                     modifier = Modifier.fillMaxWidth()
-                ) { Text("Verwijderen", color = MaterialTheme.colorScheme.error) }
+                ) { Text("Meting Verwijderen", color = MaterialTheme.colorScheme.error) }
             }
         }
     }

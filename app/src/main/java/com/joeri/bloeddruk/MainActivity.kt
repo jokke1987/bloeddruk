@@ -35,6 +35,7 @@ import com.joeri.bloeddruk.ui.BloeddrukTheme
 import com.joeri.bloeddruk.ui.EntrySheet
 import com.joeri.bloeddruk.ui.ExportAction
 import com.joeri.bloeddruk.ui.ExportDialog
+import com.joeri.bloeddruk.ui.MeasurementDetailDialog
 import com.joeri.bloeddruk.ui.MedicationScreen
 import com.joeri.bloeddruk.ui.OverviewScreen
 import com.joeri.bloeddruk.ui.SearchScreen
@@ -78,6 +79,7 @@ class MainActivity : ComponentActivity() {
                 var showDoctorDialog by rememberSaveable { mutableStateOf(false) }
                 var showBloodTypeDialog by rememberSaveable { mutableStateOf(false) }
                 var editing by remember { mutableStateOf<BloodPressureEntry?>(null) }
+                var selectedDetailEntry by remember { mutableStateOf<BloodPressureEntry?>(null) }
 
                 val snackbar = remember { SnackbarHostState() }
                 val scope = rememberCoroutineScope()
@@ -238,7 +240,7 @@ class MainActivity : ComponentActivity() {
                                 hasUpdateAvailable = hasUpdateAvailable,
                                 snackbarHostState = snackbar,
                                 onAdd = { editing = null; sheetOpen = true },
-                                onEdit = { editing = it; sheetOpen = true },
+                                onEdit = { selectedDetailEntry = it },
                                 onOpenAlarms = { activeScreen = "alarms" },
                                 onOpenMedication = { tab ->
                                     medicationInitialTab = tab
@@ -316,6 +318,23 @@ class MainActivity : ComponentActivity() {
                                 scope.launch { snackbar.showSnackbar("Bloedgroep opgeslagen") }
                             },
                             onDismiss = { showBloodTypeDialog = false }
+                        )
+                    }
+
+                    if (selectedDetailEntry != null) {
+                        MeasurementDetailDialog(
+                            entry = selectedDetailEntry!!,
+                            onEdit = { e ->
+                                selectedDetailEntry = null
+                                editing = e
+                                sheetOpen = true
+                            },
+                            onDelete = { e ->
+                                selectedDetailEntry = null
+                                vm.delete(e)
+                                scope.launch { snackbar.showSnackbar("Meting verwijderd") }
+                            },
+                            onDismiss = { selectedDetailEntry = null }
                         )
                     }
 
