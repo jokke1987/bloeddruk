@@ -2,9 +2,7 @@ package com.joeri.bloeddruk.ui
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -26,9 +24,11 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
@@ -49,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -67,7 +68,6 @@ fun EntrySheet(
 ) {
     val context = LocalContext.current
 
-    // Datum en tijd staan standaard op "nu", maar zijn aanpasbaar.
     var dateTime by remember {
         mutableStateOf(
             initial?.timestamp?.toLocalDateTime()
@@ -82,6 +82,20 @@ fun EntrySheet(
     var note by remember { mutableStateOf(initial?.note ?: "") }
     var selectedTags by remember { mutableStateOf(initial?.tags?.tagList()?.toSet() ?: emptySet()) }
     var triedSave by remember { mutableStateOf(false) }
+    var isSaving by remember { mutableStateOf(false) }
+    var showCancelConfirm by remember { mutableStateOf(false) }
+
+    val hasChanges = remember(sys, dia, pulse, note, selectedTags, dateTime, morning) {
+        if (initial == null) {
+            sys.isNotBlank() || dia.isNotBlank() || pulse.isNotBlank() || note.isNotBlank()
+        } else {
+            sys != initial.systolic.toString() ||
+                    dia != initial.diastolic.toString() ||
+                    pulse != initial.pulse.toString() ||
+                    note != initial.note ||
+                    morning != initial.isMorning
+        }
+    }
 
     val allTags = remember {
         PresetTags + (initial?.tags?.tagList().orEmpty().filter { it !in PresetTags })
@@ -95,11 +109,18 @@ fun EntrySheet(
     val pulseOk = pulseV != null && pulseV in 30..220
     val valid = sysOk && diaOk && pulseOk
 
-    // Medische waarschuwing bij extreem afwijkende geldige waarden
     val isExtremeValue = valid && (sysV!! >= 180 || diaV!! >= 120 || sysV <= 90 || diaV <= 60)
 
+    val safeDismiss = {
+        if (hasChanges && !isSaving) {
+            showCancelConfirm = true
+        } else {
+            onDismiss()
+        }
+    }
+
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = safeDismiss,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         containerColor = Surface
     ) {
@@ -111,12 +132,22 @@ fun EntrySheet(
                 .padding(bottom = 24.dp)
                 .navigationBarsPadding()
         ) {
-            Text(
-                if (initial == null) "Nieuwe meting invoeren" else "Meting bewerken",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = Ink
-            )
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    if (initial == null) "Nieuwe meting invoeren" else "Meting bewerken",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Ink
+                )
+
+                TextButton(onClick = safeDismiss) {
+                    Text("Annuleren", color = InkSoft)
+                }
+            }
 
             // Ochtend / Avond
             SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(top = 16.dp)) {
@@ -246,9 +277,11 @@ fun EntrySheet(
             )
 
             Button(
+                enabled = !isSaving,
                 onClick = {
                     triedSave = true
-                    if (valid) {
+                    if (valid && !isSaving) {
+                        isSaving = true
                         onSave(
                             BloodPressureEntry(
                                 id = initial?.id ?: 0,
@@ -264,7 +297,19 @@ fun EntrySheet(
                     }
                 },
                 modifier = Modifier.fillMaxWidth().padding(top = 20.dp).height(52.dp)
-            ) { Text("Meting Opslaan", fontWeight = FontWeight.SemiBold, fontSize = 15.sp) }
+            ) {
+                if (isSaving) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(22.dp)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text("Opslaan...", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                } else {
+                    Text("Meting Opslaan", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                }
+            }
 
             if (initial != null) {
                 TextButton(
@@ -273,6 +318,29 @@ fun EntrySheet(
                 ) { Text("Meting Verwijderen", color = MaterialTheme.colorScheme.error) }
             }
         }
+    }
+
+    if (showCancelConfirm) {
+        AlertDialog(
+            onDismissRequest = { showCancelConfirm = false },
+            title = { Text("Wijzigingen negeren?", fontWeight = FontWeight.Bold) },
+            text = { Text("Je hebt onopgeslagen wijzigingen. Weet je zeker dat je wilt sluiten zonder op te slaan?", fontSize = 14.sp) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showCancelConfirm = false
+                        onDismiss()
+                    }
+                ) {
+                    Text("Wijzigingen Negeren")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCancelConfirm = false }) {
+                    Text("Verder Bewerken")
+                }
+            }
+        )
     }
 }
 

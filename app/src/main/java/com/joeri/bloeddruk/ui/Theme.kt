@@ -9,27 +9,27 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-// FASE 1 — Professionele Visuele Stijl (Design System Tokens)
-val Primary = Color(0xFF1679C5)              // Primaire kleur blauw
-val LightBackground = Color(0xFFF3F5F8)      // Achtergrond lichtgrijs
-val LightSurface = Color(0xFFFFFFFF)         // Kaarten puur wit
-val LightInk = Color(0xFF25364A)             // Hoofdtekst donkerblauw
-val LightInkSoft = Color(0xFF667085)         // Secundaire tekst grijs
-val LightDivider = Color(0xFFE9EDF2)         // Scheidingslijnen #E9EDF2
+// Modern Design System Tokens
+val Primary = Color(0xFF1679C5)              // Primaire kleur helder blauw #1679C5
+val LightBackground = Color(0xFFF8FAFC)      // Rustig lichtgrijs #F8FAFC
+val LightSurface = Color(0xFFFFFFFF)         // Kaarten puur wit #FFFFFF
+val LightInk = Color(0xFF1E293B)             // Hoofdtekst donker leisteengrijs #1E293B
+val LightInkSoft = Color(0xFF64748B)         // Secundaire tekst grijs #64748B
+val LightDivider = Color(0xFFE2E8F0)         // Scheidingslijnen #E2E8F0
 
 // Statusthema Kleuren
-val StatusPositiveText = Color(0xFF216E46)  // Positieve status tekst
-val StatusPositiveBg = Color(0xFFE1F3E8)    // Positieve status achtergrond
-val StatusAttentionText = Color(0xFFA9670A) // Aandacht status tekst
-val StatusAttentionBg = Color(0xFFFFF1D6)   // Aandacht status achtergrond
-val StatusErrorText = Color(0xFFB42318)     // Foutmeldingen / Hoog
+val StatusPositiveText = Color(0xFF216E46)  // Positieve status tekst #216E46
+val StatusPositiveBg = Color(0xFFE1F3E8)    // Positieve status achtergrond #E1F3E8
+val StatusAttentionText = Color(0xFFA9670A) // Aandacht status tekst #A9670A
+val StatusAttentionBg = Color(0xFFFFF1D6)   // Aandacht status achtergrond #FFF1D6
+val StatusErrorText = Color(0xFFB42318)     // Foutmeldingen / Hoog #B42318
 
 // Dark Mode Colors
-val DarkBackground = Color(0xFF141D26)
-val DarkSurface = Color(0xFF1D2936)
-val DarkInk = Color(0xFFF3F5F8)
-val DarkInkSoft = Color(0xFF98A2B3)
-val DarkDivider = Color(0xFF2E3D4E)
+val DarkBackground = Color(0xFF0F172A)
+val DarkSurface = Color(0xFF1E293B)
+val DarkInk = Color(0xFFF8FAFC)
+val DarkInkSoft = Color(0xFF94A3B8)
+val DarkDivider = Color(0xFF334155)
 
 // Dynamische systeemkleuren die zich automatisch aanpassen aan Lichte of Donkere modus
 val Background: Color @Composable get() = MaterialTheme.colorScheme.background
@@ -38,10 +38,10 @@ val Ink: Color @Composable get() = MaterialTheme.colorScheme.onSurface
 val InkSoft: Color @Composable get() = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
 val Divider: Color @Composable get() = MaterialTheme.colorScheme.outline
 
-// Tabelkoppen & status
+// Accentkleuren voor status en overzichten
 val DateColor = Color(0xFFB42318)     // Accent Red
 val TimeColor = Primary               // Accent Blue
-val PressureColor: Color @Composable get() = if (MaterialTheme.colorScheme.background == DarkBackground) Color(0xFF2E3D4E) else Color(0xFFEFEFF4)
+val PressureColor: Color @Composable get() = if (MaterialTheme.colorScheme.background == DarkBackground) Color(0xFF334155) else Color(0xFFF1F5F9)
 val PulseColor = Color(0xFF216E46)    // Accent Green
 val HeartRed = Color(0xFFB42318)      // Accent Red
 
@@ -53,7 +53,7 @@ private val LightScheme = lightColorScheme(
     surface = LightSurface,
     onBackground = LightInk,
     onSurface = LightInk,
-    surfaceVariant = Color(0xFFE9EDF2),
+    surfaceVariant = Color(0xFFF1F5F9),
     outline = LightDivider
 )
 
@@ -65,7 +65,7 @@ private val DarkScheme = darkColorScheme(
     surface = DarkSurface,
     onBackground = DarkInk,
     onSurface = DarkInk,
-    surfaceVariant = Color(0xFF2E3D4E),
+    surfaceVariant = Color(0xFF334155),
     outline = DarkDivider
 )
 
