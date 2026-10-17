@@ -506,12 +506,12 @@ private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
 
             Spacer(Modifier.height(12.dp))
 
-            // Labels boven de balk: Vaag / Gemiddeld / Hoog
+            // Labels boven de balk: Laag / Gemiddeld / Hoog
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Vaag", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Ink)
+                Text("Laag", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                 Text("Gemiddeld", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Ink)
                 Text("Hoog", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Ink)
             }
