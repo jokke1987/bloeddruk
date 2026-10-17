@@ -24,13 +24,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -62,7 +57,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.joeri.bloeddruk.data.BloodPressureEntry
@@ -160,7 +154,7 @@ fun ChartTab(entries: List<BloodPressureEntry>) {
                 ) {
                     Column(Modifier.padding(12.dp)) {
                         SelectionInfo(selected?.let { data.getOrNull(it) })
-                        BpLineChart(data, selected, trendWindow, chartHeight = 260.dp) { selected = it }
+                        BpLineChart(data, selected, trendWindow, modifier = Modifier.fillMaxWidth().height(260.dp)) { selected = it }
                         ChartLegend()
                     }
                 }
@@ -233,7 +227,7 @@ private fun FullscreenLandscapeChart(
             ) {
                 SelectionInfo(selected?.let { data.getOrNull(it) })
                 Box(Modifier.weight(1f).fillMaxWidth()) {
-                    BpLineChart(data, selected, trendWindow, chartHeight = 280.dp, onSelect = onSelect)
+                    BpLineChart(data, selected, trendWindow, modifier = Modifier.fillMaxSize(), onSelect = onSelect)
                 }
                 ChartLegend()
             }
@@ -305,9 +299,11 @@ private fun BpLineChart(
     data: List<BloodPressureEntry>,
     selected: Int?,
     trendWindow: Int,
-    chartHeight: Dp = 260.dp,
+    modifier: Modifier = Modifier,
     onSelect: (Int?) -> Unit
 ) {
+    if (data.isEmpty()) return
+
     val measurer = rememberTextMeasurer()
     val progress = remember { Animatable(0f) }
     LaunchedEffect(data) {
@@ -330,9 +326,7 @@ private fun BpLineChart(
     val density = LocalDensity.current
 
     Canvas(
-        Modifier
-            .fillMaxWidth()
-            .height(chartHeight)
+        modifier
             .pointerInput(data, selected) {
                 detectTapGestures { offset ->
                     val leftPx = with(density) { 38.dp.toPx() }
@@ -350,6 +344,8 @@ private fun BpLineChart(
         val w = size.width - left - right
         val h = size.height - top - bottom
 
+        if (w <= 0f || h <= 0f) return@Canvas
+
         fun y(v: Float): Float = top + h * (1f - (v - yMin) / (yMax - yMin).toFloat())
 
         // ---------- AFBEELDING KLEURBANDEN ACHTERGROND (Rood, Geel, Groen) ----------
@@ -357,30 +353,35 @@ private fun BpLineChart(
         val y120 = y(120f).coerceIn(top, top + h)
 
         // 1. Rode Categorie Zone (>= 140 mmHg)
-        if (140 in yMin..yMax) {
+        val redH = (y140 - top).coerceAtLeast(0f)
+        if (redH > 0f) {
             drawRect(
                 color = Color(0xFFFFEBEE).copy(alpha = 0.65f),
                 topLeft = Offset(left, top),
-                size = Size(w, y140 - top)
+                size = Size(w, redH)
             )
         }
 
         // 2. Gele/Oranje Categorie Zone (120 - 139 mmHg)
-        if (120 in yMin..yMax) {
-            val yellowTop = if (140 in yMin..yMax) y140 else top
+        val yellowTop = if (140 in yMin..yMax) y140 else top
+        val yellowH = (y120 - yellowTop).coerceAtLeast(0f)
+        if (yellowH > 0f) {
             drawRect(
                 color = Color(0xFFFFF8E1).copy(alpha = 0.65f),
                 topLeft = Offset(left, yellowTop),
-                size = Size(w, y120 - yellowTop)
+                size = Size(w, yellowH)
             )
         }
 
         // 3. Groene Categorie Zone (< 120 mmHg)
-        drawRect(
-            color = Color(0xFFE8F5E9).copy(alpha = 0.65f),
-            topLeft = Offset(left, y120),
-            size = Size(w, top + h - y120)
-        )
+        val greenH = (top + h - y120).coerceAtLeast(0f)
+        if (greenH > 0f) {
+            drawRect(
+                color = Color(0xFFE8F5E9).copy(alpha = 0.65f),
+                topLeft = Offset(left, y120),
+                size = Size(w, greenH)
+            )
+        }
 
         // Raster en waarden op de Y-as
         var g = yMin
