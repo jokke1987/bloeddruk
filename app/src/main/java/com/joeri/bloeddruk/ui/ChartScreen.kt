@@ -1,5 +1,6 @@
 package com.joeri.bloeddruk.ui
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -11,18 +12,25 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.FullscreenExit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -39,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
@@ -47,6 +56,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -77,6 +87,9 @@ private fun List<BloodPressureEntry>.avg(): Avg? =
 
 @Composable
 fun ChartTab(entries: List<BloodPressureEntry>) {
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     var range by rememberSaveable { mutableStateOf(1) }
     var trendWindow by rememberSaveable { mutableStateOf(0) } // 0 = Geen, 1 = 7d Trend, 2 = 30d Trend
     var selected by remember { mutableStateOf<Int?>(null) }
@@ -90,54 +103,141 @@ fun ChartTab(entries: List<BloodPressureEntry>) {
     }
     LaunchedEffect(data) { selected = null }
 
+    if (isLandscape) {
+        // Automatisch Schermvullend in Liggende Stand (Landscape Mode)
+        FullscreenLandscapeChart(
+            data = data,
+            selected = selected,
+            range = range,
+            trendWindow = trendWindow,
+            labels = labels,
+            trendLabels = trendLabels,
+            onRangeChange = { range = it },
+            onTrendChange = { trendWindow = it },
+            onSelect = { selected = it }
+        )
+    } else {
+        // Normale Staande Stand (Portrait Mode)
+        Column(
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                labels.forEachIndexed { i, l ->
+                    SegmentedButton(
+                        selected = range == i,
+                        onClick = { range = i },
+                        shape = SegmentedButtonDefaults.itemShape(i, labels.size)
+                    ) { Text(l) }
+                }
+            }
+
+            // Trend / Voortschrijdend Gemiddelde Knoppen
+            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                trendLabels.forEachIndexed { i, l ->
+                    SegmentedButton(
+                        selected = trendWindow == i,
+                        onClick = { trendWindow = i },
+                        shape = SegmentedButtonDefaults.itemShape(i, trendLabels.size)
+                    ) { Text(l, fontSize = 12.sp) }
+                }
+            }
+
+            if (data.isEmpty()) {
+                Box(Modifier.fillMaxWidth().padding(vertical = 48.dp), contentAlignment = Alignment.Center) {
+                    Text("Nog geen metingen in deze periode.", color = InkSoft)
+                }
+            } else {
+                StatsCard(data)
+                Card(
+                    Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = Surface),
+                    elevation = CardDefaults.cardElevation(1.dp)
+                ) {
+                    Column(Modifier.padding(12.dp)) {
+                        SelectionInfo(selected?.let { data.getOrNull(it) })
+                        BpLineChart(data, selected, trendWindow, chartHeight = 260.dp) { selected = it }
+                        ChartLegend()
+                    }
+                }
+            }
+            Box(Modifier.height(8.dp))
+        }
+    }
+}
+
+/** Automatisch Schermvullende Grafiek in Liggende Stand (Landscape Mode) */
+@Composable
+private fun FullscreenLandscapeChart(
+    data: List<BloodPressureEntry>,
+    selected: Int?,
+    range: Int,
+    trendWindow: Int,
+    labels: List<String>,
+    trendLabels: List<String>,
+    onRangeChange: (Int) -> Unit,
+    onTrendChange: (Int) -> Unit,
+    onSelect: (Int?) -> Unit
+) {
     Column(
         Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .background(MaterialTheme.colorScheme.background)
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-            labels.forEachIndexed { i, l ->
-                SegmentedButton(
-                    selected = range == i,
-                    onClick = { range = i },
-                    shape = SegmentedButtonDefaults.itemShape(i, labels.size)
-                ) { Text(l) }
-            }
-        }
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("Bloeddruk Trends (Schermvullend)", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Ink)
 
-        // Trend / Voortschrijdend Gemiddelde Knoppen
-        SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-            trendLabels.forEachIndexed { i, l ->
-                SegmentedButton(
-                    selected = trendWindow == i,
-                    onClick = { trendWindow = i },
-                    shape = SegmentedButtonDefaults.itemShape(i, trendLabels.size)
-                ) { Text(l, fontSize = 12.sp) }
-            }
-        }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                SingleChoiceSegmentedButtonRow {
+                    labels.forEachIndexed { i, l ->
+                        SegmentedButton(
+                            selected = range == i,
+                            onClick = { onRangeChange(i) },
+                            shape = SegmentedButtonDefaults.itemShape(i, labels.size)
+                        ) { Text(l, fontSize = 11.sp) }
+                    }
+                }
 
-        if (data.isEmpty()) {
-            Box(Modifier.fillMaxWidth().padding(vertical = 48.dp), contentAlignment = Alignment.Center) {
-                Text("Nog geen metingen in deze periode.", color = InkSoft)
-            }
-        } else {
-            StatsCard(data)
-            Card(
-                Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Surface),
-                elevation = CardDefaults.cardElevation(1.dp)
-            ) {
-                Column(Modifier.padding(12.dp)) {
-                    SelectionInfo(selected?.let { data.getOrNull(it) })
-                    BpLineChart(data, selected, trendWindow) { selected = it }
-                    ChartLegend()
+                SingleChoiceSegmentedButtonRow {
+                    trendLabels.forEachIndexed { i, l ->
+                        SegmentedButton(
+                            selected = trendWindow == i,
+                            onClick = { onTrendChange(i) },
+                            shape = SegmentedButtonDefaults.itemShape(i, trendLabels.size)
+                        ) { Text(l, fontSize = 11.sp) }
+                    }
                 }
             }
         }
-        Box(Modifier.height(8.dp))
+
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Surface),
+            elevation = CardDefaults.cardElevation(2.dp),
+            modifier = Modifier.weight(1f).fillMaxWidth()
+        ) {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(12.dp)
+            ) {
+                SelectionInfo(selected?.let { data.getOrNull(it) })
+                Box(Modifier.weight(1f).fillMaxWidth()) {
+                    BpLineChart(data, selected, trendWindow, chartHeight = 280.dp, onSelect = onSelect)
+                }
+                ChartLegend()
+            }
+        }
     }
 }
 
@@ -176,7 +276,7 @@ private fun RowScope.StatBlock(label: String, a: Avg?) {
 
 @Composable
 private fun SelectionInfo(e: BloodPressureEntry?) {
-    Column(Modifier.fillMaxWidth().heightIn(min = 64.dp)) {
+    Column(Modifier.fillMaxWidth().heightIn(min = 40.dp)) {
         if (e == null) {
             Text("Tik op de grafiek voor de details van een meting.", color = InkSoft, fontSize = 12.sp)
         } else {
@@ -188,16 +288,13 @@ private fun SelectionInfo(e: BloodPressureEntry?) {
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium
                 )
-            }
-            Text(
-                "${e.systolic}/${e.diastolic} mmHg · pols ${e.pulse} · ${lvl.label}",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = lvl.ink
-            )
-            if (e.note.isNotBlank() || e.tags.isNotBlank()) {
-                val sub = (e.tags.tagList() + listOfNotNull(e.note.trim().ifEmpty { null })).joinToString(" · ")
-                Text(sub, fontSize = 12.sp, color = InkSoft, maxLines = 1)
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    "${e.systolic}/${e.diastolic} mmHg · pols ${e.pulse} · ${lvl.label}",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = lvl.ink
+                )
             }
         }
     }
@@ -208,6 +305,7 @@ private fun BpLineChart(
     data: List<BloodPressureEntry>,
     selected: Int?,
     trendWindow: Int,
+    chartHeight: Dp = 260.dp,
     onSelect: (Int?) -> Unit
 ) {
     val measurer = rememberTextMeasurer()
@@ -234,7 +332,7 @@ private fun BpLineChart(
     Canvas(
         Modifier
             .fillMaxWidth()
-            .height(260.dp)
+            .height(chartHeight)
             .pointerInput(data, selected) {
                 detectTapGestures { offset ->
                     val leftPx = with(density) { 38.dp.toPx() }
@@ -254,10 +352,40 @@ private fun BpLineChart(
 
         fun y(v: Float): Float = top + h * (1f - (v - yMin) / (yMax - yMin).toFloat())
 
+        // ---------- AFBEELDING KLEURBANDEN ACHTERGROND (Rood, Geel, Groen) ----------
+        val y140 = y(140f).coerceIn(top, top + h)
+        val y120 = y(120f).coerceIn(top, top + h)
+
+        // 1. Rode Categorie Zone (>= 140 mmHg)
+        if (140 in yMin..yMax) {
+            drawRect(
+                color = Color(0xFFFFEBEE).copy(alpha = 0.65f),
+                topLeft = Offset(left, top),
+                size = Size(w, y140 - top)
+            )
+        }
+
+        // 2. Gele/Oranje Categorie Zone (120 - 139 mmHg)
+        if (120 in yMin..yMax) {
+            val yellowTop = if (140 in yMin..yMax) y140 else top
+            drawRect(
+                color = Color(0xFFFFF8E1).copy(alpha = 0.65f),
+                topLeft = Offset(left, yellowTop),
+                size = Size(w, y120 - yellowTop)
+            )
+        }
+
+        // 3. Groene Categorie Zone (< 120 mmHg)
+        drawRect(
+            color = Color(0xFFE8F5E9).copy(alpha = 0.65f),
+            topLeft = Offset(left, y120),
+            size = Size(w, top + h - y120)
+        )
+
         // Raster en waarden op de Y-as
         var g = yMin
         while (g <= yMax) {
-            drawLine(dividerColor, Offset(left, y(g.toFloat())), Offset(left + w, y(g.toFloat())), strokeWidth = 1.dp.toPx())
+            drawLine(dividerColor.copy(alpha = 0.3f), Offset(left, y(g.toFloat())), Offset(left + w, y(g.toFloat())), strokeWidth = 1.dp.toPx())
             val tl = measurer.measure(g.toString(), labelStyle)
             drawText(
                 tl,
@@ -271,7 +399,7 @@ private fun BpLineChart(
         listOf(140, 90).forEach { lim ->
             if (lim in yMin..yMax) {
                 drawLine(
-                    BpLevel.HIGH.color.copy(alpha = 0.55f),
+                    BpLevel.HIGH.color.copy(alpha = 0.65f),
                     Offset(left, y(lim.toFloat())),
                     Offset(left + w, y(lim.toFloat())),
                     strokeWidth = 1.5f.dp.toPx(),
@@ -281,7 +409,7 @@ private fun BpLineChart(
         }
 
         // Datums op de X-as
-        val ticks = if (maxT == minT) 1 else 4
+        val ticks = if (maxT == minT) 1 else 6
         for (i in 0 until ticks) {
             val t = if (ticks == 1) minT else minT + (maxT - minT) * i / (ticks - 1)
             val tl = measurer.measure(t.toLocalDateTime().format(axisFmt), labelStyle)
@@ -314,7 +442,7 @@ private fun BpLineChart(
                 }
                 drawPath(
                     path,
-                    color.copy(alpha = if (trendWindow > 0) 0.35f else 1f),
+                    color.copy(alpha = if (trendWindow > 0) 0.4f else 1f),
                     style = Stroke(width = 2.5f.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
                 )
             }
