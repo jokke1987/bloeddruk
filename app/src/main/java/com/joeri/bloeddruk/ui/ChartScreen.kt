@@ -64,8 +64,9 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
-private val SysColor = Color(0xFF4C5BD4)
-private val DiaColor = Color(0xFF1E9E9E)
+// Levendige heldere kleuren voor Systolisch (Bovendruk) en Diastolisch (Onderdruk)
+private val SysColor = Color(0xFF2563EB) // Helder Diep Blauw voor Systolisch
+private val DiaColor = Color(0xFF0D9488) // Helder Diep Teal/Groen voor Diastolisch
 private val axisFmt: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM")
 private val detailFmt: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yy HH:mm")
 
@@ -98,7 +99,7 @@ fun ChartTab(entries: List<BloodPressureEntry>) {
     LaunchedEffect(data) { selected = null }
 
     if (isLandscape) {
-        // Automatisch Schermvullend in Liggende Stand (Landscape Mode)
+        // Automatisch Schermvullend in Liggende Stand (Landscape Mode) - Dominante Grafiek
         FullscreenLandscapeChart(
             data = data,
             selected = selected,
@@ -164,7 +165,7 @@ fun ChartTab(entries: List<BloodPressureEntry>) {
     }
 }
 
-/** Automatisch Schermvullende Grafiek in Liggende Stand (Landscape Mode) */
+/** Dominant Schermvullende Grafiek in Liggende Stand (Landscape Mode) */
 @Composable
 private fun FullscreenLandscapeChart(
     data: List<BloodPressureEntry>,
@@ -181,24 +182,25 @@ private fun FullscreenLandscapeChart(
         Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
+        // Compacte Bovenbalk met periode- en trendselectie
         Row(
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Bloeddruk Trends (Schermvullend)", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Ink)
+            Text("Bloeddruk Trends", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Ink)
 
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 SingleChoiceSegmentedButtonRow {
                     labels.forEachIndexed { i, l ->
                         SegmentedButton(
                             selected = range == i,
                             onClick = { onRangeChange(i) },
                             shape = SegmentedButtonDefaults.itemShape(i, labels.size)
-                        ) { Text(l, fontSize = 11.sp) }
+                        ) { Text(l, fontSize = 10.5.sp) }
                     }
                 }
 
@@ -208,12 +210,13 @@ private fun FullscreenLandscapeChart(
                             selected = trendWindow == i,
                             onClick = { onTrendChange(i) },
                             shape = SegmentedButtonDefaults.itemShape(i, trendLabels.size)
-                        ) { Text(l, fontSize = 11.sp) }
+                        ) { Text(l, fontSize = 10.5.sp) }
                     }
                 }
             }
         }
 
+        // Maximale Grafiek Kaart (Vul het hele scherm)
         Card(
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = Surface),
@@ -223,13 +226,16 @@ private fun FullscreenLandscapeChart(
             Column(
                 Modifier
                     .fillMaxSize()
-                    .padding(12.dp)
+                    .padding(10.dp)
             ) {
                 SelectionInfo(selected?.let { data.getOrNull(it) })
-                Box(Modifier.weight(1f).fillMaxWidth()) {
+                Box(
+                    Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                ) {
                     BpLineChart(data, selected, trendWindow, modifier = Modifier.fillMaxSize(), onSelect = onSelect)
                 }
-                ChartLegend()
             }
         }
     }
@@ -270,22 +276,22 @@ private fun RowScope.StatBlock(label: String, a: Avg?) {
 
 @Composable
 private fun SelectionInfo(e: BloodPressureEntry?) {
-    Column(Modifier.fillMaxWidth().heightIn(min = 40.dp)) {
+    Column(Modifier.fillMaxWidth().heightIn(min = 36.dp)) {
         if (e == null) {
-            Text("Tik op de grafiek voor de details van een meting.", color = InkSoft, fontSize = 12.sp)
+            Text("Tik op de grafiek voor de details van een meting.", color = InkSoft, fontSize = 11.5.sp)
         } else {
             val lvl = overallLevel(e.systolic, e.diastolic)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(Modifier.size(10.dp).clip(CircleShape).background(lvl.color))
                 Text(
                     "  ${e.timestamp.toLocalDateTime().format(detailFmt)} · ${if (e.isMorning) "Ochtend" else "Avond"}",
-                    fontSize = 13.sp,
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(Modifier.width(12.dp))
                 Text(
                     "${e.systolic}/${e.diastolic} mmHg · pols ${e.pulse} · ${lvl.label}",
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                     color = lvl.ink
                 )
@@ -313,6 +319,9 @@ private fun BpLineChart(
     val inkSoftColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.65f)
     val dividerColor = MaterialTheme.colorScheme.outline
     val labelStyle = remember(inkSoftColor) { TextStyle(fontSize = 10.sp, color = inkSoftColor) }
+
+    val sysLabelStyle = remember { TextStyle(fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = SysColor) }
+    val diaLabelStyle = remember { TextStyle(fontSize = 10.5.sp, fontWeight = FontWeight.Bold, color = DiaColor) }
 
     val minT = data.first().timestamp
     val maxT = data.last().timestamp
@@ -444,7 +453,7 @@ private fun BpLineChart(
                 drawPath(
                     path,
                     color.copy(alpha = if (trendWindow > 0) 0.4f else 1f),
-                    style = Stroke(width = 2.5f.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+                    style = Stroke(width = 2.8f.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
                 )
             }
         }
@@ -489,7 +498,7 @@ private fun BpLineChart(
             data.forEachIndexed { i, e ->
                 val px = xAt(e.timestamp, left, w)
                 val isSel = i == selected
-                val r = if (isSel) 6.dp.toPx() else 3.5f.dp.toPx()
+                val r = if (isSel) 6.5f.dp.toPx() else 4.dp.toPx()
 
                 drawCircle(SysColor, r, Offset(px, y(e.systolic.toFloat())))
                 drawCircle(Color.White, r * 0.5f, Offset(px, y(e.systolic.toFloat())))
@@ -497,6 +506,24 @@ private fun BpLineChart(
                 drawCircle(DiaColor, r, Offset(px, y(e.diastolic.toFloat())))
                 drawCircle(Color.White, r * 0.5f, Offset(px, y(e.diastolic.toFloat())))
             }
+
+            // NAAM ETIKETTEN DIRECT NAAST DE LIJNEN (Systolisch / Diastolisch)
+            val lastEntry = data.last()
+            val lastPx = xAt(lastEntry.timestamp, left, w)
+            val lastPySys = y(lastEntry.systolic.toFloat())
+            val lastPyDia = y(lastEntry.diastolic.toFloat())
+
+            val sysText = measurer.measure("Systolisch (Bovendruk)", sysLabelStyle)
+            val diaText = measurer.measure("Diastolisch (Onderdruk)", diaLabelStyle)
+
+            val sysX = (lastPx - sysText.size.width - 12.dp.toPx()).coerceAtLeast(left + 8.dp.toPx())
+            val sysY = (lastPySys - 18.dp.toPx()).coerceIn(top, top + h - 16.dp.toPx())
+
+            val diaX = (lastPx - diaText.size.width - 12.dp.toPx()).coerceAtLeast(left + 8.dp.toPx())
+            val diaY = (lastPyDia + 4.dp.toPx()).coerceIn(top, top + h - 16.dp.toPx())
+
+            drawText(sysText, topLeft = Offset(sysX, sysY))
+            drawText(diaText, topLeft = Offset(diaX, diaY))
         }
     }
 }
@@ -510,8 +537,8 @@ private fun ChartLegend() {
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        LegendDot("Bovendruk", SysColor)
-        LegendDot("Onderdruk", DiaColor)
+        LegendDot("Systolisch (Bovendruk)", SysColor)
+        LegendDot("Diastolisch (Onderdruk)", DiaColor)
         Text("┄ Trend", color = InkSoft, fontSize = 12.sp)
     }
 }
