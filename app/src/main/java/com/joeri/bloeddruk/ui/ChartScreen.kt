@@ -99,16 +99,11 @@ fun ChartTab(entries: List<BloodPressureEntry>) {
     LaunchedEffect(data) { selected = null }
 
     if (isLandscape) {
-        // Automatisch Schermvullend in Liggende Stand (Landscape Mode) - Dominante Grafiek
+        // Uitsluitend de Grafiek Schermvullend in Liggende Stand (Landscape Mode)
         FullscreenLandscapeChart(
             data = data,
             selected = selected,
-            range = range,
             trendWindow = trendWindow,
-            labels = labels,
-            trendLabels = trendLabels,
-            onRangeChange = { range = it },
-            onTrendChange = { trendWindow = it },
             onSelect = { selected = it }
         )
     } else {
@@ -165,79 +160,27 @@ fun ChartTab(entries: List<BloodPressureEntry>) {
     }
 }
 
-/** Dominant Schermvullende Grafiek in Liggende Stand (Landscape Mode) */
+/** Uitsluitend de Grafiek Schermvullend in Liggende Stand (Landscape Mode) */
 @Composable
 private fun FullscreenLandscapeChart(
     data: List<BloodPressureEntry>,
     selected: Int?,
-    range: Int,
     trendWindow: Int,
-    labels: List<String>,
-    trendLabels: List<String>,
-    onRangeChange: (Int) -> Unit,
-    onTrendChange: (Int) -> Unit,
     onSelect: (Int?) -> Unit
 ) {
-    Column(
+    Box(
         Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(10.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+            .padding(8.dp)
     ) {
-        // Compacte Bovenbalk met periode- en trendselectie
-        Row(
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("Bloeddruk Trends", fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Ink)
-
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                SingleChoiceSegmentedButtonRow {
-                    labels.forEachIndexed { i, l ->
-                        SegmentedButton(
-                            selected = range == i,
-                            onClick = { onRangeChange(i) },
-                            shape = SegmentedButtonDefaults.itemShape(i, labels.size)
-                        ) { Text(l, fontSize = 10.5.sp) }
-                    }
-                }
-
-                SingleChoiceSegmentedButtonRow {
-                    trendLabels.forEachIndexed { i, l ->
-                        SegmentedButton(
-                            selected = trendWindow == i,
-                            onClick = { onTrendChange(i) },
-                            shape = SegmentedButtonDefaults.itemShape(i, trendLabels.size)
-                        ) { Text(l, fontSize = 10.5.sp) }
-                    }
-                }
-            }
-        }
-
-        // Maximale Grafiek Kaart (Vul het hele scherm)
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Surface),
-            elevation = CardDefaults.cardElevation(2.dp),
-            modifier = Modifier.weight(1f).fillMaxWidth()
-        ) {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(10.dp)
-            ) {
-                SelectionInfo(selected?.let { data.getOrNull(it) })
-                Box(
-                    Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                ) {
-                    BpLineChart(data, selected, trendWindow, modifier = Modifier.fillMaxSize(), onSelect = onSelect)
-                }
-            }
-        }
+        BpLineChart(
+            data = data,
+            selected = selected,
+            trendWindow = trendWindow,
+            modifier = Modifier.fillMaxSize(),
+            onSelect = onSelect
+        )
     }
 }
 
