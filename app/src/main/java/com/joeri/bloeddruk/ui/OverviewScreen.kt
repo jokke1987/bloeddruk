@@ -464,24 +464,33 @@ private fun DashboardScreen(
     }
 }
 
-/** Nieuwe Gezondheidsdashboard Kaart met Horizontale Status-Balk en SYS / DIA weergave */
+/** Gezondheidsdashboard Kaart met dynamische real-time SYS/DIA en Canvas Driehoek-Aanwijzer (▲) */
 @Composable
 private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
     val today = LocalDate.now(ZoneId.systemDefault())
     val todays = entries.filter { it.timestamp.toLocalDateTime().toLocalDate() == today }
+    val latestEntry = remember(entries) { entries.maxByOrNull { it.timestamp } }
+
     val hasMorning = todays.any { it.isMorning }
     val hasEvening = todays.any { !it.isMorning }
     val count = (if (hasMorning) 1 else 0) + (if (hasEvening) 1 else 0)
 
-    val avgSys = if (todays.isNotEmpty()) todays.map { it.systolic }.average().roundToInt() else 113
-    val avgDia = if (todays.isNotEmpty()) todays.map { it.diastolic }.average().roundToInt() else 92
+    // Gebruik de meest recente meting van vandaag (of de allerlaatste geregistreerde meting)
+    val currentDisplayEntry = todays.maxByOrNull { it.timestamp } ?: latestEntry
 
-    // Bepaal de relatieve positie van de aanwijzer (0.0f tot 1.0f)
-    val pointerPosition = when {
-        avgSys < 120 -> 0.18f
-        avgSys in 120..129 -> 0.42f
-        avgSys in 130..139 -> 0.68f
-        else -> 0.88f
+    val displaySys = currentDisplayEntry?.systolic ?: 120
+    val displayDia = currentDisplayEntry?.diastolic ?: 80
+    val lvl = overallLevel(displaySys, displayDia)
+
+    // Continu dynamische fractie voor de driehoekige pijlaanwijzer (0.0f t/m 1.0f)
+    val pointerFraction = remember(displaySys) {
+        when {
+            displaySys <= 100 -> 0.05f
+            displaySys in 101..119 -> 0.05f + 0.20f * ((displaySys - 100) / 19f)
+            displaySys in 120..129 -> 0.25f + 0.25f * ((displaySys - 120) / 9f)
+            displaySys in 130..139 -> 0.50f + 0.25f * ((displaySys - 130) / 9f)
+            else -> (0.75f + 0.20f * ((displaySys - 140) / 40f)).coerceAtMost(0.95f)
+        }
     }
 
     Card(
@@ -511,15 +520,20 @@ private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Laag", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Ink)
-                Text("Gemiddeld", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Ink)
-                Text("Hoog", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = Ink)
+                Text("Laag", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = InkSoft)
+                Text("Gemiddeld", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = InkSoft)
+                Text("Hoog", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = InkSoft)
             }
 
             Spacer(Modifier.height(6.dp))
 
-            // Horizontale Kleurenbalk (Groen, Geel, Oranje, Rood)
-            Column(Modifier.fillMaxWidth()) {
+            // Horizontale Kleurenbalk + Aanwijzer (▲)
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(30.dp)
+            ) {
+                // 4 Gekleurde Balkjes (Groen, Geel, Oranje, Rood)
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -532,44 +546,63 @@ private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
                     Box(Modifier.weight(1f).fillMaxHeight().background(Color(0xFFEF5350)))
                 }
 
-                // Driehoekige Aanwijzer (▲)
-                Box(
+                val inkColor = MaterialTheme.colorScheme.onSurface
+
+                // Driehoekige Aanwijzer (▲) getekend via Canvas voor 100% nauwkeurigheid op elk scherm
+                Canvas(
                     Modifier
                         .fillMaxWidth()
-                        .padding(top = 2.dp)
+                        .height(28.dp)
                 ) {
-                    Text(
-                        "▲",
-                        fontSize = 16.sp,
-                        color = Ink,
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(start = (pointerPosition * 260).dp)
-                    )
+                    val w = size.width
+                    val x = (w * pointerFraction).coerceIn(12f, w - 12f)
+                    val yTop = 14.dp.toPx()
+
+                    val path = androidx.compose.ui.graphics.Path().apply {
+                        moveTo(x, yTop)
+                        lineTo(x - 8.dp.toPx(), yTop + 12.dp.toPx())
+                        lineTo(x + 8.dp.toPx(), yTop + 12.dp.toPx())
+                        close()
+                    }
+                    drawPath(path, color = inkColor)
                 }
             }
 
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(6.dp))
 
-            Text(
-                "BLOEDDRUKSTATUS",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = Ink,
-                letterSpacing = 0.5.sp,
-                modifier = Modifier.align(Alignment.Start)
-            )
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "BLOEDDRUKSTATUS",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Ink,
+                    letterSpacing = 0.5.sp
+                )
+
+                Box(
+                    Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(lvl.color.copy(alpha = 0.15f))
+                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                ) {
+                    Text(lvl.label, color = lvl.color, fontSize = 11.5.sp, fontWeight = FontWeight.Bold)
+                }
+            }
 
             Spacer(Modifier.height(10.dp))
 
-            // SYS | DIA Cijfers
+            // SYS | DIA Cijfers van de meest recente meting
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
-                    Text("$avgSys", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Ink)
+                    Text("$displaySys", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Ink)
                     Text("SYS", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = InkSoft)
                 }
 
@@ -581,7 +614,7 @@ private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
                 )
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
-                    Text("$avgDia", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Ink)
+                    Text("$displayDia", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Ink)
                     Text("DIA", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = InkSoft)
                 }
             }
