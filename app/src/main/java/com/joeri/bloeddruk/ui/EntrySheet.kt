@@ -221,24 +221,32 @@ fun EntrySheet(
                 )
             }
 
-            // Medische Informatieve Waarschuwing (oranje banner bij extreem geldige waarde)
+            // Hartstichting Veiligheidswaarschuwing bij ernstig verhoogde waarde (SYS >= 180 of DIA >= 110)
             if (isExtremeValue) {
                 Card(
                     shape = RoundedCornerShape(12.dp),
-                    colors = CardDefaults.cardColors(containerColor = StatusAttentionBg),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFFEE2E2)),
                     modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
                 ) {
-                    Row(
-                        Modifier.padding(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Filled.Warning, contentDescription = null, tint = StatusAttentionText, modifier = Modifier.size(22.dp))
-                        Spacer(Modifier.width(10.dp))
+                    Column(Modifier.padding(14.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Filled.Warning, contentDescription = null, tint = BloodPressureColors.High, modifier = Modifier.size(24.dp))
+                            Spacer(Modifier.width(10.dp))
+                            Text(
+                                "⚠️ Ernstig verhoogde bloeddrukwaarde",
+                                fontSize = 13.5.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = BloodPressureColors.High
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
                         Text(
-                            "Let op: Deze bloeddrukwaarde is erg afwijkend. Neem bij twijfel of lichamelijke klachten contact op met je arts.",
+                            "• Blijf rustig zitten en herhaal de meting zorgvuldig na 5 minuten rust.\n" +
+                            "• Blijft de waarde bij herhaalde metingen zo hoog? Neem dan vandaag nog contact op met je huisarts.\n" +
+                            "• Bij acute ernstige klachten (zoals pijn op de borst, benauwdheid of uitvalsverschijnselen): bel direct 112.",
                             fontSize = 12.sp,
-                            color = StatusAttentionText,
-                            fontWeight = FontWeight.Medium
+                            color = Ink,
+                            lineHeight = 16.sp
                         )
                     }
                 }

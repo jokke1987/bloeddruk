@@ -8,11 +8,10 @@ import com.joeri.bloeddruk.data.UserProfile
  * Bevat de exacte goedgekeurde kleurwaarden zonder bruine tint of ongewenste blending.
  */
 object BloodPressureColors {
-    val Low = Color(0xFF3987D7)          // Blauw #3987D7 voor Lage bloeddruk
-    val Normal = Color(0xFF4CAF50)       // Groen #4CAF50 voor Normaal
-    val Elevated = Color(0xFFFB8C00)     // Oranje #FB8C00 voor Verhoogde bloeddruk
-    val High = Color(0xFFE53935)         // Rood #E53935 voor Hoge bloeddruk
-    val CriticalHigh = Color(0xFFE53935) // Zichtbaar rood #E53935 voor Hoog (met interne waarschuwing)
+    val Low = Color(0xFF3987D7)      // Blauw #3987D7 voor Lage bloeddruk
+    val Normal = Color(0xFF4CAF50)   // Groen #4CAF50 voor Normaal
+    val Elevated = Color(0xFFFB8C00) // Oranje #FB8C00 voor Verhoogde bloeddruk
+    val High = Color(0xFFE53935)     // Rood #E53935 voor Hoge bloeddruk
 
     val LowBg = Color(0xFFE0F2FE)
     val NormalBg = Color(0xFFE1F3E8)
