@@ -404,6 +404,7 @@ fun OverviewScreen(
 private fun DashboardScreen(
     entries: List<BloodPressureEntry>,
     medications: List<MedicationItem>,
+    userProfile: UserProfile = UserProfile(),
     onEdit: (BloodPressureEntry) -> Unit,
     onAdd: () -> Unit,
     onOpenMedication: () -> Unit,
@@ -434,9 +435,13 @@ private fun DashboardScreen(
             )
         }
 
-        // 3. Halve Cirkel Boog Gauge (Gezondheidsdashboard Status)
+        // 3. Gezondheidsdashboard Status (100% Synchroon met Laatste Meting)
         item(key = "dashboard_gauge") {
-            DashboardGaugeCard(entries)
+            DashboardGaugeCard(
+                latestEntry = latestEntry,
+                userProfile = userProfile,
+                entries = entries
+            )
         }
 
         // 4. Medicatie Vandaag Status
@@ -464,34 +469,56 @@ private fun DashboardScreen(
     }
 }
 
-/** Gezondheidsdashboard Kaart met dynamische real-time SYS/DIA en Canvas Driehoek-Aanwijzer (▲) */
+/** Gezondheidsdashboard Kaart - 100% Synchroon met de nieuwste opgeslagen meting */
 @Composable
-private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
+private fun DashboardGaugeCard(
+    latestEntry: BloodPressureEntry?,
+    userProfile: UserProfile = UserProfile(),
+    entries: List<BloodPressureEntry> = emptyList()
+) {
     val today = LocalDate.now(ZoneId.systemDefault())
     val todays = entries.filter { it.timestamp.toLocalDateTime().toLocalDate() == today }
-    val latestEntry = remember(entries) { entries.maxByOrNull { it.timestamp } }
-
     val hasMorning = todays.any { it.isMorning }
     val hasEvening = todays.any { !it.isMorning }
     val count = (if (hasMorning) 1 else 0) + (if (hasEvening) 1 else 0)
 
-    // Gebruik de meest recente meting van vandaag (of de allerlaatste geregistreerde meting)
-    val currentDisplayEntry = todays.maxByOrNull { it.timestamp } ?: latestEntry
-
-    val displaySys = currentDisplayEntry?.systolic ?: 120
-    val displayDia = currentDisplayEntry?.diastolic ?: 80
-    val lvl = overallLevel(displaySys, displayDia)
-
-    // Continu dynamische fractie voor de driehoekige pijlaanwijzer (0.0f t/m 1.0f)
-    val pointerFraction = remember(displaySys) {
-        when {
-            displaySys <= 100 -> 0.05f
-            displaySys in 101..119 -> 0.05f + 0.20f * ((displaySys - 100) / 19f)
-            displaySys in 120..129 -> 0.25f + 0.25f * ((displaySys - 120) / 9f)
-            displaySys in 130..139 -> 0.50f + 0.25f * ((displaySys - 130) / 9f)
-            else -> (0.75f + 0.20f * ((displaySys - 140) / 40f)).coerceAtMost(0.95f)
+    if (latestEntry == null) {
+        Card(
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = Surface),
+            elevation = CardDefaults.cardElevation(2.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 6.dp)
+        ) {
+            Column(
+                Modifier.padding(20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    "GEZONDHEIDSDASHBOARD",
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = InkSoft,
+                    letterSpacing = 0.5.sp
+                )
+                Spacer(Modifier.height(10.dp))
+                Text(
+                    "Geen actuele meting om de bloeddrukstatus te berekenen.",
+                    fontSize = 13.sp,
+                    color = InkSoft,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
+        return
     }
+
+    // Gebruik de exacte systolische en diastolische waarden van de allernieuwste meting
+    val sys = latestEntry.systolic
+    val dia = latestEntry.diastolic
+    val classification = classifyBloodPressure(sys, dia, userProfile)
+    val pointerFraction = classification.pointerFraction
 
     Card(
         shape = RoundedCornerShape(20.dp),
@@ -515,40 +542,36 @@ private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
 
             Spacer(Modifier.height(12.dp))
 
-            // Labels boven de balk: Laag / Gemiddeld / Hoog
+            // Labels boven de kleurenbalk: Blauw / Groen / Oranje / Rood
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Laag", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = InkSoft)
-                Text("Gemiddeld", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = InkSoft)
-                Text("Hoog", fontSize = 12.sp, fontWeight = FontWeight.SemiBold, color = InkSoft)
+                Text("Laag", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, color = BpCategory.LOW.color)
+                Text("Normaal", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, color = BpCategory.NORMAL.color)
+                Text("Verhoogd", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, color = BpCategory.ELEVATED.color)
+                Text("Hoog", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, color = BpCategory.HIGH.color)
             }
 
             Spacer(Modifier.height(6.dp))
 
-            // Horizontale Kleurenbalk + Aanwijzer (▲)
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(30.dp)
-            ) {
-                // 4 Gekleurde Balkjes (Groen, Geel, Oranje, Rood)
+            // Horizontale Kleurenbalk (4 Zones: Blauw, Groen, Oranje, Rood)
+            Column(Modifier.fillMaxWidth()) {
                 Row(
                     Modifier
                         .fillMaxWidth()
                         .height(12.dp)
                         .clip(RoundedCornerShape(6.dp))
                 ) {
-                    Box(Modifier.weight(1f).fillMaxHeight().background(Color(0xFF4CAF50)))
-                    Box(Modifier.weight(1f).fillMaxHeight().background(Color(0xFFFFCA28)))
-                    Box(Modifier.weight(1f).fillMaxHeight().background(Color(0xFFFFA726)))
-                    Box(Modifier.weight(1f).fillMaxHeight().background(Color(0xFFEF5350)))
+                    Box(Modifier.weight(1f).fillMaxHeight().background(BpCategory.LOW.color))      // 1. Blauw
+                    Box(Modifier.weight(1f).fillMaxHeight().background(BpCategory.NORMAL.color))   // 2. Groen
+                    Box(Modifier.weight(1f).fillMaxHeight().background(BpCategory.ELEVATED.color)) // 3. Oranje
+                    Box(Modifier.weight(1f).fillMaxHeight().background(BpCategory.HIGH.color))     // 4. Rood
                 }
 
                 val inkColor = MaterialTheme.colorScheme.onSurface
 
-                // Driehoekige Aanwijzer (▲) getekend via Canvas voor 100% nauwkeurigheid op elk scherm
+                // Driehoekige Aanwijzer (▲) dynamisch gepositioneerd op basis van pointerFraction
                 Canvas(
                     Modifier
                         .fillMaxWidth()
@@ -586,23 +609,28 @@ private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
                 Box(
                     Modifier
                         .clip(RoundedCornerShape(8.dp))
-                        .background(lvl.color.copy(alpha = 0.15f))
+                        .background(classification.bgContainer)
                         .padding(horizontal = 8.dp, vertical = 2.dp)
                 ) {
-                    Text(lvl.label, color = lvl.color, fontSize = 11.5.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        classification.label,
+                        color = classification.color,
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
             Spacer(Modifier.height(10.dp))
 
-            // SYS | DIA Cijfers van de meest recente meting
+            // SYS | DIA Cijfers van de allernieuwste opgeslagen meting
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
-                    Text("$displaySys", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Ink)
+                    Text("$sys", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Ink)
                     Text("SYS", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = InkSoft)
                 }
 
@@ -614,7 +642,7 @@ private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
                 )
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
-                    Text("$displayDia", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Ink)
+                    Text("$dia", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Ink)
                     Text("DIA", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = InkSoft)
                 }
             }
@@ -628,14 +656,14 @@ private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
                     .fillMaxWidth()
                     .height(8.dp)
                     .clip(CircleShape),
-                color = Color(0xFF4CAF50),
+                color = Color(0xFF216E46),
                 trackColor = Divider,
                 strokeCap = StrokeCap.Round
             )
 
             Spacer(Modifier.height(12.dp))
 
-            // Onderste rij: ☀️ 1 van 2 metingen   🌙 Avond –
+            // Onderste rij: ☀️ X van 2 metingen   🌙 Avond –
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -645,7 +673,7 @@ private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
                     Icon(
                         Icons.Filled.WbSunny,
                         contentDescription = null,
-                        tint = if (hasMorning) Color(0xFF4CAF50) else Color(0xFFF2A93B),
+                        tint = if (hasMorning) Color(0xFF216E46) else Color(0xFFF2A93B),
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(Modifier.width(6.dp))
@@ -656,7 +684,7 @@ private fun DashboardGaugeCard(entries: List<BloodPressureEntry>) {
                     Icon(
                         Icons.Filled.DarkMode,
                         contentDescription = null,
-                        tint = if (hasEvening) Color(0xFF4CAF50) else Color(0xFF6C63B5),
+                        tint = if (hasEvening) Color(0xFF216E46) else Color(0xFF6C63B5),
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(Modifier.width(6.dp))
