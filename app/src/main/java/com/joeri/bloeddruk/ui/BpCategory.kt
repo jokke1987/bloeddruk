@@ -3,17 +3,38 @@ package com.joeri.bloeddruk.ui
 import androidx.compose.ui.graphics.Color
 import com.joeri.bloeddruk.data.UserProfile
 
-/** FASE 2 & 4: Vaste 4 Bloeddruk Categorieën voor het Gezondheidsdashboard */
+/**
+ * Centrale Kleurendefinities voor Bloeddrukcategorieën.
+ * Bevat de exacte goedgekeurde kleurwaarden zonder bruine tint of ongewenste blending.
+ */
+object BloodPressureColors {
+    val Low = Color(0xFF3987D7)          // Blauw #3987D7 voor Lage bloeddruk
+    val Normal = Color(0xFF4CAF50)       // Groen #4CAF50 voor Optimaal / Normaal
+    val Elevated = Color(0xFFFB8C00)     // Oranje #FB8C00 voor Verhoogde bloeddruk
+    val High = Color(0xFFE53935)         // Rood #E53935 voor Hoge bloeddruk
+    val CriticalHigh = Color(0xFFB71C1C) // Donkerrood #B71C1C voor Ernstig verhoogd
+
+    val LowBg = Color(0xFFE0F2FE)
+    val NormalBg = Color(0xFFE1F3E8)
+    val ElevatedBg = Color(0xFFFFF1D6)
+    val HighBg = Color(0xFFFEE2E2)
+    val CriticalHighBg = Color(0xFFFFEBEE)
+}
+
+/**
+ * Vaste 5 Bloeddruk Categorieën voor thuismetingen.
+ */
 enum class BpCategory(
     val label: String,
     val color: Color,
     val bgContainer: Color,
     val pointerFraction: Float
 ) {
-    LOW("Lage bloeddruk", Color(0xFF2563EB), Color(0xFFE0F2FE), 0.125f),      // 1. Blauwe zone (Lage bloeddruk)
-    NORMAL("Normale bloeddruk", Color(0xFF216E46), Color(0xFFE1F3E8), 0.375f), // 2. Groene zone (Normale bloeddruk)
-    ELEVATED("Licht verhoogd", Color(0xFFA9670A), Color(0xFFFFF1D6), 0.625f), // 3. Oranje zone (Licht verhoogde bloeddruk)
-    HIGH("Hoge bloeddruk", Color(0xFFB42318), Color(0xFFFEE2E2), 0.875f)      // 4. Rode zone (Hoge bloeddruk)
+    LOW("Lage bloeddruk", BloodPressureColors.Low, BloodPressureColors.LowBg, 0.125f),
+    NORMAL("Optimaal", BloodPressureColors.Normal, BloodPressureColors.NormalBg, 0.375f),
+    ELEVATED("Verhoogd", BloodPressureColors.Elevated, BloodPressureColors.ElevatedBg, 0.625f),
+    HIGH("Hoge bloeddruk", BloodPressureColors.High, BloodPressureColors.HighBg, 0.825f),
+    CRITICAL_HIGH("Ernstig verhoogd", BloodPressureColors.CriticalHigh, BloodPressureColors.CriticalHighBg, 0.95f)
 }
 
 /** Geharmoniseerd overkoepelend beoordelingsresultaat */
@@ -28,54 +49,79 @@ data class BpClassification(
 }
 
 /**
- * Centrale, medisch verantwoorde beoordelingsfunctie.
- * Beoordeelt ZOVEL de systolische (bovendruk) als diastolische (onderdruk) waarde,
- * en kent de categorie toe aan het HOOGSTE risiconiveau van beide.
+ * Centrale, medisch verantwoorde beoordelingsfunctie voor THUISMETINGEN bij volwassenen.
+ * Beoordeelt ZOVEL de systolische (bovendruk) als diastolische (onderdruk) waarde.
+ * Bij verschillende categorieën krijgt altijd de HOOGSTE toepasselijke risicocategorie voorrang.
+ *
+ * Thuismeting Grenswaarden:
+ * 1. Ernstig verhoogd: SYS >= 180 mmHg OF DIA >= 110 mmHg (Donkerrood #B71C1C)
+ * 2. Hoge bloeddruk: SYS >= 135 mmHg OF DIA >= 85 mmHg (Rood #E53935)
+ * 3. Verhoogd: SYS >= 120 mmHg OF DIA >= 80 mmHg (Oranje #FB8C00)
+ * 4. Optimaal: SYS < 120 mmHg EN DIA < 80 mmHg (Groen #4CAF50)
+ * 5. Lage bloeddruk: SYS < 90 mmHg EN DIA < 60 mmHg (Blauw #3987D7)
  */
 fun classifyBloodPressure(
     systolic: Int,
     diastolic: Int,
     userProfile: UserProfile = UserProfile()
 ): BpClassification {
-    val sysNormalMax = userProfile.sysNormalMax.coerceAtLeast(100)
-    val diaNormalMax = userProfile.diaNormalMax.coerceAtLeast(60)
-    val sysElevatedMax = userProfile.sysElevatedMax.coerceAtLeast(sysNormalMax + 1)
-    val diaElevatedMax = userProfile.diaElevatedMax.coerceAtLeast(diaNormalMax + 1)
-
-    // Bepaal de categorie voor systolisch
-    val sysCat = when {
-        systolic < 90 -> BpCategory.LOW
-        systolic <= sysNormalMax -> BpCategory.NORMAL
-        systolic <= sysElevatedMax -> BpCategory.ELEVATED
-        else -> BpCategory.HIGH
+    // 1. Controleer ERNSTIG VERHOOGD (SYS >= 180 OF DIA >= 110) EERST!
+    if (systolic >= 180 || diastolic >= 110) {
+        return BpClassification(
+            category = BpCategory.CRITICAL_HIGH,
+            label = "Ernstig verhoogd",
+            color = BloodPressureColors.CriticalHigh,
+            bgContainer = BloodPressureColors.CriticalHighBg,
+            pointerFraction = 0.95f
+        )
     }
 
-    // Bepaal de categorie voor diastolisch
-    val diaCat = when {
-        diastolic < 60 -> BpCategory.LOW
-        diastolic <= diaNormalMax -> BpCategory.NORMAL
-        diastolic <= diaElevatedMax -> BpCategory.ELEVATED
-        else -> BpCategory.HIGH
+    // 2. Controleer HOGE BLOEDDRUK voor thuismetingen (SYS >= 135 OF DIA >= 85)
+    if (systolic >= 135 || diastolic >= 85) {
+        val frac = 0.75f + 0.15f * (((systolic - 135).coerceAtLeast(0)) / 45f)
+        return BpClassification(
+            category = BpCategory.HIGH,
+            label = "Hoge bloeddruk",
+            color = BloodPressureColors.High,
+            bgContainer = BloodPressureColors.HighBg,
+            pointerFraction = frac.coerceIn(0.75f, 0.90f)
+        )
     }
 
-    // Kies het hoogste risiconiveau van beide
-    val highestCategory = maxOf(sysCat, diaCat, compareBy { it.ordinal })
-
-    // Bereken een vloeiende pointerFraction voor de 4-kleurenbalk
-    val baseFraction = when (highestCategory) {
-        BpCategory.LOW -> 0.05f + 0.18f * ((systolic.coerceIn(50, 90) - 50) / 40f)
-        BpCategory.NORMAL -> 0.25f + 0.22f * ((systolic.coerceIn(90, sysNormalMax) - 90) / (sysNormalMax - 90f).coerceAtLeast(1f))
-        BpCategory.ELEVATED -> 0.50f + 0.22f * ((systolic.coerceIn(sysNormalMax + 1, sysElevatedMax) - sysNormalMax) / (sysElevatedMax - sysNormalMax).toFloat().coerceAtLeast(1f))
-        BpCategory.HIGH -> (0.75f + 0.20f * ((systolic.coerceIn(sysElevatedMax + 1, 220) - sysElevatedMax) / 80f)).coerceAtMost(0.95f)
+    // 3. Controleer VERHOOGDE BLOEDDRUK voor thuismetingen (SYS >= 120 OF DIA >= 80)
+    if (systolic >= 120 || diastolic >= 80) {
+        val sysRatio = if (systolic >= 120) (systolic - 120) / 15f else 0f
+        val diaRatio = if (diastolic >= 80) (diastolic - 80) / 5f else 0f
+        val maxRatio = maxOf(sysRatio, diaRatio).coerceIn(0f, 1f)
+        val frac = 0.50f + 0.23f * maxRatio
+        return BpClassification(
+            category = BpCategory.ELEVATED,
+            label = "Verhoogd",
+            color = BloodPressureColors.Elevated,
+            bgContainer = BloodPressureColors.ElevatedBg,
+            pointerFraction = frac
+        )
     }
 
+    // 4. Controleer LAGE BLOEDDRUK (SYS < 90 EN DIA < 60)
+    if (systolic < 90 && diastolic < 60) {
+        return BpClassification(
+            category = BpCategory.LOW,
+            label = "Lage bloeddruk",
+            color = BloodPressureColors.Low,
+            bgContainer = BloodPressureColors.LowBg,
+            pointerFraction = 0.125f
+        )
+    }
+
+    // 5. Anders: OPTIMAAL (SYS < 120 EN DIA < 80)
+    val sysFrac = (systolic.coerceIn(90, 119) - 90) / 29f
+    val frac = 0.25f + 0.23f * sysFrac
     return BpClassification(
-        category = highestCategory,
-        label = highestCategory.label,
-        color = highestCategory.color,
-        bgContainer = highestCategory.bgContainer,
-        pointerFraction = baseFraction
+        category = BpCategory.NORMAL,
+        label = "Optimaal",
+        color = BloodPressureColors.Normal,
+        bgContainer = BloodPressureColors.NormalBg,
+        pointerFraction = frac
     )
 }
-
-

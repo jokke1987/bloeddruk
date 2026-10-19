@@ -548,7 +548,7 @@ private fun DashboardGaugeCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text("Laag", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, color = BpCategory.LOW.color)
-                Text("Normaal", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, color = BpCategory.NORMAL.color)
+                Text("Optimaal", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, color = BpCategory.NORMAL.color)
                 Text("Verhoogd", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, color = BpCategory.ELEVATED.color)
                 Text("Hoog", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, color = BpCategory.HIGH.color)
             }
