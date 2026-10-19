@@ -9,9 +9,9 @@ import com.joeri.bloeddruk.data.UserProfile
  */
 object BloodPressureColors {
     val Low = Color(0xFF3987D7)      // Blauw #3987D7 voor Lage bloeddruk
-    val Normal = Color(0xFF4CAF50)   // Groen #4CAF50 voor Normaal
-    val Elevated = Color(0xFFFB8C00) // Oranje #FB8C00 voor Verhoogde bloeddruk
-    val High = Color(0xFFE53935)     // Rood #E53935 voor Hoge bloeddruk
+    val Normal = Color(0xFF4CAF50)   // Groen #4CAF50 voor Normaal (Ideaal / Goed < 130/< 85)
+    val Elevated = Color(0xFFFB8C00) // Oranje #FB8C00 voor Verhoogd (Hoog-normaal 130-139 / 85-89)
+    val High = Color(0xFFE53935)     // Rood #E53935 voor Hoge bloeddruk (Hypertensie >= 140 / >= 90)
 
     val LowBg = Color(0xFFE0F2FE)
     val NormalBg = Color(0xFFE1F3E8)
@@ -51,11 +51,11 @@ data class BpClassification(
  * Beoordeelt ZOVEL de systolische (bovendruk) als diastolische (onderdruk) waarde.
  * Bij verschillende categorieën krijgt altijd de HOOGSTE toepasselijke risicocategorie voorrang.
  *
- * Exclusief 4 Zichtbare Categorieën (Laag, Normaal, Verhoogd, Hoog):
- * 1. Ernstig verhoogde waarden (SYS >= 180 OF DIA >= 110): Zichtbare categorie 'Hoog' (Rood #E53935) + isCritical vlag voor waarschuwing.
- * 2. Hoge bloeddruk (SYS >= 135 OF DIA >= 85): Zichtbare categorie 'Hoog' (Rood #E53935).
- * 3. Verhoogde bloeddruk (SYS >= 120 OF DIA >= 80): Zichtbare categorie 'Verhoogd' (Oranje #FB8C00).
- * 4. Normale bloeddruk (SYS < 120 EN DIA < 80): Zichtbare categorie 'Normaal' (Groen #4CAF50).
+ * Nieuwe Gewenste Grenswaarden:
+ * 1. Ernstige hypertensie (SYS >= 180 OF DIA >= 110): Zichtbare categorie 'Hoog' (Rood #E53935) + isCritical vlag voor waarschuwing.
+ * 2. Hoge bloeddruk / Hypertensie (SYS >= 140 OF DIA >= 90): Zichtbare categorie 'Hoog' (Rood #E53935).
+ * 3. Hoog-normaal / Verhoogd (SYS 130..139 OF DIA 85..89): Zichtbare categorie 'Verhoogd' (Oranje #FB8C00).
+ * 4. Normaal / Goed / Ideaal (SYS < 130 EN DIA < 85): Zichtbare categorie 'Normaal' (Groen #4CAF50).
  * 5. Lage bloeddruk (SYS < 90 EN DIA < 60): Zichtbare categorie 'Laag' (Blauw #3987D7).
  */
 fun classifyBloodPressure(
@@ -75,9 +75,9 @@ fun classifyBloodPressure(
         )
     }
 
-    // 2. Controleer HOGE BLOEDDRUK voor thuismetingen (SYS >= 135 OF DIA >= 85)
-    if (systolic >= 135 || diastolic >= 85) {
-        val frac = 0.75f + 0.15f * (((systolic - 135).coerceAtLeast(0)) / 45f)
+    // 2. Controleer HOGE BLOEDDRUK / HYPERTENSIE (SYS >= 140 OF DIA >= 90)
+    if (systolic >= 140 || diastolic >= 90) {
+        val frac = 0.75f + 0.15f * (((systolic - 140).coerceAtLeast(0)) / 40f)
         return BpClassification(
             category = BpCategory.HIGH,
             label = "Hoog",
@@ -88,10 +88,10 @@ fun classifyBloodPressure(
         )
     }
 
-    // 3. Controleer VERHOOGDE BLOEDDRUK voor thuismetingen (SYS >= 120 OF DIA >= 80)
-    if (systolic >= 120 || diastolic >= 80) {
-        val sysRatio = if (systolic >= 120) (systolic - 120) / 15f else 0f
-        val diaRatio = if (diastolic >= 80) (diastolic - 80) / 5f else 0f
+    // 3. Controleer HOOG-NORMAAL / VERHOOGD (SYS >= 130 OF DIA >= 85)
+    if (systolic >= 130 || diastolic >= 85) {
+        val sysRatio = if (systolic >= 130) (systolic - 130) / 9f else 0f
+        val diaRatio = if (diastolic >= 85) (diastolic - 85) / 4f else 0f
         val maxRatio = maxOf(sysRatio, diaRatio).coerceIn(0f, 1f)
         val frac = 0.50f + 0.23f * maxRatio
         return BpClassification(
@@ -116,8 +116,8 @@ fun classifyBloodPressure(
         )
     }
 
-    // 5. Anders: NORMAAL (SYS < 120 EN DIA < 80)
-    val sysFrac = (systolic.coerceIn(90, 119) - 90) / 29f
+    // 5. Anders: NORMAAL / GOED / IDEAAL (SYS < 130 EN DIA < 85)
+    val sysFrac = (systolic.coerceIn(90, 129) - 90) / 39f
     val frac = 0.25f + 0.23f * sysFrac
     return BpClassification(
         category = BpCategory.NORMAL,

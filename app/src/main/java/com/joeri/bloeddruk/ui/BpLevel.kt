@@ -15,15 +15,15 @@ enum class BpLevel(val label: String, val color: Color, val ink: Color) {
 
 fun systolicLevel(v: Int): BpLevel = when {
     v < 90 -> BpLevel.LOW
-    v < 120 -> BpLevel.NORMAL
-    v < 135 -> BpLevel.ELEVATED
+    v < 130 -> BpLevel.NORMAL
+    v < 140 -> BpLevel.ELEVATED
     else -> BpLevel.HIGH
 }
 
 fun diastolicLevel(v: Int): BpLevel = when {
     v < 60 -> BpLevel.LOW
-    v < 80 -> BpLevel.NORMAL
-    v < 85 -> BpLevel.ELEVATED
+    v < 85 -> BpLevel.NORMAL
+    v < 90 -> BpLevel.ELEVATED
     else -> BpLevel.HIGH
 }
 
