@@ -20,30 +20,41 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.FileProvider
 import com.joeri.bloeddruk.data.BloodPressureEntry
 import com.joeri.bloeddruk.data.UserProfile
-import com.joeri.bloeddruk.ui.BpLevel
+import com.joeri.bloeddruk.ui.BpCategory
+import com.joeri.bloeddruk.ui.classifyBloodPressure
 import com.joeri.bloeddruk.ui.diastolicLevel
-import com.joeri.bloeddruk.ui.overallLevel
 import com.joeri.bloeddruk.ui.systolicLevel
 import com.joeri.bloeddruk.ui.tagList
 import com.joeri.bloeddruk.ui.toLocalDateTime
 import java.io.File
 import java.io.FileOutputStream
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.WeekFields
 import kotlin.math.roundToInt
 
-private val INK = 0xFF2B2F36.toInt()
-private val SOFT = 0xFF6B7280.toInt()
-private val GRID = 0xFFD9DCE1.toInt()
-private val ZEBRA = 0xFFF5F6F8.toInt()
-private val SYS = 0xFF4C5BD4.toInt()
-private val DIA = 0xFF1E9E9E.toInt()
+private val INK = 0xFF1E293B.toInt()
+private val SOFT = 0xFF64748B.toInt()
+private val GRID = 0xFFE2E8F0.toInt()
+private val ZEBRA = 0xFFF8FAFC.toInt()
+private val SYS = 0xFF2563EB.toInt()
+private val DIA = 0xFF0D9488.toInt()
 private val WHITE = 0xFFFFFFFF.toInt()
+private val PRIMARY = 0xFF1679C5.toInt()
 
 private val dateFmt: DateTimeFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
 private val timeFmt: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 private val axisFmt: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM")
+
+data class WeekGroup(
+    val year: Int,
+    val weekNumber: Int,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val entries: List<BloodPressureEntry>
+)
 
 object Exporter {
 
@@ -62,7 +73,7 @@ object Exporter {
                 e.systolic.toString(),
                 e.diastolic.toString(),
                 e.pulse.toString(),
-                overallLevel(e.systolic, e.diastolic).label,
+                classifyBloodPressure(e.systolic, e.diastolic).label,
                 e.tags.tagList().joinToString(", "),
                 e.note
             )
@@ -77,7 +88,7 @@ object Exporter {
             "\"" + s.replace("\"", "\"\"") + "\""
         else s
 
-    // ---------- PDF ----------
+    // ---------- PDF (WEEKGROEPERING & SLIMME PAGINERING) ----------
 
     fun exportPdf(
         context: Context,
@@ -90,19 +101,22 @@ object Exporter {
         val w = PdfWriter(595, 842, 40f)
         val contentW = w.pageW - 2 * w.margin
 
-        val titleP = paint(20f, bold = true)
-        val bodyP = paint(10f)
-        val boldP = paint(10f, bold = true)
+        val titleP = paint(18f, bold = true)
+        val sectionP = paint(13f, PRIMARY, bold = true)
+        val bodyP = paint(9.5f)
+        val boldP = paint(9.5f, bold = true)
         val smallP = paint(8.5f, SOFT)
-        val valueP = paint(10f, bold = true)
+        val valueP = paint(9.5f, bold = true)
         val headP = paint(9f, WHITE, bold = true)
         val headDarkP = paint(9f, INK, bold = true)
         val fillP = Paint().apply { style = Paint.Style.FILL }
         val gridP = Paint().apply { color = GRID; strokeWidth = 0.6f }
 
         w.newPage()
-        w.canvas.drawText("Bloeddruk-rapport", w.margin, w.y + 18f, titleP)
-        w.y += 30f
+
+        // 1. Hoofdkop op pagina 1
+        w.canvas.drawText("Bloeddruk Assistent", w.margin, w.y + 18f, titleP)
+        w.y += 28f
 
         if (userProfile.doctorName.isNotBlank() || userProfile.doctorAddress.isNotBlank()) {
             val docStr = "Behandelend arts: ${userProfile.doctorName.ifBlank { "Niet opgegeven" }} · ${userProfile.doctorAddress}"
@@ -124,110 +138,165 @@ object Exporter {
             return file
         }
 
-        val first = sorted.first().timestamp.toLocalDateTime().format(dateFmt)
-        val last = sorted.last().timestamp.toLocalDateTime().format(dateFmt)
+        val firstDate = sorted.first().timestamp.toLocalDateTime().format(dateFmt)
+        val lastDate = sorted.last().timestamp.toLocalDateTime().format(dateFmt)
         w.canvas.drawText(
-            "Periode: $first t/m $last  ·  Aangemaakt op ${LocalDate.now().format(dateFmt)}",
+            "Rapportperiode: $firstDate t/m $lastDate  ·  Aangemaakt op ${LocalDate.now().format(dateFmt)}",
             w.margin, w.y + 10f, smallP
         )
-        w.y += 24f
+        w.y += 22f
 
-        // Samenvatting
-        val am = sorted.filter { it.isMorning }
-        val pm = sorted.filter { !it.isMorning }
-        val highest = sorted.maxByOrNull { it.systolic }!!
-        val lowest = sorted.minByOrNull { it.systolic }!!
-        val counts = BpLevel.entries.associateWith { lvl ->
-            sorted.count { overallLevel(it.systolic, it.diastolic) == lvl }
-        }
-        fun at(e: BloodPressureEntry) = e.timestamp.toLocalDateTime().format(dateFmt)
-        val summary = listOf(
-            "Aantal metingen" to "${sorted.size} (ochtend ${am.size}, avond ${pm.size})",
-            "Gemiddelde" to avgText(sorted),
-            "Gemiddelde ochtend" to avgText(am),
-            "Gemiddelde avond" to avgText(pm),
-            "Hoogste bovendruk" to "${highest.systolic}/${highest.diastolic} mmHg op ${at(highest)}",
-            "Laagste bovendruk" to "${lowest.systolic}/${lowest.diastolic} mmHg op ${at(lowest)}",
-            "Verdeling" to BpLevel.entries.joinToString("  ·  ") { "${it.label} ${counts[it]}" }
-        )
-        summary.forEach { (k, v) ->
-            w.canvas.drawText(k, w.margin, w.y + 10f, boldP)
-            w.canvas.drawText(v, w.margin + 125f, w.y + 10f, bodyP)
-            w.y += 15f
-        }
-        w.y += 8f
+        // 2. Groepeer metingen per Kalenderweek (Maandag t/m Zondag)
+        val weekFields = WeekFields.of(DayOfWeek.MONDAY, 1)
+        val groupedWeeks = sorted.groupBy { e ->
+            val dt = e.timestamp.toLocalDateTime().toLocalDate()
+            val weekNum = dt.get(weekFields.weekOfWeekBasedYear())
+            val year = dt.get(weekFields.weekBasedYear())
+            year to weekNum
+        }.map { (key, weekEntries) ->
+            val sortedWeek = weekEntries.sortedBy { it.timestamp }
+            val firstInWeek = sortedWeek.first().timestamp.toLocalDateTime().toLocalDate()
+            val startOfWeek = firstInWeek.with(DayOfWeek.MONDAY)
+            val endOfWeek = firstInWeek.with(DayOfWeek.SUNDAY)
 
-        // Grafiek
-        if (sorted.size >= 2) {
-            drawChart(w.canvas, w.margin, w.y, contentW, 150f, sorted, smallP, gridP)
-            w.y += 150f
-            // legenda
-            val ly = w.y + 10f
-            fillP.color = SYS; w.canvas.drawCircle(w.margin + 30f, ly - 3f, 3f, fillP)
-            w.canvas.drawText("Bovendruk", w.margin + 37f, ly, smallP)
-            fillP.color = DIA; w.canvas.drawCircle(w.margin + 100f, ly - 3f, 3f, fillP)
-            w.canvas.drawText("Onderdruk", w.margin + 107f, ly, smallP)
-            w.canvas.drawText("┄ grens 140 / 90", w.margin + 175f, ly, smallP)
-            w.y += 26f
-        }
+            WeekGroup(
+                year = key.first,
+                weekNumber = key.second,
+                startDate = startOfWeek,
+                endDate = endOfWeek,
+                entries = sortedWeek
+            )
+        }.sortedBy { it.startDate }
 
-        // Tabel
+        // 3. Verwerk elke Kalenderweek als één logisch blok
         val xs = floatArrayOf(0f, 62f, 100f, 148f, 190f, 232f, 272f, 352f, contentW)
         val rowH = 16f
 
-        fun header() {
+        fun drawTableHeader() {
             val labels = listOf("Datum", "Tijd", "Moment", "Boven", "Onder", "Pols", "Beoordeling", "Labels / notitie")
             val colors = listOf(
-                0xFFE0605C, 0xFF3A9FD8, 0xFF3A9FD8, 0xFFE9E8F6, 0xFFE9E8F6, 0xFF5BA573, 0xFFE7E9ED, 0xFFE7E9ED
+                0xFFB42318, 0xFF1679C5, 0xFF1679C5, 0xFFE2E8F0, 0xFFE2E8F0, 0xFF216E46, 0xFFE2E8F0, 0xFFE2E8F0
             ).map { it.toInt() }
             val dark = setOf(3, 4, 6, 7)
             for (i in labels.indices) {
                 fillP.color = colors[i]
                 w.canvas.drawRect(w.margin + xs[i], w.y, w.margin + xs[i + 1], w.y + rowH + 2f, fillP)
                 w.canvas.drawText(
-                    labels[i], w.margin + xs[i] + 4f, w.y + 12f,
+                    labels[i], w.margin + xs[i] + 4f, w.y + 11.5f,
                     if (i in dark) headDarkP else headP
                 )
             }
             w.y += rowH + 2f
         }
 
-        header()
-        sorted.forEachIndexed { idx, e ->
-            if (w.y + rowH > w.pageH - 50f) {
+        groupedWeeks.forEachIndexed { weekIdx, week ->
+            val weekTitle = "Week ${week.weekNumber} (${week.startDate.format(dateFmt)} t/m ${week.endDate.format(dateFmt)})"
+            val weekBlockHeight = 240f // Benodigde hoogte voor Titel + Samenvatting + Grafiek
+
+            // Als het hele weekblok niet meer op de pagina past, begin een nieuwe pagina!
+            if (w.y + weekBlockHeight > w.pageH - 45f && weekIdx > 0) {
                 w.newPage()
-                header()
             }
-            val dt = e.timestamp.toLocalDateTime()
-            if (idx % 2 == 1) {
-                fillP.color = ZEBRA
-                w.canvas.drawRect(w.margin, w.y, w.margin + contentW, w.y + rowH, fillP)
+
+            // Week Titel
+            fillP.color = ZEBRA
+            w.canvas.drawRect(w.margin, w.y, w.margin + contentW, w.y + 22f, fillP)
+            w.canvas.drawText(weekTitle, w.margin + 6f, w.y + 15f, sectionP)
+            w.y += 28f
+
+            // Week Samenvatting
+            val weekEntries = week.entries
+            val am = weekEntries.filter { it.isMorning }
+            val pm = weekEntries.filter { !it.isMorning }
+            val highest = weekEntries.maxByOrNull { it.systolic }!!
+            val lowest = weekEntries.minByOrNull { it.systolic }!!
+            val counts = BpCategory.entries.associateWith { cat ->
+                weekEntries.count { classifyBloodPressure(it.systolic, it.diastolic).category == cat }
             }
-            val ty = w.y + 11.5f
-            w.canvas.drawText(dt.format(dateFmt), w.margin + xs[0] + 4f, ty, bodyP)
-            w.canvas.drawText(dt.format(timeFmt), w.margin + xs[1] + 4f, ty, bodyP)
-            w.canvas.drawText(if (e.isMorning) "Ochtend" else "Avond", w.margin + xs[2] + 4f, ty, bodyP)
+            fun at(e: BloodPressureEntry) = e.timestamp.toLocalDateTime().format(dateFmt)
 
-            valueP.color = systolicLevel(e.systolic).ink.toArgb()
-            w.canvas.drawText(e.systolic.toString(), w.margin + xs[3] + 4f, ty, valueP)
-            valueP.color = diastolicLevel(e.diastolic).ink.toArgb()
-            w.canvas.drawText(e.diastolic.toString(), w.margin + xs[4] + 4f, ty, valueP)
+            val summary = listOf(
+                "Aantal metingen" to "${weekEntries.size} (ochtend ${am.size}, avond ${pm.size})",
+                "Gemiddelde week" to avgText(weekEntries),
+                "Gemiddelde ochtend" to avgText(am),
+                "Gemiddelde avond" to avgText(pm),
+                "Hoogste bovendruk" to "${highest.systolic}/${highest.diastolic} mmHg op ${at(highest)}",
+                "Laagste bovendruk" to "${lowest.systolic}/${lowest.diastolic} mmHg op ${at(lowest)}",
+                "Verdeling" to BpCategory.entries.joinToString("  ·  ") { "${it.label}: ${counts[it]}" }
+            )
 
-            w.canvas.drawText(e.pulse.toString(), w.margin + xs[5] + 4f, ty, bodyP)
-
-            val lvl = overallLevel(e.systolic, e.diastolic)
-            valueP.color = lvl.ink.toArgb()
-            w.canvas.drawText(lvl.label, w.margin + xs[6] + 4f, ty, valueP)
-
-            val extra = (e.tags.tagList() + listOfNotNull(e.note.trim().ifEmpty { null }))
-                .joinToString(" · ")
-            if (extra.isNotEmpty()) {
-                val maxW = xs[8] - xs[7] - 8f
-                val text = TextUtils.ellipsize(extra, TextPaint(smallP), maxW, TextUtils.TruncateAt.END).toString()
-                w.canvas.drawText(text, w.margin + xs[7] + 4f, ty, smallP)
+            summary.forEach { (k, v) ->
+                w.canvas.drawText(k, w.margin + 4f, w.y + 10f, boldP)
+                w.canvas.drawText(v, w.margin + 125f, w.y + 10f, bodyP)
+                w.y += 14f
             }
-            w.canvas.drawLine(w.margin, w.y + rowH, w.margin + contentW, w.y + rowH, gridP)
-            w.y += rowH
+            w.y += 6f
+
+            // Week Trendgrafiek
+            if (weekEntries.size >= 2) {
+                drawChart(w.canvas, w.margin, w.y, contentW, 120f, weekEntries, smallP, gridP)
+                w.y += 120f
+                val ly = w.y + 10f
+                fillP.color = SYS; w.canvas.drawCircle(w.margin + 30f, ly - 3f, 3f, fillP)
+                w.canvas.drawText("Bovendruk", w.margin + 37f, ly, smallP)
+                fillP.color = DIA; w.canvas.drawCircle(w.margin + 100f, ly - 3f, 3f, fillP)
+                w.canvas.drawText("Onderdruk", w.margin + 107f, ly, smallP)
+                w.canvas.drawText("┄ thuismeting grens 135 / 85", w.margin + 175f, ly, smallP)
+                w.y += 22f
+            }
+
+            // Week Meettabel
+            if (w.y + rowH * 2 > w.pageH - 45f) {
+                w.newPage()
+                w.canvas.drawText("$weekTitle (vervolg)", w.margin + 6f, w.y + 15f, sectionP)
+                w.y += 22f
+            }
+
+            drawTableHeader()
+
+            weekEntries.forEachIndexed { rowIdx, e ->
+                if (w.y + rowH > w.pageH - 40f) {
+                    w.newPage()
+                    w.canvas.drawText("$weekTitle (vervolg)", w.margin + 6f, w.y + 15f, sectionP)
+                    w.y += 22f
+                    drawTableHeader()
+                }
+
+                val dt = e.timestamp.toLocalDateTime()
+                if (rowIdx % 2 == 1) {
+                    fillP.color = ZEBRA
+                    w.canvas.drawRect(w.margin, w.y, w.margin + contentW, w.y + rowH, fillP)
+                }
+
+                val ty = w.y + 11.5f
+                w.canvas.drawText(dt.format(dateFmt), w.margin + xs[0] + 4f, ty, bodyP)
+                w.canvas.drawText(dt.format(timeFmt), w.margin + xs[1] + 4f, ty, bodyP)
+                w.canvas.drawText(if (e.isMorning) "Ochtend" else "Avond", w.margin + xs[2] + 4f, ty, bodyP)
+
+                val classification = classifyBloodPressure(e.systolic, e.diastolic)
+
+                valueP.color = systolicLevel(e.systolic).ink.toArgb()
+                w.canvas.drawText(e.systolic.toString(), w.margin + xs[3] + 4f, ty, valueP)
+                valueP.color = diastolicLevel(e.diastolic).ink.toArgb()
+                w.canvas.drawText(e.diastolic.toString(), w.margin + xs[4] + 4f, ty, valueP)
+
+                w.canvas.drawText(e.pulse.toString(), w.margin + xs[5] + 4f, ty, bodyP)
+
+                valueP.color = classification.color.toArgb()
+                w.canvas.drawText(classification.label, w.margin + xs[6] + 4f, ty, valueP)
+
+                val extra = (e.tags.tagList() + listOfNotNull(e.note.trim().ifEmpty { null })).joinToString(" · ")
+                if (extra.isNotEmpty()) {
+                    val maxW = xs[8] - xs[7] - 8f
+                    val text = TextUtils.ellipsize(extra, TextPaint(smallP), maxW, TextUtils.TruncateAt.END).toString()
+                    w.canvas.drawText(text, w.margin + xs[7] + 4f, ty, smallP)
+                }
+
+                w.canvas.drawLine(w.margin, w.y + rowH, w.margin + contentW, w.y + rowH, gridP)
+                w.y += rowH
+            }
+
+            w.y += 16f // Ruimte tussen de weken
         }
 
         w.finish(file)
@@ -274,11 +343,11 @@ object Exporter {
         }
 
         val dashed = Paint(grid).apply {
-            color = BpLevel.HIGH.color.toArgb()
+            color = BpCategory.HIGH.color.toArgb()
             pathEffect = DashPathEffect(floatArrayOf(5f, 4f), 0f)
             strokeWidth = 0.8f
         }
-        listOf(140, 90).forEach { if (it in yMin..yMax) c.drawLine(left, yAt(it), left + cw, yAt(it), dashed) }
+        listOf(135, 85).forEach { if (it in yMin..yMax) c.drawLine(left, yAt(it), left + cw, yAt(it), dashed) }
 
         fun series(value: (BloodPressureEntry) -> Int, color: Int) {
             val line = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -313,7 +382,7 @@ object Exporter {
             type = mime
             putExtra(Intent.EXTRA_STREAM, uri)
             putExtra(Intent.EXTRA_SUBJECT, subject)
-            clipData = ClipData.newRawUri("Bloeddruk", uri)
+            clipData = ClipData.newRawUri("Bloeddruk Assistent", uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         context.startActivity(Intent.createChooser(send, "Delen of opslaan"))
@@ -321,10 +390,6 @@ object Exporter {
 
     // ---------- Helpers ----------
 
-    /**
-     * Exportmap. Alleen bestanden ouder dan een dag worden opgeruimd, zodat een mail-app
-     * een net gedeeld bestand nog kan uitlezen terwijl je alweer iets anders exporteert.
-     */
     private fun exportDir(context: Context): File {
         val dir = File(context.cacheDir, "export").apply { mkdirs() }
         val limit = System.currentTimeMillis() - 24L * 60 * 60 * 1000
@@ -338,7 +403,6 @@ object Exporter {
     fun uriFor(context: Context, file: File): Uri =
         FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
 
-    /** Bewaart een kopie in Downloads/Bloeddruk (Android 10+). Geeft true als dat gelukt is. */
     fun saveCopy(context: Context, file: File, mime: String): Boolean {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return false
         return try {
@@ -358,7 +422,6 @@ object Exporter {
         }
     }
 
-    /** Schrijft het bestand naar een plek die de gebruiker zelf koos (bestandskiezer). */
     fun copyTo(context: Context, file: File, target: Uri): Boolean =
         try {
             context.contentResolver.openOutputStream(target)
@@ -367,12 +430,11 @@ object Exporter {
             false
         }
 
-    /** Opent het bestand direct in een PDF-lezer of spreadsheet-app. Geeft false als er geen app is. */
     fun open(context: Context, file: File, mime: String): Boolean {
         val uri = uriFor(context, file)
         val view = Intent(Intent.ACTION_VIEW).apply {
             setDataAndType(uri, mime)
-            clipData = ClipData.newRawUri("Bloeddruk", uri)
+            clipData = ClipData.newRawUri("Bloeddruk Assistent", uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
         return try {
@@ -384,7 +446,7 @@ object Exporter {
     }
 }
 
-/** Kleine hulpklasse voor pagina's in een PDF. */
+/** Hulpklasse voor pagina's in een PDF met 'Bloeddruk Assistent' en 'Pagina X van Y' */
 private class PdfWriter(val pageW: Int, val pageH: Int, val margin: Float) {
     private val doc = PdfDocument()
     private var page: PdfDocument.Page? = null
@@ -406,7 +468,7 @@ private class PdfWriter(val pageW: Int, val pageH: Int, val margin: Float) {
     private fun closePage() {
         val p = page ?: return
         canvas.drawText(
-            "Indicatief overzicht van thuismetingen – geen medische diagnose.",
+            "Bloeddruk Assistent · Indicatief overzicht van thuismetingen – geen medische diagnose.",
             margin, pageH - 24f, footerP
         )
         val t = "Pagina $pageNo"

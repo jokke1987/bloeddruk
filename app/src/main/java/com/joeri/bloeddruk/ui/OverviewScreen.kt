@@ -221,23 +221,13 @@ fun OverviewScreen(
                         }
                     )
 
-                    // Sectie: Behandeling & Medicatie
+                    // Sectie: Behandeling
                     Text(
                         "Behandeling",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = InkSoft,
                         modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                    )
-
-                    NavigationDrawerItem(
-                        icon = { Icon(Icons.Filled.MedicalServices, null) },
-                        label = { Text("Medicatie Management") },
-                        selected = false,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            onOpenMedication(0)
-                        }
                     )
 
                     NavigationDrawerItem(

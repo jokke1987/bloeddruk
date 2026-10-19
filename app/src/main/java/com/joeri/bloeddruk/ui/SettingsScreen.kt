@@ -331,7 +331,7 @@ fun SettingsScreen(
                             Icon(Icons.Filled.Info, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
                             Spacer(Modifier.width(12.dp))
                             Column {
-                                Text("Bloeddruk Assistent Pro", fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                                Text("Bloeddruk Assistent", fontWeight = FontWeight.Bold, fontSize = 15.sp)
                                 Text("Versie 1.0.1 (Build 2)", fontSize = 12.sp, color = InkSoft)
                             }
                         }
