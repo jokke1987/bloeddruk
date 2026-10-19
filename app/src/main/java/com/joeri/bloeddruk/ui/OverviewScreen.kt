@@ -168,8 +168,7 @@ fun OverviewScreen(
                             )
                             Spacer(Modifier.width(12.dp))
                             Column {
-                                Text("Bloeddruk Assistent", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Ink)
-                                Text("Pro", fontSize = 12.sp, color = Primary, fontWeight = FontWeight.Bold)
+                                Text("Bloeddruk Assistent", fontWeight = FontWeight.Bold, fontSize = 17.sp, color = Ink)
                             }
                         }
                         IconButton(onClick = {
@@ -408,11 +407,10 @@ private fun DashboardScreen(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        // 1. Snelacties Balk
+        // 1. Snelacties Balk (Alleen 'Nieuwe meting' en 'Rapport')
         item(key = "quick_actions") {
             QuickActionsBar(
                 onNewMeasurement = onAdd,
-                onOpenMedication = onOpenMedication,
                 onOpenReport = onOpenReport
             )
         }

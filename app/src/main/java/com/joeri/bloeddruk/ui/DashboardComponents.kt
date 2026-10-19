@@ -187,48 +187,21 @@ fun LatestBloodPressureCard(
     }
 }
 
-/** Component 2: Snelacties Balk - Flexibel en Volledig Zichtbaar */
+/** Component 2: Snelacties Balk - Alleen 'Nieuwe meting' en 'Rapport' */
 @Composable
 fun QuickActionsBar(
     onNewMeasurement: () -> Unit,
-    onOpenMedication: () -> Unit,
     onOpenReport: () -> Unit
 ) {
     Row(
         Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Button(
             onClick = onNewMeasurement,
             colors = ButtonDefaults.buttonColors(containerColor = Primary),
             shape = RoundedCornerShape(14.dp),
-            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
-            modifier = Modifier
-                .weight(1.2f)
-                .defaultMinSize(minHeight = 48.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    "Nieuwe meting",
-                    fontSize = 12.5.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 2,
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-
-        Button(
-            onClick = onOpenMedication,
-            colors = ButtonDefaults.buttonColors(containerColor = Surface),
-            elevation = ButtonDefaults.buttonElevation(1.dp),
-            shape = RoundedCornerShape(14.dp),
-            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
             modifier = Modifier
                 .weight(1f)
                 .defaultMinSize(minHeight = 48.dp)
@@ -237,14 +210,13 @@ fun QuickActionsBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Icon(Icons.Filled.MedicalServices, contentDescription = null, tint = Primary, modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(4.dp))
+                Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(6.dp))
                 Text(
-                    "Medicatie",
-                    fontSize = 12.5.sp,
-                    color = Ink,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 2,
+                    "Nieuwe meting",
+                    fontSize = 13.5.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
                     textAlign = TextAlign.Center
                 )
             }
@@ -255,7 +227,7 @@ fun QuickActionsBar(
             colors = ButtonDefaults.buttonColors(containerColor = Surface),
             elevation = ButtonDefaults.buttonElevation(1.dp),
             shape = RoundedCornerShape(14.dp),
-            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp),
             modifier = Modifier
                 .weight(1f)
                 .defaultMinSize(minHeight = 48.dp)
@@ -264,14 +236,14 @@ fun QuickActionsBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Icon(Icons.Filled.PictureAsPdf, contentDescription = null, tint = Primary, modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(4.dp))
+                Icon(Icons.Filled.PictureAsPdf, contentDescription = null, tint = Primary, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(6.dp))
                 Text(
                     "Rapport",
-                    fontSize = 12.5.sp,
+                    fontSize = 13.5.sp,
                     color = Ink,
-                    fontWeight = FontWeight.Medium,
-                    maxLines = 2,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
                     textAlign = TextAlign.Center
                 )
             }

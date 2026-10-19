@@ -9,20 +9,19 @@ import com.joeri.bloeddruk.data.UserProfile
  */
 object BloodPressureColors {
     val Low = Color(0xFF3987D7)          // Blauw #3987D7 voor Lage bloeddruk
-    val Normal = Color(0xFF4CAF50)       // Groen #4CAF50 voor Optimaal / Normaal
+    val Normal = Color(0xFF4CAF50)       // Groen #4CAF50 voor Normaal
     val Elevated = Color(0xFFFB8C00)     // Oranje #FB8C00 voor Verhoogde bloeddruk
     val High = Color(0xFFE53935)         // Rood #E53935 voor Hoge bloeddruk
-    val CriticalHigh = Color(0xFFB71C1C) // Donkerrood #B71C1C voor Ernstig verhoogd
+    val CriticalHigh = Color(0xFFE53935) // Zichtbaar rood #E53935 voor Hoog (met interne waarschuwing)
 
     val LowBg = Color(0xFFE0F2FE)
     val NormalBg = Color(0xFFE1F3E8)
     val ElevatedBg = Color(0xFFFFF1D6)
     val HighBg = Color(0xFFFEE2E2)
-    val CriticalHighBg = Color(0xFFFFEBEE)
 }
 
 /**
- * Vaste 5 Bloeddruk Categorieën voor thuismetingen.
+ * EXCLUSIEF 4 ZICHTBARE BLOEDDRUKCATEGORIEËN
  */
 enum class BpCategory(
     val label: String,
@@ -30,11 +29,10 @@ enum class BpCategory(
     val bgContainer: Color,
     val pointerFraction: Float
 ) {
-    LOW("Lage bloeddruk", BloodPressureColors.Low, BloodPressureColors.LowBg, 0.125f),
-    NORMAL("Optimaal", BloodPressureColors.Normal, BloodPressureColors.NormalBg, 0.375f),
+    LOW("Laag", BloodPressureColors.Low, BloodPressureColors.LowBg, 0.125f),
+    NORMAL("Normaal", BloodPressureColors.Normal, BloodPressureColors.NormalBg, 0.375f),
     ELEVATED("Verhoogd", BloodPressureColors.Elevated, BloodPressureColors.ElevatedBg, 0.625f),
-    HIGH("Hoge bloeddruk", BloodPressureColors.High, BloodPressureColors.HighBg, 0.825f),
-    CRITICAL_HIGH("Ernstig verhoogd", BloodPressureColors.CriticalHigh, BloodPressureColors.CriticalHighBg, 0.95f)
+    HIGH("Hoog", BloodPressureColors.High, BloodPressureColors.HighBg, 0.875f)
 }
 
 /** Geharmoniseerd overkoepelend beoordelingsresultaat */
@@ -43,7 +41,8 @@ data class BpClassification(
     val label: String = category.label,
     val color: Color = category.color,
     val bgContainer: Color = category.bgContainer,
-    val pointerFraction: Float = category.pointerFraction
+    val pointerFraction: Float = category.pointerFraction,
+    val isCritical: Boolean = false // Interne vlag voor veiligheidswaarschuwing
 ) {
     val ink: Color get() = color
 }
@@ -53,26 +52,27 @@ data class BpClassification(
  * Beoordeelt ZOVEL de systolische (bovendruk) als diastolische (onderdruk) waarde.
  * Bij verschillende categorieën krijgt altijd de HOOGSTE toepasselijke risicocategorie voorrang.
  *
- * Thuismeting Grenswaarden:
- * 1. Ernstig verhoogd: SYS >= 180 mmHg OF DIA >= 110 mmHg (Donkerrood #B71C1C)
- * 2. Hoge bloeddruk: SYS >= 135 mmHg OF DIA >= 85 mmHg (Rood #E53935)
- * 3. Verhoogd: SYS >= 120 mmHg OF DIA >= 80 mmHg (Oranje #FB8C00)
- * 4. Optimaal: SYS < 120 mmHg EN DIA < 80 mmHg (Groen #4CAF50)
- * 5. Lage bloeddruk: SYS < 90 mmHg EN DIA < 60 mmHg (Blauw #3987D7)
+ * Exclusief 4 Zichtbare Categorieën (Laag, Normaal, Verhoogd, Hoog):
+ * 1. Ernstig verhoogde waarden (SYS >= 180 OF DIA >= 110): Zichtbare categorie 'Hoog' (Rood #E53935) + isCritical vlag voor waarschuwing.
+ * 2. Hoge bloeddruk (SYS >= 135 OF DIA >= 85): Zichtbare categorie 'Hoog' (Rood #E53935).
+ * 3. Verhoogde bloeddruk (SYS >= 120 OF DIA >= 80): Zichtbare categorie 'Verhoogd' (Oranje #FB8C00).
+ * 4. Normale bloeddruk (SYS < 120 EN DIA < 80): Zichtbare categorie 'Normaal' (Groen #4CAF50).
+ * 5. Lage bloeddruk (SYS < 90 EN DIA < 60): Zichtbare categorie 'Laag' (Blauw #3987D7).
  */
 fun classifyBloodPressure(
     systolic: Int,
     diastolic: Int,
     userProfile: UserProfile = UserProfile()
 ): BpClassification {
-    // 1. Controleer ERNSTIG VERHOOGD (SYS >= 180 OF DIA >= 110) EERST!
+    // 1. Controleer ERNSTIG VERHOOGDE WAARDEN (SYS >= 180 OF DIA >= 110)
     if (systolic >= 180 || diastolic >= 110) {
         return BpClassification(
-            category = BpCategory.CRITICAL_HIGH,
-            label = "Ernstig verhoogd",
-            color = BloodPressureColors.CriticalHigh,
-            bgContainer = BloodPressureColors.CriticalHighBg,
-            pointerFraction = 0.95f
+            category = BpCategory.HIGH,
+            label = "Hoog",
+            color = BloodPressureColors.High,
+            bgContainer = BloodPressureColors.HighBg,
+            pointerFraction = 0.92f,
+            isCritical = true
         )
     }
 
@@ -81,10 +81,11 @@ fun classifyBloodPressure(
         val frac = 0.75f + 0.15f * (((systolic - 135).coerceAtLeast(0)) / 45f)
         return BpClassification(
             category = BpCategory.HIGH,
-            label = "Hoge bloeddruk",
+            label = "Hoog",
             color = BloodPressureColors.High,
             bgContainer = BloodPressureColors.HighBg,
-            pointerFraction = frac.coerceIn(0.75f, 0.90f)
+            pointerFraction = frac.coerceIn(0.75f, 0.90f),
+            isCritical = false
         )
     }
 
@@ -99,7 +100,8 @@ fun classifyBloodPressure(
             label = "Verhoogd",
             color = BloodPressureColors.Elevated,
             bgContainer = BloodPressureColors.ElevatedBg,
-            pointerFraction = frac
+            pointerFraction = frac,
+            isCritical = false
         )
     }
 
@@ -107,21 +109,23 @@ fun classifyBloodPressure(
     if (systolic < 90 && diastolic < 60) {
         return BpClassification(
             category = BpCategory.LOW,
-            label = "Lage bloeddruk",
+            label = "Laag",
             color = BloodPressureColors.Low,
             bgContainer = BloodPressureColors.LowBg,
-            pointerFraction = 0.125f
+            pointerFraction = 0.125f,
+            isCritical = false
         )
     }
 
-    // 5. Anders: OPTIMAAL (SYS < 120 EN DIA < 80)
+    // 5. Anders: NORMAAL (SYS < 120 EN DIA < 80)
     val sysFrac = (systolic.coerceIn(90, 119) - 90) / 29f
     val frac = 0.25f + 0.23f * sysFrac
     return BpClassification(
         category = BpCategory.NORMAL,
-        label = "Optimaal",
+        label = "Normaal",
         color = BloodPressureColors.Normal,
         bgContainer = BloodPressureColors.NormalBg,
-        pointerFraction = frac
+        pointerFraction = frac,
+        isCritical = false
     )
 }
