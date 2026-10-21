@@ -26,177 +26,385 @@
 16    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 16-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:9:5-81
 16-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:9:22-78
-17
-18    <permission
-18-->[androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
-19        android:name="com.joeri.bloeddruk.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
-19-->[androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
-20        android:protectionLevel="signature" />
-20-->[androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
-21
-22    <uses-permission android:name="com.joeri.bloeddruk.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
-22-->[androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
-22-->[androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
-23
-24    <application
-24-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:11:5-52:19
-25        android:name="com.joeri.bloeddruk.BloeddrukApp"
-25-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:12:9-37
-26        android:allowBackup="true"
-26-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:13:9-35
-27        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-27-->[androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\531ef86f33a5d068725dc312b26c6bc8\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
-28        android:debuggable="true"
-29        android:extractNativeLibs="false"
-30        android:icon="@drawable/ic_launcher"
-30-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:14:9-45
-31        android:label="@string/app_name"
-31-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:15:9-41
-32        android:supportsRtl="true"
-32-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:16:9-35
-33        android:theme="@android:style/Theme.Material.Light.NoActionBar" >
-33-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:17:9-72
-34        <activity
-34-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:19:9-28:20
-35            android:name="com.joeri.bloeddruk.MainActivity"
-35-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:20:13-41
-36            android:exported="true"
-36-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:21:13-36
-37            android:theme="@style/Theme.Bloeddruk.Splash"
-37-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:22:13-58
-38            android:windowSoftInputMode="adjustResize" >
-38-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:23:13-55
-39            <intent-filter>
-39-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:24:13-27:29
-40                <action android:name="android.intent.action.MAIN" />
-40-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:25:17-69
-40-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:25:25-66
-41
-42                <category android:name="android.intent.category.LAUNCHER" />
-42-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:26:17-77
-42-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:26:27-74
-43            </intent-filter>
-44        </activity>
-45
-46        <receiver
-46-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:30:9-32:40
-47            android:name="com.joeri.bloeddruk.alarm.AlarmReceiver"
-47-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:31:13-48
-48            android:exported="false" />
-48-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:32:13-37
-49        <receiver
-49-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:34:9-40:20
-50            android:name="com.joeri.bloeddruk.alarm.BootReceiver"
-50-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:35:13-47
-51            android:exported="true" >
-51-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:36:13-36
-52            <intent-filter>
-52-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:37:13-39:29
-53                <action android:name="android.intent.action.BOOT_COMPLETED" />
-53-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:38:17-79
-53-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:38:25-76
-54            </intent-filter>
-55        </receiver>
-56
-57        <!-- Voor het delen van PDF/CSV-exports -->
-58        <provider
-59            android:name="androidx.core.content.FileProvider"
-59-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:44:13-62
-60            android:authorities="com.joeri.bloeddruk.fileprovider"
-60-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:45:13-64
-61            android:exported="false"
-61-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:46:13-37
-62            android:grantUriPermissions="true" >
-62-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:47:13-47
-63            <meta-data
-63-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:48:13-50:54
-64                android:name="android.support.FILE_PROVIDER_PATHS"
-64-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:49:17-67
-65                android:resource="@xml/file_paths" />
-65-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:50:17-51
-66        </provider>
-67
-68        <activity
-68-->[androidx.compose.ui:ui-tooling-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\87b9cb7595114aa8955e25c1a84e44a7\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
-69            android:name="androidx.compose.ui.tooling.PreviewActivity"
-69-->[androidx.compose.ui:ui-tooling-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\87b9cb7595114aa8955e25c1a84e44a7\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
-70            android:exported="true" />
-70-->[androidx.compose.ui:ui-tooling-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\87b9cb7595114aa8955e25c1a84e44a7\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
-71
-72        <provider
-72-->[androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
-73            android:name="androidx.startup.InitializationProvider"
-73-->[androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
-74            android:authorities="com.joeri.bloeddruk.androidx-startup"
-74-->[androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
-75            android:exported="false" >
-75-->[androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
-76            <meta-data
-76-->[androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
-77                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-77-->[androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
-78                android:value="androidx.startup" />
-78-->[androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\aaea17b762999861b762e1372746996e\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
-79            <meta-data
-79-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f26e49795bbdc42a99373d8b6ab0ab8b\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:29:13-31:52
-80                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-80-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f26e49795bbdc42a99373d8b6ab0ab8b\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:30:17-78
-81                android:value="androidx.startup" />
-81-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f26e49795bbdc42a99373d8b6ab0ab8b\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:31:17-49
-82            <meta-data
-82-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
-83                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-83-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
-84                android:value="androidx.startup" />
-84-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
-85        </provider>
-86
-87        <service
-87-->[androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1a7675bf6ce456da9ec092f7f2c3e215\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
-88            android:name="androidx.room.MultiInstanceInvalidationService"
-88-->[androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1a7675bf6ce456da9ec092f7f2c3e215\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
-89            android:directBootAware="true"
-89-->[androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1a7675bf6ce456da9ec092f7f2c3e215\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
-90            android:exported="false" />
-90-->[androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\1a7675bf6ce456da9ec092f7f2c3e215\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
-91
-92        <receiver
-92-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
-93            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-93-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
-94            android:directBootAware="false"
-94-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
-95            android:enabled="true"
-95-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
-96            android:exported="true"
-96-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
-97            android:permission="android.permission.DUMP" >
-97-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
-98            <intent-filter>
-98-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
-99                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-99-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
-99-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
-100            </intent-filter>
-101            <intent-filter>
-101-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
-102                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-102-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
-102-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+17    <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+17-->[com.google.android.recaptcha:recaptcha:18.5.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d97e2f7ff0596962e19448bc08a019f2\transformed\recaptcha-18.5.1\AndroidManifest.xml:9:5-98
+17-->[com.google.android.recaptcha:recaptcha:18.5.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d97e2f7ff0596962e19448bc08a019f2\transformed\recaptcha-18.5.1\AndroidManifest.xml:9:22-95
+18
+19    <permission
+19-->[androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\00bb202600bea0d49f7f187f4c964301\transformed\core-1.13.1\AndroidManifest.xml:22:5-24:47
+20        android:name="com.joeri.bloeddruk.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+20-->[androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\00bb202600bea0d49f7f187f4c964301\transformed\core-1.13.1\AndroidManifest.xml:23:9-81
+21        android:protectionLevel="signature" />
+21-->[androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\00bb202600bea0d49f7f187f4c964301\transformed\core-1.13.1\AndroidManifest.xml:24:9-44
+22
+23    <uses-permission android:name="com.joeri.bloeddruk.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+23-->[androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\00bb202600bea0d49f7f187f4c964301\transformed\core-1.13.1\AndroidManifest.xml:26:5-97
+23-->[androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\00bb202600bea0d49f7f187f4c964301\transformed\core-1.13.1\AndroidManifest.xml:26:22-94
+24
+25    <application
+25-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:11:5-52:19
+26        android:name="com.joeri.bloeddruk.BloeddrukApp"
+26-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:12:9-37
+27        android:allowBackup="true"
+27-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:13:9-35
+28        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+28-->[androidx.core:core:1.13.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\00bb202600bea0d49f7f187f4c964301\transformed\core-1.13.1\AndroidManifest.xml:28:18-86
+29        android:debuggable="true"
+30        android:extractNativeLibs="false"
+31        android:icon="@drawable/ic_launcher"
+31-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:14:9-45
+32        android:label="@string/app_name"
+32-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:15:9-41
+33        android:supportsRtl="true"
+33-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:16:9-35
+34        android:theme="@android:style/Theme.Material.Light.NoActionBar" >
+34-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:17:9-72
+35        <activity
+35-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:19:9-28:20
+36            android:name="com.joeri.bloeddruk.MainActivity"
+36-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:20:13-41
+37            android:exported="true"
+37-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:21:13-36
+38            android:theme="@style/Theme.Bloeddruk.Splash"
+38-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:22:13-58
+39            android:windowSoftInputMode="adjustResize" >
+39-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:23:13-55
+40            <intent-filter>
+40-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:24:13-27:29
+41                <action android:name="android.intent.action.MAIN" />
+41-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:25:17-69
+41-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:25:25-66
+42
+43                <category android:name="android.intent.category.LAUNCHER" />
+43-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:26:17-77
+43-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:26:27-74
+44            </intent-filter>
+45        </activity>
+46
+47        <receiver
+47-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:30:9-32:40
+48            android:name="com.joeri.bloeddruk.alarm.AlarmReceiver"
+48-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:31:13-48
+49            android:exported="false" />
+49-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:32:13-37
+50        <receiver
+50-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:34:9-40:20
+51            android:name="com.joeri.bloeddruk.alarm.BootReceiver"
+51-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:35:13-47
+52            android:exported="true" >
+52-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:36:13-36
+53            <intent-filter>
+53-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:37:13-39:29
+54                <action android:name="android.intent.action.BOOT_COMPLETED" />
+54-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:38:17-79
+54-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:38:25-76
+55            </intent-filter>
+56        </receiver>
+57
+58        <!-- Voor het delen van PDF/CSV-exports -->
+59        <provider
+60            android:name="androidx.core.content.FileProvider"
+60-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:44:13-62
+61            android:authorities="com.joeri.bloeddruk.fileprovider"
+61-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:45:13-64
+62            android:exported="false"
+62-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:46:13-37
+63            android:grantUriPermissions="true" >
+63-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:47:13-47
+64            <meta-data
+64-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:48:13-50:54
+65                android:name="android.support.FILE_PROVIDER_PATHS"
+65-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:49:17-67
+66                android:resource="@xml/file_paths" />
+66-->C:\Users\wieri\Downloads\Bloeddruk2\Bloeddruk\app\src\main\AndroidManifest.xml:50:17-51
+67        </provider>
+68
+69        <activity
+69-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:29:9-46:20
+70            android:name="com.google.firebase.auth.internal.GenericIdpActivity"
+70-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:30:13-80
+71            android:excludeFromRecents="true"
+71-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:31:13-46
+72            android:exported="true"
+72-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:32:13-36
+73            android:launchMode="singleTask"
+73-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:33:13-44
+74            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+74-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:34:13-72
+75            <intent-filter>
+75-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:35:13-45:29
+76                <action android:name="android.intent.action.VIEW" />
+76-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:36:17-69
+76-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:36:25-66
+77
+78                <category android:name="android.intent.category.DEFAULT" />
+78-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:38:17-76
+78-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:38:27-73
+79                <category android:name="android.intent.category.BROWSABLE" />
+79-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:39:17-78
+79-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:39:27-75
+80
+81                <data
+81-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:41:17-44:51
+82                    android:host="firebase.auth"
+82-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:42:21-49
+83                    android:path="/"
+83-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:43:21-37
+84                    android:scheme="genericidp" />
+84-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:44:21-48
+85            </intent-filter>
+86        </activity>
+87        <activity
+87-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:47:9-64:20
+88            android:name="com.google.firebase.auth.internal.RecaptchaActivity"
+88-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:48:13-79
+89            android:excludeFromRecents="true"
+89-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:49:13-46
+90            android:exported="true"
+90-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:50:13-36
+91            android:launchMode="singleTask"
+91-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:51:13-44
+92            android:theme="@android:style/Theme.Translucent.NoTitleBar" >
+92-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:52:13-72
+93            <intent-filter>
+93-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:53:13-63:29
+94                <action android:name="android.intent.action.VIEW" />
+94-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:36:17-69
+94-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:36:25-66
+95
+96                <category android:name="android.intent.category.DEFAULT" />
+96-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:38:17-76
+96-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:38:27-73
+97                <category android:name="android.intent.category.BROWSABLE" />
+97-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:39:17-78
+97-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:39:27-75
+98
+99                <data
+99-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:41:17-44:51
+100                    android:host="firebase.auth"
+100-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:42:21-49
+101                    android:path="/"
+101-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:43:21-37
+102                    android:scheme="recaptcha" />
+102-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:44:21-48
 103            </intent-filter>
-104            <intent-filter>
-104-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
-105                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-105-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
-105-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
-106            </intent-filter>
-107            <intent-filter>
-107-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
-108                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-108-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
-108-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\4a6d485db5add41c9f987bde10e66085\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
-109            </intent-filter>
-110        </receiver>
-111    </application>
-112
-113</manifest>
+104        </activity>
+105
+106        <service
+106-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:66:9-72:19
+107            android:name="com.google.firebase.components.ComponentDiscoveryService"
+107-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:67:13-84
+108            android:directBootAware="true"
+108-->[com.google.firebase:firebase-common:21.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\263e3a77585f338b628b0dfd1a3788fe\transformed\firebase-common-21.0.0\AndroidManifest.xml:32:13-43
+109            android:exported="false" >
+109-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:68:13-37
+110            <meta-data
+110-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:69:13-71:85
+111                android:name="com.google.firebase.components:com.google.firebase.auth.FirebaseAuthRegistrar"
+111-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:70:17-109
+112                android:value="com.google.firebase.components.ComponentRegistrar" />
+112-->[com.google.firebase:firebase-auth:23.1.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\2e5e0fb6cb9c04a4e6393feaec90b99d\transformed\firebase-auth-23.1.0\AndroidManifest.xml:71:17-82
+113            <meta-data
+113-->[com.google.firebase:firebase-firestore:25.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\e24fee02fd76c4287e0d830b52dc67bf\transformed\firebase-firestore-25.1.1\AndroidManifest.xml:17:13-19:85
+114                android:name="com.google.firebase.components:com.google.firebase.firestore.FirebaseFirestoreKtxRegistrar"
+114-->[com.google.firebase:firebase-firestore:25.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\e24fee02fd76c4287e0d830b52dc67bf\transformed\firebase-firestore-25.1.1\AndroidManifest.xml:18:17-122
+115                android:value="com.google.firebase.components.ComponentRegistrar" />
+115-->[com.google.firebase:firebase-firestore:25.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\e24fee02fd76c4287e0d830b52dc67bf\transformed\firebase-firestore-25.1.1\AndroidManifest.xml:19:17-82
+116            <meta-data
+116-->[com.google.firebase:firebase-firestore:25.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\e24fee02fd76c4287e0d830b52dc67bf\transformed\firebase-firestore-25.1.1\AndroidManifest.xml:20:13-22:85
+117                android:name="com.google.firebase.components:com.google.firebase.firestore.FirestoreRegistrar"
+117-->[com.google.firebase:firebase-firestore:25.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\e24fee02fd76c4287e0d830b52dc67bf\transformed\firebase-firestore-25.1.1\AndroidManifest.xml:21:17-111
+118                android:value="com.google.firebase.components.ComponentRegistrar" />
+118-->[com.google.firebase:firebase-firestore:25.1.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\e24fee02fd76c4287e0d830b52dc67bf\transformed\firebase-firestore-25.1.1\AndroidManifest.xml:22:17-82
+119            <meta-data
+119-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\6fd2f6663b8b392e16291872604af6d2\transformed\firebase-common-ktx-21.0.0\AndroidManifest.xml:12:13-14:85
+120                android:name="com.google.firebase.components:com.google.firebase.ktx.FirebaseCommonLegacyRegistrar"
+120-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\6fd2f6663b8b392e16291872604af6d2\transformed\firebase-common-ktx-21.0.0\AndroidManifest.xml:13:17-116
+121                android:value="com.google.firebase.components.ComponentRegistrar" />
+121-->[com.google.firebase:firebase-common-ktx:21.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\6fd2f6663b8b392e16291872604af6d2\transformed\firebase-common-ktx-21.0.0\AndroidManifest.xml:14:17-82
+122            <meta-data
+122-->[com.google.firebase:firebase-common:21.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\263e3a77585f338b628b0dfd1a3788fe\transformed\firebase-common-21.0.0\AndroidManifest.xml:35:13-37:85
+123                android:name="com.google.firebase.components:com.google.firebase.FirebaseCommonKtxRegistrar"
+123-->[com.google.firebase:firebase-common:21.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\263e3a77585f338b628b0dfd1a3788fe\transformed\firebase-common-21.0.0\AndroidManifest.xml:36:17-109
+124                android:value="com.google.firebase.components.ComponentRegistrar" />
+124-->[com.google.firebase:firebase-common:21.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\263e3a77585f338b628b0dfd1a3788fe\transformed\firebase-common-21.0.0\AndroidManifest.xml:37:17-82
+125        </service>
+126        <service
+126-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f3fe119ca4057e0f1b4894b32e3706af\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:24:9-32:19
+127            android:name="androidx.credentials.playservices.CredentialProviderMetadataHolder"
+127-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f3fe119ca4057e0f1b4894b32e3706af\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:25:13-94
+128            android:enabled="true"
+128-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f3fe119ca4057e0f1b4894b32e3706af\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:26:13-35
+129            android:exported="false" >
+129-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f3fe119ca4057e0f1b4894b32e3706af\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:27:13-37
+130            <meta-data
+130-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f3fe119ca4057e0f1b4894b32e3706af\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:29:13-31:104
+131                android:name="androidx.credentials.CREDENTIAL_PROVIDER_KEY"
+131-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f3fe119ca4057e0f1b4894b32e3706af\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:30:17-76
+132                android:value="androidx.credentials.playservices.CredentialProviderPlayServicesImpl" />
+132-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f3fe119ca4057e0f1b4894b32e3706af\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:31:17-101
+133        </service>
+134
+135        <activity
+135-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f3fe119ca4057e0f1b4894b32e3706af\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:34:9-41:20
+136            android:name="androidx.credentials.playservices.HiddenActivity"
+136-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f3fe119ca4057e0f1b4894b32e3706af\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:35:13-76
+137            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+137-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f3fe119ca4057e0f1b4894b32e3706af\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:36:13-87
+138            android:enabled="true"
+138-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f3fe119ca4057e0f1b4894b32e3706af\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:37:13-35
+139            android:exported="false"
+139-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f3fe119ca4057e0f1b4894b32e3706af\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:38:13-37
+140            android:fitsSystemWindows="true"
+140-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f3fe119ca4057e0f1b4894b32e3706af\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:39:13-45
+141            android:theme="@style/Theme.Hidden" >
+141-->[androidx.credentials:credentials-play-services-auth:1.2.0-rc01] C:\Users\wieri\.gradle\caches\9.6.0\transforms\f3fe119ca4057e0f1b4894b32e3706af\transformed\credentials-play-services-auth-1.2.0-rc01\AndroidManifest.xml:40:13-48
+142        </activity>
+143        <activity
+143-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a4a5e5c1eeeee12e2cd14b78d77f9284\transformed\play-services-auth-20.7.0\AndroidManifest.xml:23:9-27:75
+144            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+144-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a4a5e5c1eeeee12e2cd14b78d77f9284\transformed\play-services-auth-20.7.0\AndroidManifest.xml:24:13-93
+145            android:excludeFromRecents="true"
+145-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a4a5e5c1eeeee12e2cd14b78d77f9284\transformed\play-services-auth-20.7.0\AndroidManifest.xml:25:13-46
+146            android:exported="false"
+146-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a4a5e5c1eeeee12e2cd14b78d77f9284\transformed\play-services-auth-20.7.0\AndroidManifest.xml:26:13-37
+147            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+147-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a4a5e5c1eeeee12e2cd14b78d77f9284\transformed\play-services-auth-20.7.0\AndroidManifest.xml:27:13-72
+148        <!--
+149            Service handling Google Sign-In user revocation. For apps that do not integrate with
+150            Google Sign-In, this service will never be started.
+151        -->
+152        <service
+152-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a4a5e5c1eeeee12e2cd14b78d77f9284\transformed\play-services-auth-20.7.0\AndroidManifest.xml:33:9-37:51
+153            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
+153-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a4a5e5c1eeeee12e2cd14b78d77f9284\transformed\play-services-auth-20.7.0\AndroidManifest.xml:34:13-89
+154            android:exported="true"
+154-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a4a5e5c1eeeee12e2cd14b78d77f9284\transformed\play-services-auth-20.7.0\AndroidManifest.xml:35:13-36
+155            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
+155-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a4a5e5c1eeeee12e2cd14b78d77f9284\transformed\play-services-auth-20.7.0\AndroidManifest.xml:36:13-107
+156            android:visibleToInstantApps="true" />
+156-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\a4a5e5c1eeeee12e2cd14b78d77f9284\transformed\play-services-auth-20.7.0\AndroidManifest.xml:37:13-48
+157
+158        <provider
+158-->[com.google.firebase:firebase-common:21.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\263e3a77585f338b628b0dfd1a3788fe\transformed\firebase-common-21.0.0\AndroidManifest.xml:23:9-28:39
+159            android:name="com.google.firebase.provider.FirebaseInitProvider"
+159-->[com.google.firebase:firebase-common:21.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\263e3a77585f338b628b0dfd1a3788fe\transformed\firebase-common-21.0.0\AndroidManifest.xml:24:13-77
+160            android:authorities="com.joeri.bloeddruk.firebaseinitprovider"
+160-->[com.google.firebase:firebase-common:21.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\263e3a77585f338b628b0dfd1a3788fe\transformed\firebase-common-21.0.0\AndroidManifest.xml:25:13-72
+161            android:directBootAware="true"
+161-->[com.google.firebase:firebase-common:21.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\263e3a77585f338b628b0dfd1a3788fe\transformed\firebase-common-21.0.0\AndroidManifest.xml:26:13-43
+162            android:exported="false"
+162-->[com.google.firebase:firebase-common:21.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\263e3a77585f338b628b0dfd1a3788fe\transformed\firebase-common-21.0.0\AndroidManifest.xml:27:13-37
+163            android:initOrder="100" />
+163-->[com.google.firebase:firebase-common:21.0.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\263e3a77585f338b628b0dfd1a3788fe\transformed\firebase-common-21.0.0\AndroidManifest.xml:28:13-36
+164
+165        <activity
+165-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\5de4de7667fc21196fa8f8d615932bf3\transformed\play-services-base-18.0.1\AndroidManifest.xml:20:9-22:45
+166            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+166-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\5de4de7667fc21196fa8f8d615932bf3\transformed\play-services-base-18.0.1\AndroidManifest.xml:20:19-85
+167            android:exported="false"
+167-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\5de4de7667fc21196fa8f8d615932bf3\transformed\play-services-base-18.0.1\AndroidManifest.xml:22:19-43
+168            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+168-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\5de4de7667fc21196fa8f8d615932bf3\transformed\play-services-base-18.0.1\AndroidManifest.xml:21:19-78
+169
+170        <service
+170-->[androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\75ed50d79201ca57ce4f64d174ada76b\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
+171            android:name="androidx.room.MultiInstanceInvalidationService"
+171-->[androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\75ed50d79201ca57ce4f64d174ada76b\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
+172            android:directBootAware="true"
+172-->[androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\75ed50d79201ca57ce4f64d174ada76b\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
+173            android:exported="false" />
+173-->[androidx.room:room-runtime:2.6.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\75ed50d79201ca57ce4f64d174ada76b\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
+174
+175        <activity
+175-->[androidx.compose.ui:ui-tooling-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\18ce938d5bdff9a3e941eb0e05961642\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
+176            android:name="androidx.compose.ui.tooling.PreviewActivity"
+176-->[androidx.compose.ui:ui-tooling-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\18ce938d5bdff9a3e941eb0e05961642\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
+177            android:exported="true" />
+177-->[androidx.compose.ui:ui-tooling-android:1.7.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\18ce938d5bdff9a3e941eb0e05961642\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
+178
+179        <provider
+179-->[androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c1a6efa2159e15b90fe08fa034c2fa13\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+180            android:name="androidx.startup.InitializationProvider"
+180-->[androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c1a6efa2159e15b90fe08fa034c2fa13\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+181            android:authorities="com.joeri.bloeddruk.androidx-startup"
+181-->[androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c1a6efa2159e15b90fe08fa034c2fa13\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+182            android:exported="false" >
+182-->[androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c1a6efa2159e15b90fe08fa034c2fa13\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+183            <meta-data
+183-->[androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c1a6efa2159e15b90fe08fa034c2fa13\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+184                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+184-->[androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c1a6efa2159e15b90fe08fa034c2fa13\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+185                android:value="androidx.startup" />
+185-->[androidx.emoji2:emoji2:1.3.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\c1a6efa2159e15b90fe08fa034c2fa13\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+186            <meta-data
+186-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bef446fe88d998c3a3a1f5dda1bf77ef\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:29:13-31:52
+187                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+187-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bef446fe88d998c3a3a1f5dda1bf77ef\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:30:17-78
+188                android:value="androidx.startup" />
+188-->[androidx.lifecycle:lifecycle-process:2.8.6] C:\Users\wieri\.gradle\caches\9.6.0\transforms\bef446fe88d998c3a3a1f5dda1bf77ef\transformed\lifecycle-process-2.8.6\AndroidManifest.xml:31:17-49
+189            <meta-data
+189-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+190                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+190-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+191                android:value="androidx.startup" />
+191-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+192        </provider>
+193
+194        <meta-data
+194-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\8244908838cf3abf55dc0d04065867e5\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:9-122
+195            android:name="com.google.android.gms.version"
+195-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\8244908838cf3abf55dc0d04065867e5\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:20-65
+196            android:value="@integer/google_play_services_version" />
+196-->[com.google.android.gms:play-services-basement:18.4.0] C:\Users\wieri\.gradle\caches\9.6.0\transforms\8244908838cf3abf55dc0d04065867e5\transformed\play-services-basement-18.4.0\AndroidManifest.xml:6:66-119
+197
+198        <receiver
+198-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+199            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+199-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+200            android:directBootAware="false"
+200-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+201            android:enabled="true"
+201-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+202            android:exported="true"
+202-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+203            android:permission="android.permission.DUMP" >
+203-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+204            <intent-filter>
+204-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+205                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+205-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+205-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+206            </intent-filter>
+207            <intent-filter>
+207-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+208                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+208-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+208-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+209            </intent-filter>
+210            <intent-filter>
+210-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+211                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+211-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+211-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+212            </intent-filter>
+213            <intent-filter>
+213-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+214                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+214-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+214-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\wieri\.gradle\caches\9.6.0\transforms\d76b12ccdba30831002646f96c01a420\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+215            </intent-filter>
+216        </receiver> <!-- The activities will be merged into the manifest of the hosting app. -->
+217        <activity
+217-->[com.google.android.play:core-common:2.0.3] C:\Users\wieri\.gradle\caches\9.6.0\transforms\b7a6faa253c7dcd8d1f8ed98e6752183\transformed\core-common-2.0.3\AndroidManifest.xml:14:9-18:65
+218            android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity"
+218-->[com.google.android.play:core-common:2.0.3] C:\Users\wieri\.gradle\caches\9.6.0\transforms\b7a6faa253c7dcd8d1f8ed98e6752183\transformed\core-common-2.0.3\AndroidManifest.xml:15:13-93
+219            android:exported="false"
+219-->[com.google.android.play:core-common:2.0.3] C:\Users\wieri\.gradle\caches\9.6.0\transforms\b7a6faa253c7dcd8d1f8ed98e6752183\transformed\core-common-2.0.3\AndroidManifest.xml:16:13-37
+220            android:stateNotNeeded="true"
+220-->[com.google.android.play:core-common:2.0.3] C:\Users\wieri\.gradle\caches\9.6.0\transforms\b7a6faa253c7dcd8d1f8ed98e6752183\transformed\core-common-2.0.3\AndroidManifest.xml:17:13-42
+221            android:theme="@style/Theme.PlayCore.Transparent" />
+221-->[com.google.android.play:core-common:2.0.3] C:\Users\wieri\.gradle\caches\9.6.0\transforms\b7a6faa253c7dcd8d1f8ed98e6752183\transformed\core-common-2.0.3\AndroidManifest.xml:18:13-62
+222    </application>
+223
+224</manifest>

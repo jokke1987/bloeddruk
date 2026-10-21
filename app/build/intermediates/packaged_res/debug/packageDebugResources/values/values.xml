@@ -2,6 +2,12 @@
 <resources>
     <color name="splash_bg">#CBEFEA</color>
     <string name="app_name">Bloeddruk</string>
+    <string name="gcm_defaultSenderId" translatable="false">529663146599</string>
+    <string name="google_api_key" translatable="false">AIzaSyCa82_7HFvhklVuJDXKjKWx4jxNPJ6nHMs</string>
+    <string name="google_app_id" translatable="false">1:529663146599:android:0fc6bf7a69d81b191cb2c2</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCa82_7HFvhklVuJDXKjKWx4jxNPJ6nHMs</string>
+    <string name="google_storage_bucket" translatable="false">bloeddruk-assistent.firebasestorage.app</string>
+    <string name="project_id" translatable="false">bloeddruk-assistent</string>
     <style name="Theme.Bloeddruk.Splash" parent="@android:style/Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_background</item>
         <item name="android:statusBarColor">#CBEFEA</item>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "529663146599",
+    "project_id": "bloeddruk-assistent",
+    "storage_bucket": "bloeddruk-assistent.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:529663146599:android:0fc6bf7a69d81b191cb2c2",
+        "android_client_info": {
+          "package_name": "com.joeri.bloeddruk"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCa82_7HFvhklVuJDXKjKWx4jxNPJ6nHMs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
