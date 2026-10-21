@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.FolderZip
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phonelink
 import androidx.compose.material.icons.filled.Speed
@@ -66,6 +67,7 @@ fun SettingsScreen(
     onOpenAlarms: () -> Unit,
     onOpenDoctor: () -> Unit,
     onOpenExport: () -> Unit,
+    onOpenLogin: () -> Unit = {},
     onCreateBackup: () -> Unit,
     onRestoreBackupUri: (Uri) -> Unit,
     onUploadGitHubBackup: (token: String, repo: String) -> Unit = { _, _ -> },
@@ -128,6 +130,30 @@ fun SettingsScreen(
                             Text(
                                 if (userProfile.doctorName.isNotBlank()) "Dokter: ${userProfile.doctorName}"
                                 else "Voer profiel- en doktersgegevens in",
+                                fontSize = 12.sp,
+                                color = InkSoft
+                            )
+                        }
+                        Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = InkSoft)
+                    }
+
+                    HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
+
+                    // Firebase Account & Inloggen
+                    val firebaseUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onOpenLogin() },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.Lock, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text("Firebase Sync Account", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                            Text(
+                                if (firebaseUser != null) "Ingelogd: ${firebaseUser.email ?: firebaseUser.uid.take(12)}"
+                                else "Tik om in te loggen met E-mail & Wachtwoord",
                                 fontSize = 12.sp,
                                 color = InkSoft
                             )

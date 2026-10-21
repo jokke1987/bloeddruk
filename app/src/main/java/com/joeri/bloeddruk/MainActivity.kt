@@ -34,7 +34,9 @@ import com.joeri.bloeddruk.ui.ArchiveScreen
 import com.joeri.bloeddruk.ui.BloeddrukTheme
 import com.joeri.bloeddruk.ui.EntrySheet
 import com.joeri.bloeddruk.ui.ExportAction
+import com.google.firebase.auth.FirebaseAuth
 import com.joeri.bloeddruk.ui.ExportDialog
+import com.joeri.bloeddruk.ui.LoginScreen
 import com.joeri.bloeddruk.ui.MeasurementDetailDialog
 import com.joeri.bloeddruk.ui.MedicationScreen
 import com.joeri.bloeddruk.ui.OverviewScreen
@@ -165,6 +167,17 @@ class MainActivity : ComponentActivity() {
                     BackHandler(enabled = activeScreen != "overview") { activeScreen = "overview" }
 
                     when (activeScreen) {
+                        "login" -> {
+                            LoginScreen(
+                                onLoginSuccess = { userId ->
+                                    activeScreen = "overview"
+                                    scope.launch { snackbar.showSnackbar("Succesvol ingelogd bij Firebase!") }
+                                },
+                                onSkipLogin = {
+                                    activeScreen = "overview"
+                                }
+                            )
+                        }
                         "alarms" -> {
                             AlarmsScreen(
                                 alarms = alarms,
