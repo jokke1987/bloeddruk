@@ -36,6 +36,9 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     init {
+        // FASE 5: Start de real-time Firestore synchronisatie op het pad /users/{userId}/measurements
+        com.joeri.bloeddruk.data.FirestoreSyncManager.startRealtimeSync(db, viewModelScope)
+
         // Schakel alle automatische interne 7u30 / 19u30 alarmen uit
         viewModelScope.launch {
             val allAlarms = db.alarmDao().getAll()
@@ -49,9 +52,15 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun save(entry: BloodPressureEntry) = viewModelScope.launch { db.bloodPressureDao().upsert(entry) }
+    fun save(entry: BloodPressureEntry) = viewModelScope.launch {
+        db.bloodPressureDao().upsert(entry)
+        com.joeri.bloeddruk.data.FirestoreSyncManager.saveMeasurementToFirestore(entry)
+    }
 
-    fun delete(entry: BloodPressureEntry) = viewModelScope.launch { db.bloodPressureDao().delete(entry) }
+    fun delete(entry: BloodPressureEntry) = viewModelScope.launch {
+        db.bloodPressureDao().delete(entry)
+        com.joeri.bloeddruk.data.FirestoreSyncManager.deleteMeasurementFromFirestore(entry)
+    }
 
     fun saveMedication(item: MedicationItem) = viewModelScope.launch { db.medicationDao().upsert(item) }
 
