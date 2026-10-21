@@ -32,6 +32,7 @@ import androidx.compose.material.icons.filled.Phonelink
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -141,10 +142,18 @@ fun SettingsScreen(
 
                     // Firebase Account & Inloggen
                     val firebaseUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+                    var showLogoutDialog by remember { mutableStateOf(false) }
+
                     Row(
                         Modifier
                             .fillMaxWidth()
-                            .clickable { onOpenLogin() },
+                            .clickable {
+                                if (firebaseUser != null) {
+                                    showLogoutDialog = true
+                                } else {
+                                    onOpenLogin()
+                                }
+                            },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(Icons.Filled.Lock, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
@@ -159,6 +168,37 @@ fun SettingsScreen(
                             )
                         }
                         Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = InkSoft)
+                    }
+
+                    if (showLogoutDialog) {
+                        AlertDialog(
+                            onDismissRequest = { showLogoutDialog = false },
+                            title = { Text("Firebase Account", fontWeight = FontWeight.Bold) },
+                            text = {
+                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Text("Ingelogd als: ${firebaseUser?.email ?: firebaseUser?.uid}", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Ink)
+                                    Text("ID: ${firebaseUser?.uid}", fontSize = 11.sp, color = InkSoft)
+                                    Text("Status: Actief gesynchroniseerd", fontSize = 12.sp, color = StatusPositiveText)
+                                }
+                            },
+                            confirmButton = {
+                                Button(
+                                    onClick = {
+                                        com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
+                                        showLogoutDialog = false
+                                        onOpenLogin()
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = StatusErrorText)
+                                ) {
+                                    Text("Uitloggen")
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(onClick = { showLogoutDialog = false }) {
+                                    Text("Sluiten")
+                                }
+                            }
+                        )
                     }
 
                     HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))

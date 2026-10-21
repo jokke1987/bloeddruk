@@ -220,6 +220,7 @@ class MainActivity : ComponentActivity() {
                                 onOpenAlarms = { activeScreen = "alarms" },
                                 onOpenDoctor = { showDoctorDialog = true },
                                 onOpenExport = { showExport = true },
+                                onOpenLogin = { activeScreen = "login" },
                                 onCreateBackup = {
                                     val json = BackupManager.createBackupJson(entries, medications, userProfile)
                                     BackupManager.saveBackupToFile(context, json)
