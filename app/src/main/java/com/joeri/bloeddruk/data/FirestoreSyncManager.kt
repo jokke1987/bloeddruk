@@ -10,12 +10,13 @@ import kotlinx.coroutines.launch
 
 /**
  * FASE 5: Real-time Firestore Synchronisatie tussen Telefoon en Tablet.
- * Bewaart en luistert naar het strikte pad: /users/{userId}/measurements
+ * Bewaart, luistert en vervangt de lijst op het pad: /users/{userId}/measurements
  */
 object FirestoreSyncManager {
 
     private const val TAG = "FirestoreSyncManager"
     private var snapshotListener: ListenerRegistration? = null
+    private var activeUserId: String? = null
 
     /** Start de real-time listener voor de ingelogde gebruiker */
     fun startRealtimeSync(
@@ -45,7 +46,14 @@ object FirestoreSyncManager {
         database: AppDatabase,
         scope: CoroutineScope
     ) {
-        detachSnapshotListener() // Annuleer eventuele oude listener
+        // Voorkom dubbele registratie bij herstart van Activity/Fragment
+        if (activeUserId == userId && snapshotListener != null) {
+            Log.d(TAG, "Listener voor gebruiker $userId is al actief.")
+            return
+        }
+
+        detachSnapshotListener() // Stop eventuele oude listener
+        activeUserId = userId
 
         val collectionRef = FirebaseFirestore.getInstance()
             .collection("users")
@@ -89,7 +97,9 @@ object FirestoreSyncManager {
                         }
                     }
 
-                    // Sla op in de lokale Room database (wat automatisch de UI bijwerkt via StateFlow)
+                    // 1. Maak de lokale tabel/lijst eerst leeg om dubbele items te voorkomen
+                    // 2. Wijs de nieuwe snapshot-documenten direct toewijzen/opslaan
+                    database.bloodPressureDao().deleteAll()
                     entriesFromFirestore.forEach { entry ->
                         database.bloodPressureDao().upsert(entry)
                     }
@@ -102,6 +112,7 @@ object FirestoreSyncManager {
     fun detachSnapshotListener() {
         snapshotListener?.remove()
         snapshotListener = null
+        activeUserId = null
     }
 
     /** Sla een nieuwe of bewerkte meting op in Firestore op het pad: users/{userId}/measurements/{id} */

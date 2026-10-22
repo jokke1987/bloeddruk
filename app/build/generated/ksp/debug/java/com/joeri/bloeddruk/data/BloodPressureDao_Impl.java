@@ -8,6 +8,7 @@ import androidx.room.EntityInsertionAdapter;
 import androidx.room.EntityUpsertionAdapter;
 import androidx.room.RoomDatabase;
 import androidx.room.RoomSQLiteQuery;
+import androidx.room.SharedSQLiteStatement;
 import androidx.room.util.CursorUtil;
 import androidx.room.util.DBUtil;
 import androidx.sqlite.db.SupportSQLiteStatement;
@@ -33,6 +34,8 @@ public final class BloodPressureDao_Impl implements BloodPressureDao {
 
   private final EntityDeletionOrUpdateAdapter<BloodPressureEntry> __deletionAdapterOfBloodPressureEntry;
 
+  private final SharedSQLiteStatement __preparedStmtOfDeleteAll;
+
   private final EntityUpsertionAdapter<BloodPressureEntry> __upsertionAdapterOfBloodPressureEntry;
 
   public BloodPressureDao_Impl(@NonNull final RoomDatabase __db) {
@@ -48,6 +51,14 @@ public final class BloodPressureDao_Impl implements BloodPressureDao {
       protected void bind(@NonNull final SupportSQLiteStatement statement,
           @NonNull final BloodPressureEntry entity) {
         statement.bindLong(1, entity.getId());
+      }
+    };
+    this.__preparedStmtOfDeleteAll = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "DELETE FROM metingen";
+        return _query;
       }
     };
     this.__upsertionAdapterOfBloodPressureEntry = new EntityUpsertionAdapter<BloodPressureEntry>(new EntityInsertionAdapter<BloodPressureEntry>(__db) {
@@ -108,6 +119,29 @@ public final class BloodPressureDao_Impl implements BloodPressureDao {
           return Unit.INSTANCE;
         } finally {
           __db.endTransaction();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object deleteAll(final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfDeleteAll.acquire();
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfDeleteAll.release(_stmt);
         }
       }
     }, $completion);

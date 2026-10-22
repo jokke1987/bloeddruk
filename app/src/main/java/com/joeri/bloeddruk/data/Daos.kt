@@ -16,6 +16,9 @@ interface BloodPressureDao {
 
     @Delete
     suspend fun delete(entry: BloodPressureEntry)
+
+    @Query("DELETE FROM metingen")
+    suspend fun deleteAll()
 }
 
 @Dao
