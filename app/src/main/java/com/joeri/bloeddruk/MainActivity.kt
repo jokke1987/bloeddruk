@@ -221,6 +221,10 @@ class MainActivity : ComponentActivity() {
                                 onOpenDoctor = { showDoctorDialog = true },
                                 onOpenExport = { showExport = true },
                                 onOpenLogin = { activeScreen = "login" },
+                                onCleanupDuplicates = {
+                                    vm.cleanupDuplicates()
+                                    scope.launch { snackbar.showSnackbar("Dubbele metingen opgeschoond!") }
+                                },
                                 onCreateBackup = {
                                     val json = BackupManager.createBackupJson(entries, medications, userProfile)
                                     BackupManager.saveBackupToFile(context, json)

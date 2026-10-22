@@ -1,6 +1,7 @@
 package com.joeri.bloeddruk.data;
 
 import android.database.Cursor;
+import android.os.CancellationSignal;
 import androidx.annotation.NonNull;
 import androidx.room.CoroutinesRoom;
 import androidx.room.EntityDeletionOrUpdateAdapter;
@@ -34,6 +35,8 @@ public final class BloodPressureDao_Impl implements BloodPressureDao {
 
   private final EntityDeletionOrUpdateAdapter<BloodPressureEntry> __deletionAdapterOfBloodPressureEntry;
 
+  private final SharedSQLiteStatement __preparedStmtOfDeleteByTimestamp;
+
   private final SharedSQLiteStatement __preparedStmtOfDeleteAll;
 
   private final EntityUpsertionAdapter<BloodPressureEntry> __upsertionAdapterOfBloodPressureEntry;
@@ -51,6 +54,14 @@ public final class BloodPressureDao_Impl implements BloodPressureDao {
       protected void bind(@NonNull final SupportSQLiteStatement statement,
           @NonNull final BloodPressureEntry entity) {
         statement.bindLong(1, entity.getId());
+      }
+    };
+    this.__preparedStmtOfDeleteByTimestamp = new SharedSQLiteStatement(__db) {
+      @Override
+      @NonNull
+      public String createQuery() {
+        final String _query = "DELETE FROM metingen WHERE timestamp = ?";
+        return _query;
       }
     };
     this.__preparedStmtOfDeleteAll = new SharedSQLiteStatement(__db) {
@@ -119,6 +130,32 @@ public final class BloodPressureDao_Impl implements BloodPressureDao {
           return Unit.INSTANCE;
         } finally {
           __db.endTransaction();
+        }
+      }
+    }, $completion);
+  }
+
+  @Override
+  public Object deleteByTimestamp(final long timestamp,
+      final Continuation<? super Unit> $completion) {
+    return CoroutinesRoom.execute(__db, true, new Callable<Unit>() {
+      @Override
+      @NonNull
+      public Unit call() throws Exception {
+        final SupportSQLiteStatement _stmt = __preparedStmtOfDeleteByTimestamp.acquire();
+        int _argIndex = 1;
+        _stmt.bindLong(_argIndex, timestamp);
+        try {
+          __db.beginTransaction();
+          try {
+            _stmt.executeUpdateDelete();
+            __db.setTransactionSuccessful();
+            return Unit.INSTANCE;
+          } finally {
+            __db.endTransaction();
+          }
+        } finally {
+          __preparedStmtOfDeleteByTimestamp.release(_stmt);
         }
       }
     }, $completion);
@@ -219,6 +256,58 @@ public final class BloodPressureDao_Impl implements BloodPressureDao {
         _statement.release();
       }
     });
+  }
+
+  @Override
+  public Object getAllEntries(final Continuation<? super List<BloodPressureEntry>> $completion) {
+    final String _sql = "SELECT * FROM metingen ORDER BY timestamp DESC";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
+    final CancellationSignal _cancellationSignal = DBUtil.createCancellationSignal();
+    return CoroutinesRoom.execute(__db, false, _cancellationSignal, new Callable<List<BloodPressureEntry>>() {
+      @Override
+      @NonNull
+      public List<BloodPressureEntry> call() throws Exception {
+        final Cursor _cursor = DBUtil.query(__db, _statement, false, null);
+        try {
+          final int _cursorIndexOfId = CursorUtil.getColumnIndexOrThrow(_cursor, "id");
+          final int _cursorIndexOfTimestamp = CursorUtil.getColumnIndexOrThrow(_cursor, "timestamp");
+          final int _cursorIndexOfIsMorning = CursorUtil.getColumnIndexOrThrow(_cursor, "isMorning");
+          final int _cursorIndexOfSystolic = CursorUtil.getColumnIndexOrThrow(_cursor, "systolic");
+          final int _cursorIndexOfDiastolic = CursorUtil.getColumnIndexOrThrow(_cursor, "diastolic");
+          final int _cursorIndexOfPulse = CursorUtil.getColumnIndexOrThrow(_cursor, "pulse");
+          final int _cursorIndexOfNote = CursorUtil.getColumnIndexOrThrow(_cursor, "note");
+          final int _cursorIndexOfTags = CursorUtil.getColumnIndexOrThrow(_cursor, "tags");
+          final List<BloodPressureEntry> _result = new ArrayList<BloodPressureEntry>(_cursor.getCount());
+          while (_cursor.moveToNext()) {
+            final BloodPressureEntry _item;
+            final long _tmpId;
+            _tmpId = _cursor.getLong(_cursorIndexOfId);
+            final long _tmpTimestamp;
+            _tmpTimestamp = _cursor.getLong(_cursorIndexOfTimestamp);
+            final boolean _tmpIsMorning;
+            final int _tmp;
+            _tmp = _cursor.getInt(_cursorIndexOfIsMorning);
+            _tmpIsMorning = _tmp != 0;
+            final int _tmpSystolic;
+            _tmpSystolic = _cursor.getInt(_cursorIndexOfSystolic);
+            final int _tmpDiastolic;
+            _tmpDiastolic = _cursor.getInt(_cursorIndexOfDiastolic);
+            final int _tmpPulse;
+            _tmpPulse = _cursor.getInt(_cursorIndexOfPulse);
+            final String _tmpNote;
+            _tmpNote = _cursor.getString(_cursorIndexOfNote);
+            final String _tmpTags;
+            _tmpTags = _cursor.getString(_cursorIndexOfTags);
+            _item = new BloodPressureEntry(_tmpId,_tmpTimestamp,_tmpIsMorning,_tmpSystolic,_tmpDiastolic,_tmpPulse,_tmpNote,_tmpTags);
+            _result.add(_item);
+          }
+          return _result;
+        } finally {
+          _cursor.close();
+          _statement.release();
+        }
+      }
+    }, $completion);
   }
 
   @NonNull

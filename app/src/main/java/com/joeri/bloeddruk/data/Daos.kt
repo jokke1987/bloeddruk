@@ -11,11 +11,17 @@ interface BloodPressureDao {
     @Query("SELECT * FROM metingen ORDER BY timestamp DESC")
     fun observeAll(): Flow<List<BloodPressureEntry>>
 
+    @Query("SELECT * FROM metingen ORDER BY timestamp DESC")
+    suspend fun getAllEntries(): List<BloodPressureEntry>
+
     @Upsert
     suspend fun upsert(entry: BloodPressureEntry)
 
     @Delete
     suspend fun delete(entry: BloodPressureEntry)
+
+    @Query("DELETE FROM metingen WHERE timestamp = :timestamp")
+    suspend fun deleteByTimestamp(timestamp: Long)
 
     @Query("DELETE FROM metingen")
     suspend fun deleteAll()

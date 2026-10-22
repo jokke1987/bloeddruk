@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.DarkMode
@@ -69,6 +70,7 @@ fun SettingsScreen(
     onOpenDoctor: () -> Unit,
     onOpenExport: () -> Unit,
     onOpenLogin: () -> Unit = {},
+    onCleanupDuplicates: () -> Unit = {},
     onCreateBackup: () -> Unit,
     onRestoreBackupUri: (Uri) -> Unit,
     onUploadGitHubBackup: (token: String, repo: String) -> Unit = { _, _ -> },
@@ -376,6 +378,22 @@ fun SettingsScreen(
                             Text("Exporteer maandrapporten of CSV voor Excel", fontSize = 12.sp, color = InkSoft)
                         }
                         Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = InkSoft)
+                    }
+
+                    HorizontalDivider(color = InkSoft.copy(alpha = 0.15f))
+
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable { onCleanupDuplicates() },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Filled.CleaningServices, contentDescription = null, tint = Primary, modifier = Modifier.size(24.dp))
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text("Dubbele Metingen Opschonen", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
+                            Text("Schoont dubbele ochtend/avond metingen op dezelfde datum op", fontSize = 12.sp, color = InkSoft)
+                        }
                     }
                 }
             }

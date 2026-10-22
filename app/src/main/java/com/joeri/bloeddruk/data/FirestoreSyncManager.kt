@@ -4,13 +4,19 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import com.joeri.bloeddruk.ui.toLocalDateTime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 /**
- * FASE 5: Real-time Firestore Synchronisatie tussen Telefoon en Tablet.
- * Bewaart, luistert en vervangt de lijst op het pad: /users/{userId}/measurements
+ * FASE 5: Real-time Idempotente Firestore Synchronisatie tussen Smartphone en Tablet.
+ *
+ * Oplossingen voor dubbele metingen & herrijzende verwijderingen:
+ * 1. Unieke, deterministische ID op basis van de timestamp (geen dubbele auto-ids).
+ * 2. Tombstone-registratie (isDeleted = true) zodat verwijderde metingen op alle toestellen gewist blijven.
+ * 3. Automatische opschoning van dubbele ochtend- en avondmetingen per dag.
  */
 object FirestoreSyncManager {
 
@@ -25,7 +31,6 @@ object FirestoreSyncManager {
     ) {
         val auth = FirebaseAuth.getInstance()
 
-        // Luister naar inlog- / uitlog-status
         auth.addAuthStateListener { firebaseAuth ->
             val user = firebaseAuth.currentUser
             if (user != null) {
@@ -35,7 +40,6 @@ object FirestoreSyncManager {
             }
         }
 
-        // Als er nu al een gebruiker ingelogd is:
         auth.currentUser?.let { user ->
             attachSnapshotListener(user.uid, database, scope)
         }
@@ -46,13 +50,12 @@ object FirestoreSyncManager {
         database: AppDatabase,
         scope: CoroutineScope
     ) {
-        // Voorkom dubbele registratie bij herstart van Activity/Fragment
         if (activeUserId == userId && snapshotListener != null) {
             Log.d(TAG, "Listener voor gebruiker $userId is al actief.")
             return
         }
 
-        detachSnapshotListener() // Stop eventuele oude listener
+        detachSnapshotListener()
         activeUserId = userId
 
         val collectionRef = FirebaseFirestore.getInstance()
@@ -70,37 +73,53 @@ object FirestoreSyncManager {
 
             if (snapshot != null) {
                 scope.launch(Dispatchers.IO) {
-                    val entriesFromFirestore = snapshot.documents.mapNotNull { doc ->
-                        try {
-                            val id = doc.getLong("id") ?: doc.id.hashCode().toLong()
-                            val timestamp = doc.getLong("timestamp") ?: return@mapNotNull null
-                            val systolic = doc.getLong("systolic")?.toInt() ?: return@mapNotNull null
-                            val diastolic = doc.getLong("diastolic")?.toInt() ?: return@mapNotNull null
-                            val pulse = doc.getLong("pulse")?.toInt() ?: 70
-                            val isMorning = doc.getBoolean("isMorning") ?: false
-                            val note = doc.getString("note") ?: ""
-                            val tags = doc.getString("tags") ?: ""
+                    val validEntries = mutableListOf<BloodPressureEntry>()
+                    val deletedTimestamps = mutableSetOf<Long>()
 
-                            BloodPressureEntry(
-                                id = id,
-                                timestamp = timestamp,
-                                isMorning = isMorning,
-                                systolic = systolic,
-                                diastolic = diastolic,
-                                pulse = pulse,
-                                note = note,
-                                tags = tags
-                            )
+                    snapshot.documents.forEach { doc ->
+                        try {
+                            val isDeleted = doc.getBoolean("isDeleted") ?: false
+                            val timestamp = doc.getLong("timestamp") ?: doc.getLong("id") ?: return@forEach
+
+                            if (isDeleted) {
+                                deletedTimestamps.add(timestamp)
+                            } else {
+                                val systolic = doc.getLong("systolic")?.toInt() ?: return@forEach
+                                val diastolic = doc.getLong("diastolic")?.toInt() ?: return@forEach
+                                val pulse = doc.getLong("pulse")?.toInt() ?: 70
+                                val isMorning = doc.getBoolean("isMorning") ?: false
+                                val note = doc.getString("note") ?: ""
+                                val tags = doc.getString("tags") ?: ""
+
+                                validEntries.add(
+                                    BloodPressureEntry(
+                                        id = timestamp, // Deterministische ID op basis van de timestamp
+                                        timestamp = timestamp,
+                                        isMorning = isMorning,
+                                        systolic = systolic,
+                                        diastolic = diastolic,
+                                        pulse = pulse,
+                                        note = note,
+                                        tags = tags
+                                    )
+                                )
+                            }
                         } catch (e: Exception) {
                             Log.e(TAG, "Fout bij parsen document: ${doc.id}", e)
-                            null
                         }
                     }
 
-                    // 1. Maak de lokale tabel/lijst eerst leeg om dubbele items te voorkomen
-                    // 2. Wijs de nieuwe snapshot-documenten direct toewijzen/opslaan
+                    // 1. Verwijder alle tombstones (verwijderde metingen) uit de lokale Room DB
+                    deletedTimestamps.forEach { ts ->
+                        database.bloodPressureDao().deleteByTimestamp(ts)
+                    }
+
+                    // 2. Ontdubbel geldige metingen (max 1 ochtend- en 1 avondmeting per kalenderdag)
+                    val deduplicatedEntries = deduplicateEntries(validEntries)
+
+                    // 3. Vervang de lokale Room database met de schone, ontdubbelde lijst
                     database.bloodPressureDao().deleteAll()
-                    entriesFromFirestore.forEach { entry ->
+                    deduplicatedEntries.forEach { entry ->
                         database.bloodPressureDao().upsert(entry)
                     }
                 }
@@ -115,20 +134,21 @@ object FirestoreSyncManager {
         activeUserId = null
     }
 
-    /** Sla een nieuwe of bewerkte meting op in Firestore op het pad: users/{userId}/measurements/{id} */
+    /** Sla een nieuwe of bewerkte meting op in Firestore met deterministische ID */
     fun saveMeasurementToFirestore(entry: BloodPressureEntry) {
         val user = FirebaseAuth.getInstance().currentUser ?: return
-        val docId = if (entry.id != 0L) entry.id.toString() else entry.timestamp.toString()
+        val docId = entry.timestamp.toString()
 
         val map = hashMapOf(
-            "id" to entry.id,
+            "id" to entry.timestamp,
             "timestamp" to entry.timestamp,
             "isMorning" to entry.isMorning,
             "systolic" to entry.systolic,
             "diastolic" to entry.diastolic,
             "pulse" to entry.pulse,
             "note" to entry.note,
-            "tags" to entry.tags
+            "tags" to entry.tags,
+            "isDeleted" to false
         )
 
         FirebaseFirestore.getInstance()
@@ -138,29 +158,62 @@ object FirestoreSyncManager {
             .document(docId)
             .set(map)
             .addOnSuccessListener {
-                Log.d(TAG, "Meting $docId succesvol opgeslagen in Firestore op pad /users/${user.uid}/measurements")
+                Log.d(TAG, "Meting $docId succesvol geüpload naar Firestore")
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "Fout bij opslaan in Firestore", e)
             }
     }
 
-    /** Verwijder een meting uit Firestore */
+    /** Markeert een meting als verwijderd (Tombstone) in Firestore */
     fun deleteMeasurementFromFirestore(entry: BloodPressureEntry) {
         val user = FirebaseAuth.getInstance().currentUser ?: return
-        val docId = if (entry.id != 0L) entry.id.toString() else entry.timestamp.toString()
+        val docId = entry.timestamp.toString()
+
+        val tombstoneMap = hashMapOf(
+            "id" to entry.timestamp,
+            "timestamp" to entry.timestamp,
+            "isDeleted" to true,
+            "deletedAt" to System.currentTimeMillis()
+        )
 
         FirebaseFirestore.getInstance()
             .collection("users")
             .document(user.uid)
             .collection("measurements")
             .document(docId)
-            .delete()
+            .set(tombstoneMap)
             .addOnSuccessListener {
-                Log.d(TAG, "Meting $docId verwijderd uit Firestore")
+                Log.d(TAG, "Tombstone voor meting $docId geplaatst in Firestore")
             }
             .addOnFailureListener { e ->
-                Log.e(TAG, "Fout bij verwijderen uit Firestore", e)
+                Log.e(TAG, "Fout bij plaatsen tombstone in Firestore", e)
             }
+    }
+
+    /**
+     * Hulpmethode om dubbele metingen per dagdeel te filteren.
+     * Behoudt maximaal 1 ochtend- en 1 avondmeting per kalenderdatum (de meest recente).
+     */
+    fun deduplicateEntries(entries: List<BloodPressureEntry>): List<BloodPressureEntry> {
+        return entries
+            .sortedByDescending { it.timestamp }
+            .groupBy { e ->
+                val dt = e.timestamp.toLocalDateTime().toLocalDate()
+                dt to e.isMorning
+            }
+            .map { (_, groupEntries) ->
+                // Kies de meest recente meting van dat specifieke dagdeel
+                groupEntries.maxByOrNull { it.timestamp }!!
+            }
+            .sortedByDescending { it.timestamp }
+    }
+
+    /** Handmatige opschoonfunctie om bestaande dubbele metingen in Room op te schonen */
+    suspend fun cleanupLocalDuplicates(database: AppDatabase) {
+        val allEntries = database.bloodPressureDao().getAllEntries()
+        val cleaned = deduplicateEntries(allEntries)
+        database.bloodPressureDao().deleteAll()
+        cleaned.forEach { database.bloodPressureDao().upsert(it) }
     }
 }

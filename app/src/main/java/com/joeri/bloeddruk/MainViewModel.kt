@@ -85,6 +85,10 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
 
     fun saveProfile(profile: UserProfile) = viewModelScope.launch { db.userProfileDao().upsert(profile) }
 
+    fun cleanupDuplicates() = viewModelScope.launch {
+        com.joeri.bloeddruk.data.FirestoreSyncManager.cleanupLocalDuplicates(db)
+    }
+
     fun restoreBackup(data: com.joeri.bloeddruk.data.BackupData) = viewModelScope.launch {
         data.entries.forEach { db.bloodPressureDao().upsert(it) }
         data.medications.forEach { db.medicationDao().upsert(it) }
