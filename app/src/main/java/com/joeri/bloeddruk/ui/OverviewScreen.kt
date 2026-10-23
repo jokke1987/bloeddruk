@@ -415,17 +415,9 @@ private fun DashboardScreen(
             )
         }
 
-        // 2. Laatste Bloeddrukmeting
-        item(key = "latest_card") {
-            LatestBloodPressureCard(
-                latestEntry = latestEntry,
-                onAddFirst = onAdd
-            )
-        }
-
-        // 3. Gezondheidsdashboard Status (100% Synchroon met Laatste Meting)
-        item(key = "dashboard_gauge") {
-            DashboardGaugeCard(
+        // 2. ÉÉN Gecombineerde Dashboard Kaart (Foto 1 Ontwerp)
+        item(key = "combined_dashboard_card") {
+            CombinedDashboardCard(
                 latestEntry = latestEntry,
                 userProfile = userProfile,
                 entries = entries
@@ -457,9 +449,9 @@ private fun DashboardScreen(
     }
 }
 
-/** Gezondheidsdashboard Kaart - 100% Synchroon met de nieuwste opgeslagen meting */
+/** Gecombineerde Dashboard Kaart (Foto 1 Ontwerp): Samenvoeging van Laatste Meting & Gezondheidsdashboard */
 @Composable
-private fun DashboardGaugeCard(
+private fun CombinedDashboardCard(
     latestEntry: BloodPressureEntry?,
     userProfile: UserProfile = UserProfile(),
     entries: List<BloodPressureEntry> = emptyList()
@@ -492,7 +484,7 @@ private fun DashboardGaugeCard(
                 )
                 Spacer(Modifier.height(10.dp))
                 Text(
-                    "Geen actuele meting om de bloeddrukstatus te berekenen.",
+                    "Nog geen metingen geregistreerd.\nVoeg je eerste meting toe om de status te bekijken.",
                     fontSize = 13.sp,
                     color = InkSoft,
                     textAlign = TextAlign.Center
@@ -502,14 +494,14 @@ private fun DashboardGaugeCard(
         return
     }
 
-    // Gebruik de exacte systolische en diastolische waarden van de allernieuwste meting
+    // Gebruik de exacte systolische en diastolische waarden van de allernieuwste opgeslagen meting
     val sys = latestEntry.systolic
     val dia = latestEntry.diastolic
     val classification = classifyBloodPressure(sys, dia, userProfile)
     val pointerFraction = classification.pointerFraction
 
     Card(
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(containerColor = Surface),
         elevation = CardDefaults.cardElevation(2.dp),
         modifier = Modifier
@@ -520,6 +512,7 @@ private fun DashboardGaugeCard(
             Modifier.padding(18.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // 1. Titel
             Text(
                 "GEZONDHEIDSDASHBOARD",
                 fontSize = 13.sp,
@@ -530,20 +523,20 @@ private fun DashboardGaugeCard(
 
             Spacer(Modifier.height(12.dp))
 
-            // Labels boven de kleurenbalk: Blauw / Groen / Oranje / Rood
+            // 2. Labels boven de kleurenbalk: Laag / Normaal / Verhoogd / Hoog
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text("Laag", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, color = BpCategory.LOW.color)
-                Text("Optimaal", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, color = BpCategory.NORMAL.color)
+                Text("Normaal", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, color = BpCategory.NORMAL.color)
                 Text("Verhoogd", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, color = BpCategory.ELEVATED.color)
                 Text("Hoog", fontSize = 11.5.sp, fontWeight = FontWeight.SemiBold, color = BpCategory.HIGH.color)
             }
 
             Spacer(Modifier.height(6.dp))
 
-            // Horizontale Kleurenbalk (4 Zones: Blauw, Groen, Oranje, Rood)
+            // 3. Horizontale Kleurenbalk (4 Zones: Blauw, Groen, Oranje, Rood)
             Column(Modifier.fillMaxWidth()) {
                 Row(
                     Modifier
@@ -559,7 +552,7 @@ private fun DashboardGaugeCard(
 
                 val inkColor = MaterialTheme.colorScheme.onSurface
 
-                // Driehoekige Aanwijzer (▲) dynamisch gepositioneerd op basis van pointerFraction
+                // Driehoekige Aanwijzer (▲)
                 Canvas(
                     Modifier
                         .fillMaxWidth()
@@ -581,6 +574,7 @@ private fun DashboardGaugeCard(
 
             Spacer(Modifier.height(6.dp))
 
+            // 4. BLOEDDRUKSTATUS & Status Badge
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -598,46 +592,46 @@ private fun DashboardGaugeCard(
                     Modifier
                         .clip(RoundedCornerShape(8.dp))
                         .background(classification.bgContainer)
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(
                         classification.label,
                         color = classification.color,
-                        fontSize = 11.5.sp,
+                        fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
             }
 
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(12.dp))
 
-            // SYS | DIA Cijfers van de allernieuwste opgeslagen meting
+            // 5. SYS | DIA Cijfers van de meest recente opgeslagen meting
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
-                    Text("$sys", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Ink)
+                    Text("$sys", fontSize = 42.sp, fontWeight = FontWeight.Bold, color = Ink)
                     Text("SYS", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = InkSoft)
                 }
 
                 Box(
                     Modifier
                         .width(1.dp)
-                        .height(48.dp)
+                        .height(52.dp)
                         .background(Divider)
                 )
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.weight(1f)) {
-                    Text("$dia", fontSize = 38.sp, fontWeight = FontWeight.Bold, color = Ink)
+                    Text("$dia", fontSize = 42.sp, fontWeight = FontWeight.Bold, color = Ink)
                     Text("DIA", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = InkSoft)
                 }
             }
 
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(16.dp))
 
-            // Voortgangsbalk (Groen voor gedaan, grijs voor te doen)
+            // 6. Voortgangsbalk (Groen voor gedaan, grijs voor te doen)
             LinearProgressIndicator(
                 progress = { count / 2f },
                 modifier = Modifier
@@ -651,7 +645,7 @@ private fun DashboardGaugeCard(
 
             Spacer(Modifier.height(12.dp))
 
-            // Onderste rij: ☀️ X van 2 metingen   🌙 Avond –
+            // 7. Onderste rij: ☀️ X van 2 metingen   🌙 Avond ✓
             Row(
                 Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
