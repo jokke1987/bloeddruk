@@ -55,11 +55,23 @@ class MainViewModel(app: Application) : AndroidViewModel(app) {
     fun save(entry: BloodPressureEntry) = viewModelScope.launch {
         db.bloodPressureDao().upsert(entry)
         com.joeri.bloeddruk.data.FirestoreSyncManager.saveMeasurementToFirestore(entry)
+        val allEntries = db.bloodPressureDao().getAllEntries()
+        com.joeri.bloeddruk.export.MonthlyReportManager.autoUpdateAllMonthlyReports(
+            getApplication(),
+            allEntries,
+            userProfile.value
+        )
     }
 
     fun delete(entry: BloodPressureEntry) = viewModelScope.launch {
         db.bloodPressureDao().delete(entry)
         com.joeri.bloeddruk.data.FirestoreSyncManager.deleteMeasurementFromFirestore(entry)
+        val allEntries = db.bloodPressureDao().getAllEntries()
+        com.joeri.bloeddruk.export.MonthlyReportManager.autoUpdateAllMonthlyReports(
+            getApplication(),
+            allEntries,
+            userProfile.value
+        )
     }
 
     fun saveMedication(item: MedicationItem) = viewModelScope.launch { db.medicationDao().upsert(item) }

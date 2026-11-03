@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 data class BloodPressureEntry(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     /** Moment van meten, in milliseconden sinds epoch. */
+
     val timestamp: Long,
     /** true = Ochtend (AM), false = Avond (PM). */
     val isMorning: Boolean,

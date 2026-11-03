@@ -4,26 +4,7 @@
             "outputFile": "com.joeri.bloeddruk.app-mergeDebugResources-60:/values-v21/values-v21.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\wieri\\.gradle\\caches\\9.6.0\\transforms\\f3fe119ca4057e0f1b4894b32e3706af\\transformed\\credentials-play-services-auth-1.2.0-rc01\\res\\values-v21\\values-v21.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endLines": "9",
-                        "endColumns": "12",
-                        "endOffsets": "543"
-                    },
-                    "to": {
-                        "startLines": "10",
-                        "startColumns": "4",
-                        "startOffsets": "864",
-                        "endLines": "17",
-                        "endColumns": "12",
-                        "endOffsets": "1352"
-                    }
-                },
-                {
-                    "source": "C:\\Users\\wieri\\.gradle\\caches\\9.6.0\\transforms\\00bb202600bea0d49f7f187f4c964301\\transformed\\core-1.13.1\\res\\values-v21\\values-v21.xml",
+                    "source": "C:\\Users\\wieri\\.gradle\\caches\\9.6.0\\transforms\\82d0d74d7a1e87a7a1033ef41c248beb\\transformed\\core-1.13.1\\res\\values-v21\\values-v21.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,13",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4",
@@ -39,6 +20,25 @@
                         "endLines": "2,3,4,5,6,7,8,9,20,25",
                         "endColumns": "117,63,66,63,115,125,125,127,12,12",
                         "endOffsets": "168,232,299,363,479,605,731,859,1524,1876"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\wieri\\.gradle\\caches\\9.6.0\\transforms\\e2b49583c551ed7f56da154260a7f00f\\transformed\\credentials-play-services-auth-1.2.0-rc01\\res\\values-v21\\values-v21.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "9",
+                        "endColumns": "12",
+                        "endOffsets": "543"
+                    },
+                    "to": {
+                        "startLines": "10",
+                        "startColumns": "4",
+                        "startOffsets": "864",
+                        "endLines": "17",
+                        "endColumns": "12",
+                        "endOffsets": "1352"
                     }
                 }
             ]
